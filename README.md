@@ -186,6 +186,10 @@ Removing a command from the list will automatically set it's value to `false`.
 <details>
 <summary>Changelog</summary>
 
+`0.0.3`
+- Fixed bug with chat cooldown being applied twice the value of the config
+- Fixed bug with waypoint limits.
+
 `0.0.2`
 - Fixed bug on allies checking when it was called if plugin was never reloaded with Wetstone.
 

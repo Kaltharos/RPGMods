@@ -52,10 +52,13 @@ namespace RPGMods.Commands
                     }
                     if (!global)
                     {
-                        if (Database.waypoints_owned.TryGetValue(SteamID, out var total) && total >= WaypointLimit)
+                        if (Database.waypoints_owned.TryGetValue(SteamID, out var total))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, "You already have reached your total waypoint limit.");
-                            return;
+                            if (total >= WaypointLimit)
+                            {
+                                CommandOutput.CustomErrorMessage(ctx, "You already have reached your total waypoint limit.");
+                                return;
+                            }
                         }
                         wp_name = wp_name + "_" +SteamID;
                         if (Database.waypoints.TryGetValue(wp_name, out _))

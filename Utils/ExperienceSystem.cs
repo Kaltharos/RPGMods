@@ -17,7 +17,6 @@ namespace RPGMods.Utils
     public class ExperienceSystem
     {
         private static EntityManager entityManager = VWorld.Server.EntityManager;
-        private static ServerGameManager serverGameManager = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
 
         public static bool isEXPActive = true;
         public static float EXPMultiplier = 1;
@@ -31,6 +30,8 @@ namespace RPGMods.Utils
         public static double EXPLostOnDeath = 0.10;
 
         private static PrefabGUID vBloodType = new PrefabGUID(1557174542);
+
+        public static Dictionary<Entity, float> Group = new Dictionary<Entity, float>();
 
         public static void UpdateEXP(Entity killerEntity, Entity victimEntity)
         {
@@ -66,17 +67,10 @@ namespace RPGMods.Utils
                 else if (level_diff <= -10) EXPGained = (int)(EXPGained * 0.5 * EXPMultiplier);
                 else EXPGained = (int)(EXPGained * EXPMultiplier);
 
-                bool HasAllies = GetAllies(killerEntity, out Dictionary<Entity, float> Group);
+                bool HasAllies = GetAllies(killerEntity);
                 if (HasAllies)
                 {
-                    int total_close = 0;
-                    foreach (var teammate in Group)
-                    {
-                        if (teammate.Value <= GroupMaxDistance)
-                        {
-                            total_close++;
-                        }
-                    }
+                    int total_close = Group.Count;
                     if (total_close > 0)
                     {
                         for (int i = 0; i < total_close; i++)
@@ -90,7 +84,7 @@ namespace RPGMods.Utils
                     }
                 }
 
-                if (exp == 0) Database.player_experience[SteamID] = EXPGained;
+                if (exp <= 0) Database.player_experience[SteamID] = EXPGained;
                 else Database.player_experience[SteamID] = exp + EXPGained;
 
                 SetLevel(killerEntity, SteamID);
@@ -106,19 +100,21 @@ namespace RPGMods.Utils
             {
                 Database.player_experience.TryGetValue(user_component.PlatformId, out var exp);
                 Database.player_experience[user_component.PlatformId] = exp+EXPGain;
+                SetLevel(user_component.LocalCharacter._Entity, user_component.PlatformId);
             }
-            SetLevel(user_component.LocalCharacter._Entity, user_component.PlatformId);
         }
 
-        public static bool GetAllies(Entity PlayerCharacter, out Dictionary<Entity, float> Group)
+        public static bool GetAllies(Entity PlayerCharacter)
         {
+            var serverGameManager = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
             Team team = entityManager.GetComponentData<Team>(PlayerCharacter);
-            Group = new Dictionary<Entity, float>();
             if (serverGameManager._TeamChecker.GetAlliedUsersCount(team) <= 1) return false;
+
             LocalToWorld playerPos = entityManager.GetComponentData<LocalToWorld>(PlayerCharacter);
             NativeList<Entity> allyBuffer = serverGameManager._TeamChecker.GetTeamsChecked();
             serverGameManager._TeamChecker.GetAlliedUsers(team, allyBuffer);
             int i = 0;
+            Group.Clear();
             try
             {
                 foreach (var entity in allyBuffer)
@@ -128,7 +124,11 @@ namespace RPGMods.Utils
                         Entity allyEntity = entityManager.GetComponentData<User>(entity).LocalCharacter._Entity;
                         if (allyEntity.Equals(PlayerCharacter)) continue;
                         LocalToWorld allyPos = entityManager.GetComponentData<LocalToWorld>(allyEntity);
-                        Group[entity] = math.distance(playerPos.Position.xz,allyPos.Position.xz);
+                        var Distance = math.distance(playerPos.Position.xz, allyPos.Position.xz);
+                        if (Distance <= GroupMaxDistance)
+                        {
+                            Group[allyEntity] = Distance;
+                        }
                         i++;
                     }
                 }

@@ -1,6 +1,6 @@
 {
     "name": "RPGMods",
-    "version_number": "1.3.9",
+    "version_number": "0.0.1",
     "website_url": "",
     "description": "RPGMods combined with ChatCommands.",
     "dependencies": [

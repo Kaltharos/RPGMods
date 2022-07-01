@@ -23,7 +23,6 @@ namespace RPGMods.Commands
                 return;
             }
 
-            LoadKits();
             string name = string.Join(' ', ctx.Args);
 
             try

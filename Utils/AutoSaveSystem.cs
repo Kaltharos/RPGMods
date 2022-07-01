@@ -17,6 +17,7 @@ namespace RPGMods.Utils
             GodMode.SaveGodMode();
             Speed.SaveSpeed();
             AutoRespawn.SaveAutoRespawn();
+            //Kit.SaveKits();   //-- Nothing to save here for now.
 
             ExperienceSystem.SaveEXPData();
             PvPStatistics.SavePvPStat();
@@ -32,6 +33,7 @@ namespace RPGMods.Utils
             GodMode.LoadGodMode();
             Speed.LoadSpeed();
             AutoRespawn.LoadAutoRespawn();
+            Kit.LoadKits();
 
             //-- System Related
             PvPStatistics.LoadPvPStat();

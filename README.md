@@ -185,7 +185,7 @@ Removing a command from the list will automatically set it's value to `false`.
 <details>
 <summary>Changelog</summary>
 
-`0.0.1_alpha`
+`0.0.1`
 - Added command delay timer
 - Integrated the data saving into the GameServer autosave & shutdown
 - All saved data will now use SteamID as key for compability with character name changes

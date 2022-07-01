@@ -1,4 +1,5 @@
 # RPGMods
+### [My Patreon Page](https://patreon.com/kaltharos) for people who may want to support me!
 ### Server Only Mod
 Server only mod for RPG system which also include ChatCommands with bug fixes.\
 Read the changelog for extra details.

@@ -191,6 +191,7 @@ Removing a command from the list will automatically set it's value to `false`.
 - Fixed bug with waypoint limits.
 - Fixed bug with PvPStats recording.
 - Fixed bug with teleport command.
+- PvPKD should display decimals properly now.
 
 `0.0.2`
 - Fixed bug on allies checking when it was called if plugin was never reloaded with Wetstone.

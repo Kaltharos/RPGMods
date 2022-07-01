@@ -47,9 +47,9 @@ namespace RPGMods.Commands
             
             if (ctx.Args.Length > 0)
             {
-                var isVampirePvPOn = false;
-                if (ctx.Args[0].ToLower().Equals("on")) isVampirePvPOn = true;
-                else if (ctx.Args[0].ToLower().Equals("off")) isVampirePvPOn = false;
+                var isPvPShieldON = false;
+                if (ctx.Args[0].ToLower().Equals("on")) isPvPShieldON = false;
+                else if (ctx.Args[0].ToLower().Equals("off")) isPvPShieldON = true;
                 else
                 {
                     Utils.CommandOutput.InvalidArguments(ctx);
@@ -63,9 +63,9 @@ namespace RPGMods.Commands
                         Utils.CommandOutput.CustomErrorMessage(ctx, $"Unable to change PvP Toggle, you are in combat!");
                         return;
                     }
-                    CommandHelper.SetPvP(charEntity, isVampirePvPOn);
-                    string s = isVampirePvPOn ? "ON" : "OFF";
-                    user.SendSystemMessage($"PvP is now {isVampirePvPOn}");
+                    CommandHelper.SetPvPShield(charEntity, isPvPShieldON);
+                    string s = isPvPShieldON ? "OFF" : "ON";
+                    user.SendSystemMessage($"PvP is now {s}");
                     return;
                 }
                 else if (ctx.Args.Length == 2 && ctx.Event.User.IsAdmin)
@@ -75,9 +75,9 @@ namespace RPGMods.Commands
                         string name = ctx.Args[2];
                         if (CommandHelper.FindPlayer(name,true,out Entity targetChar, out Entity targetUser))
                         {
-                            CommandHelper.SetPvP(targetChar, isVampirePvPOn);
-                            string s = isVampirePvPOn ? "ON" : "OFF";
-                            user.SendSystemMessage($"Player \"{name}\" PvP is now {isVampirePvPOn}");
+                            CommandHelper.SetPvPShield(targetChar, isPvPShieldON);
+                            string s = isPvPShieldON ? "OFF" : "ON";
+                            user.SendSystemMessage($"Player \"{name}\" PvP is now {s}");
                         }
                         else
                         {

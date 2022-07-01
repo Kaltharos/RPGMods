@@ -156,7 +156,7 @@ namespace RPGMods.Utils
             return BuffUtility.HasBuff(VWorld.Server.EntityManager, player, BuffGUID);
         }
 
-        public static void SetPvP(Entity character, bool value)
+        public static void SetPvPShield(Entity character, bool value)
         {
             var em = VWorld.Server.EntityManager;
             var cUnitStats = em.GetComponentData<UnitStats>(character);

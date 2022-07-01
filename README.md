@@ -186,6 +186,9 @@ Removing a command from the list will automatically set it's value to `false`.
 <details>
 <summary>Changelog</summary>
 
+`0.0.2`
+- Fixed bug on allies checking when it was called if plugin was never reloaded with Wetstone.
+
 `0.0.1`
 - Added command delay timer
 - Integrated the data saving into the GameServer autosave & shutdown

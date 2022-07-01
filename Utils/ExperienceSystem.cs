@@ -31,8 +31,6 @@ namespace RPGMods.Utils
 
         private static PrefabGUID vBloodType = new PrefabGUID(1557174542);
 
-        public static Dictionary<Entity, float> Group = new Dictionary<Entity, float>();
-
         public static void UpdateEXP(Entity killerEntity, Entity victimEntity)
         {
             bool isVictimNPC = entityManager.HasComponent<UnitLevel>(victimEntity);
@@ -67,20 +65,16 @@ namespace RPGMods.Utils
                 else if (level_diff <= -10) EXPGained = (int)(EXPGained * 0.5 * EXPMultiplier);
                 else EXPGained = (int)(EXPGained * EXPMultiplier);
 
-                bool HasAllies = GetAllies(killerEntity);
+                bool HasAllies = GetAllies(killerEntity, out var Group);
                 if (HasAllies)
                 {
-                    int total_close = Group.Count;
-                    if (total_close > 0)
+                    for (int i = 0; i < Group.Count; i++)
                     {
-                        for (int i = 0; i < total_close; i++)
-                        {
-                            EXPGained = (int)(EXPGained * GroupModifier);
-                        }
-                        foreach (var teammate in Group)
-                        {
-                            ShareEXP(teammate.Key, EXPGained);
-                        }
+                        EXPGained = (int)(EXPGained * GroupModifier);
+                    }
+                    foreach (var teammate in Group)
+                    {
+                        ShareEXP(teammate.Key, EXPGained);
                     }
                 }
 
@@ -104,17 +98,17 @@ namespace RPGMods.Utils
             }
         }
 
-        public static bool GetAllies(Entity PlayerCharacter)
+        public static bool GetAllies(Entity PlayerCharacter, out Dictionary<Entity, float> Group)
         {
             var serverGameManager = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
             Team team = entityManager.GetComponentData<Team>(PlayerCharacter);
+            Group = new Dictionary<Entity, float>();
             if (serverGameManager._TeamChecker.GetAlliedUsersCount(team) <= 1) return false;
 
             LocalToWorld playerPos = entityManager.GetComponentData<LocalToWorld>(PlayerCharacter);
             NativeList<Entity> allyBuffer = serverGameManager._TeamChecker.GetTeamsChecked();
             serverGameManager._TeamChecker.GetAlliedUsers(team, allyBuffer);
             int i = 0;
-            Group.Clear();
             try
             {
                 foreach (var entity in allyBuffer)
@@ -127,9 +121,9 @@ namespace RPGMods.Utils
                         var Distance = math.distance(playerPos.Position.xz, allyPos.Position.xz);
                         if (Distance <= GroupMaxDistance)
                         {
-                            Group[allyEntity] = Distance;
+                            Group[entity] = Distance;
+                            i++;
                         }
-                        i++;
                     }
                 }
             }

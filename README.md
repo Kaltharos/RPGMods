@@ -1,5 +1,5 @@
 # RPGMods
-### [My Patreon Page](https://patreon.com/kaltharos) for people who may want to support me!
+### [Original ChatCommands Repository](https://github.com/NopeyBoi/ChatCommands)
 ### Server Only Mod
 Server only mod for RPG system which also include ChatCommands with bug fixes.\
 Read the changelog for extra details.
@@ -189,6 +189,7 @@ Removing a command from the list will automatically set it's value to `false`.
 `0.0.3`
 - Fixed bug with chat cooldown being applied twice the value of the config
 - Fixed bug with waypoint limits.
+- Fixed bug with PvPStats recording.
 
 `0.0.2`
 - Fixed bug on allies checking when it was called if plugin was never reloaded with Wetstone.

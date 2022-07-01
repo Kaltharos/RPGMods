@@ -35,6 +35,12 @@ namespace RPGMods.Utils
             Database.pvpdeath[victim_id] = VictimDeath + 1;
 
             //-- Update K/D
+            var isExist = Database.pvpdeath.TryGetValue(killer_id, out _);
+            if (!isExist) Database.pvpdeath[killer_id] = 0;
+
+            isExist = Database.pvpkills.TryGetValue(victim_id, out _);
+            if (!isExist) Database.pvpkills[victim_id] = 0;
+
             if (Database.pvpdeath[killer_id] != 0) Database.pvpkd[killer_id] = Database.pvpkills[killer_id] / Database.pvpdeath[killer_id];
             else Database.pvpkd[killer_id] = Database.pvpkills[killer_id];
 

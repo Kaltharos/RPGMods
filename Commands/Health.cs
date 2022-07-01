@@ -13,7 +13,7 @@ namespace RPGMods.Commands
             var PlayerName = ctx.Event.User.CharacterName;
             var UserIndex = ctx.Event.User.Index;
             var component = ctx.EntityManager.GetComponentData<ProjectM.Health>(ctx.Event.SenderCharacterEntity);
-            int Value = 10000;
+            int Value = 100;
             if (ctx.Args.Length != 0)
             {
                 if (!int.TryParse(ctx.Args[0], out Value))
@@ -36,6 +36,7 @@ namespace RPGMods.Commands
                 else
                 {
                     Utils.CommandOutput.CustomErrorMessage(ctx, $"Player \"{targetName}\" not found.");
+                    return;
                 }
             }
 

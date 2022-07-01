@@ -68,7 +68,7 @@ namespace RPGMods.Utils
         //-- -- PvP Stats
         public static Dictionary<ulong, int> pvpkills { get; set; }
         public static Dictionary<ulong, int> pvpdeath { get; set; }
-        public static Dictionary<ulong, float> pvpkd { get; set; }
+        public static Dictionary<ulong, double> pvpkd { get; set; }
 
         //-- Static Database (Data that will never be changed in runtime)
         public static Dictionary<string, PrefabGUID> database_units = new Dictionary<string, PrefabGUID>()

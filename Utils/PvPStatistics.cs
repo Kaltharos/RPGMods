@@ -35,19 +35,25 @@ namespace RPGMods.Utils
             Database.pvpdeath[victim_id] = VictimDeath + 1;
 
             //-- Update K/D
+            UpdateKD(killer_id, victim_id);
+
+            //-- Announce Kills
+            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(entityManager, $"Vampire \"{killer_name}\" has killed \"{victim_name}\"!");
+        }
+
+        public static void UpdateKD(ulong killer_id, ulong victim_id)
+        {
             var isExist = Database.pvpdeath.TryGetValue(killer_id, out _);
             if (!isExist) Database.pvpdeath[killer_id] = 0;
 
             isExist = Database.pvpkills.TryGetValue(victim_id, out _);
             if (!isExist) Database.pvpkills[victim_id] = 0;
 
-            if (Database.pvpdeath[killer_id] != 0) Database.pvpkd[killer_id] = Database.pvpkills[killer_id] / Database.pvpdeath[killer_id];
+            if (Database.pvpdeath[killer_id] != 0) Database.pvpkd[killer_id] = (double) Database.pvpkills[killer_id] / Database.pvpdeath[killer_id];
             else Database.pvpkd[killer_id] = Database.pvpkills[killer_id];
 
-            if (Database.pvpkills[victim_id] != 0) Database.pvpkd[victim_id] = Database.pvpkills[victim_id] / Database.pvpdeath[victim_id];
+            if (Database.pvpkills[victim_id] != 0) Database.pvpkd[victim_id] = (double) Database.pvpkills[victim_id] / Database.pvpdeath[victim_id];
             else Database.pvpkd[victim_id] = 0;
-
-            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(entityManager, $"Vampire \"{killer_name}\" has killed \"{victim_name}\"!");
         }
 
         public static void SavePvPStat()
@@ -101,12 +107,12 @@ namespace RPGMods.Utils
             json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpkd.json");
             try
             {
-                Database.pvpkd = JsonSerializer.Deserialize<Dictionary<ulong, float>>(json);
+                Database.pvpkd = JsonSerializer.Deserialize<Dictionary<ulong, double>>(json);
                 Plugin.Logger.LogWarning("PvP K/D List Populated.");
             }
             catch
             {
-                Database.pvpkd = new Dictionary<ulong, float>();
+                Database.pvpkd = new Dictionary<ulong, double>();
                 Plugin.Logger.LogWarning("PvP K/D List Created.");
             }
         }

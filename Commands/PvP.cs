@@ -24,7 +24,6 @@ namespace RPGMods.Commands
                 Database.pvpdeath.TryGetValue(SteamID, out var pvp_deaths);
                 Database.pvpkd.TryGetValue(SteamID, out var pvp_kd);
 
-
                 user.SendSystemMessage($"-- <color=#ffffffff>{CharName}</color> --");
                 user.SendSystemMessage($"K/D: <color=#ffffffff>{pvp_kd} [{pvp_kills}/{pvp_deaths}]</color>");
 

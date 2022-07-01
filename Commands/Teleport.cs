@@ -10,9 +10,9 @@ using Wetstone.API;
 namespace RPGMods.Commands
 {
     [Command("teleport, tp", "teleport <Name>", "Teleport you to another online player within your clan.")]
-    public class Teleport
+    public static class Teleport
     {
-        public void Initialize(Context ctx)
+        public static void Initialize(Context ctx)
         {
             var eventUser = ctx.Event.User;
             var UserCharacter = ctx.Event.SenderCharacterEntity;
@@ -21,22 +21,22 @@ namespace RPGMods.Commands
 
             if (CommandHelper.IsPlayerInCombat(UserCharacter))
             {
-                eventUser.SendSystemMessage("Unable to use command! You're <color=#ff0000ff>in combat</color>!");
+                Utils.CommandOutput.CustomErrorMessage(ctx, "Unable to use command! You're in combat!");
                 return;
             }
             if (ctx.Args.Length < 1)
             {
-                eventUser.SendSystemMessage("Missing parameters.");
+                Utils.CommandOutput.InvalidArguments(ctx);
                 return;
             }
 
-            Team user_TeamComponent = entityManager.GetComponentData<Team>(UserEntity);
+            Team user_TeamComponent = entityManager.GetComponentData<Team>(UserCharacter);
 
             string TargetName = string.Join(' ', ctx.Args);
             LocalToWorld target_WorldComponent;
             Team target_TeamComponent;
 
-            if(CommandHelper.FindPlayer(TargetName, true, out Entity TargetChar, out Entity TargetUserEntity))
+            if (CommandHelper.FindPlayer(TargetName, true, out Entity TargetChar, out Entity TargetUserEntity))
             {
                 target_TeamComponent = entityManager.GetComponentData<Team>(TargetUserEntity);
                 target_WorldComponent = entityManager.GetComponentData<LocalToWorld>(TargetChar);

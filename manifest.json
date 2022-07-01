@@ -1,0 +1,10 @@
+{
+    "name": "RPGMods",
+    "version_number": "1.3.9",
+    "website_url": "",
+    "description": "RPGMods combined with ChatCommands.",
+    "dependencies": [
+		"BepInEx-BepInExPack_V_Rising-1.0.0",
+        "molenzwiebel-Wetstone-1.1.0"
+    ]
+}

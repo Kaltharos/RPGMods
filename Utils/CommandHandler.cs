@@ -54,9 +54,9 @@ namespace RPGMods.Utils
                 }
 
                 Cache.command_Cooldown.TryGetValue(ev.User.PlatformId, out float last_Command);
-                if (getCurrentTime < last_Command + delay_Cooldown && !ev.User.IsAdmin)
+                if (getCurrentTime < last_Command && !ev.User.IsAdmin)
                 {
-                    var wait = last_Command - getCurrentTime;
+                    int wait = (int)Math.Ceiling(last_Command - getCurrentTime);
                     ev.User.SendSystemMessage($"<color=#ff0000ff>Please wait for {wait} second(s) before sending another command.</color>");
                     return;
                 }

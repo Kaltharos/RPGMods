@@ -3,6 +3,7 @@
 ### Server Only Mod
 Server only mod for RPG system which also include ChatCommands with bug fixes.\
 Read the changelog for extra details.
+#### [Video Demo of Experience & Mastery](https://streamable.com/k2p3bm)
 
 ## Experience System
 Disable the VRising Gear Level system and replace it with a traditional RPG experience system,\

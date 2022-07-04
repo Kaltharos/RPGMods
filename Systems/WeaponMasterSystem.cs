@@ -79,7 +79,7 @@ namespace RPGMods.Systems
 
             Cache.player_last_combat.TryGetValue(SteamID, out var LastCombat);
             TimeSpan elapsed_time = DateTime.Now - LastCombat;
-            if (elapsed_time.TotalSeconds > 15) Cache.player_combat_ticks[SteamID] = 1;
+            if (elapsed_time.TotalSeconds >= 10) Cache.player_combat_ticks[SteamID] = 0;
             if (elapsed_time.TotalSeconds * 0.2 < 1) return;
 
             Cache.player_last_combat[SteamID] = DateTime.Now;
@@ -89,6 +89,7 @@ namespace RPGMods.Systems
 
             int MasteryValue = (int)(MasteryCombatTick * MasteryMultiplier);
             Cache.player_combat_ticks[SteamID] += 1;
+            
             SetMastery(SteamID, WeaponType, MasteryValue);
         }
 

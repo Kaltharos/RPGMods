@@ -104,7 +104,7 @@ namespace RPGMods.Utils
 
         public static void SavePermissions()
         {
-            File.WriteAllText("BepInEx/config/RPGMods/permissions.json", JsonSerializer.Serialize(Permissions, Database.JSON_options));
+            File.WriteAllText("BepInEx/config/RPGMods/permissions.json", JsonSerializer.Serialize(Permissions, Database.Pretty_JSON_options));
         }
     }
 

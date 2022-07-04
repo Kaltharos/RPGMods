@@ -11,7 +11,7 @@ namespace RPGMods.Utils
         //-- AutoSave is now directly hooked into the Server game save activity.
         public static void SaveDatabase()
         {
-            CommandHandler.SavePermissions();
+            //CommandHandler.SavePermissions(); //-- Nothing new to save.
             SunImmunity.SaveImmunity();
             Waypoint.SaveWaypoints();
             NoCooldown.SaveCooldown();

@@ -82,6 +82,11 @@ namespace RPGMods.Utils
             WriteIndented = false,
             IncludeFields = false
         };
+        public static JsonSerializerOptions Pretty_JSON_options = new JsonSerializerOptions()
+        {
+            WriteIndented = true,
+            IncludeFields = true
+        };
         //-- Dynamic Database (Saved on a JSON file on plugin reload, server restart, and shutdown.)
         //-- Initialization for the data loading is on each command or related CS file.
 

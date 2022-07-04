@@ -189,8 +189,8 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
                     Buffer.Add(SunResist);
                     Buffer.Add(GResist);
                     Buffer.Add(SPResist);
-                    //Buffer.Add(PPower);
-                    //Buffer.Add(SPPower);
+                    Buffer.Add(PPower);
+                    Buffer.Add(SPPower);
                     //Buffer.Add(PHRegen);
                     //Buffer.Add(HRecovery);
                     Buffer.Add(MaxHP);

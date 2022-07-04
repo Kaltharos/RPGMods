@@ -20,7 +20,7 @@ namespace RPGMods.Commands
             UpdateSpeed(ctx, isSpeeding);
             string s = isSpeeding ? "Activated" : "Deactivated";
             ctx.Event.User.SendSystemMessage($"Speed buff <color=#ffff00ff>{s}</color>");
-            CommandHelper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
+            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 
         public static bool UpdateSpeed(Context ctx, bool isGodMode)
@@ -59,12 +59,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.speeding = JsonSerializer.Deserialize<Dictionary<ulong, bool>>(json);
-                Plugin.Logger.LogWarning("Speed List Populated.");
+                Plugin.Logger.LogWarning("Speed DB Populated.");
             }
             catch
             {
                 Database.speeding = new Dictionary<ulong, bool>();
-                Plugin.Logger.LogWarning("New Speed List Created.");
+                Plugin.Logger.LogWarning("Speed DB Created.");
             }
         }
     }

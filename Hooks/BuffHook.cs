@@ -3,8 +3,10 @@ using Unity.Entities;
 using Unity.Collections;
 using ProjectM.Network;
 using ProjectM;
+using ProjectM.Sequencer;
 using RPGMods.Utils;
 using RPGMods.Commands;
+using RPGMods.Systems;
 
 namespace RPGMods.Hooks;
 [HarmonyPatch(typeof(ModifyUnitStatBuffSystem_Spawn), nameof(ModifyUnitStatBuffSystem_Spawn.OnUpdate))]
@@ -130,6 +132,14 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
         Id = ModificationId.NewId(0)
     };
 
+    private static ModifyUnitStatBuff_DOTS MaxHP = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.MaxHealth,
+        Value = 10000,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
     private static void Prefix(ModifyUnitStatBuffSystem_Spawn __instance)
     {
         EntityManager entityManager = __instance.EntityManager;
@@ -148,6 +158,10 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
                 User Data = entityManager.GetComponentData<User>(User);
 
                 var Buffer = entityManager.GetBuffer<ModifyUnitStatBuff_DOTS>(entity);
+
+                Buffer.Clear();
+
+                if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.BuffReceiver(Buffer, Owner, Data.PlatformId);
 
                 if (Database.nocooldownlist.TryGetValue(Data.PlatformId, out bool b))
                 {
@@ -175,10 +189,11 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
                     Buffer.Add(SunResist);
                     Buffer.Add(GResist);
                     Buffer.Add(SPResist);
-                    Buffer.Add(PPower);
-                    Buffer.Add(SPPower);
-                    Buffer.Add(PHRegen);
-                    Buffer.Add(HRecovery);
+                    //Buffer.Add(PPower);
+                    //Buffer.Add(SPPower);
+                    //Buffer.Add(PHRegen);
+                    //Buffer.Add(HRecovery);
+                    Buffer.Add(MaxHP);
                     Buffer.Add(Hazard);
                     Buffer.Add(SunCharge);
                 }
@@ -192,7 +207,7 @@ public class BuffSystem_Spawn_Server_Patch
 {
     private static void Postfix(BuffSystem_Spawn_Server __instance)
     {
-        if(HunterHunted.isActive)
+        if (HunterHunted.isActive || WeaponMasterSystem.isMasteryEnabled)
         {
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
             foreach (var entity in entities)
@@ -201,7 +216,8 @@ public class BuffSystem_Spawn_Server_Patch
                 Entity e_Owner = __instance.EntityManager.GetComponentData<EntityOwner>(entity).Owner;
                 if (!__instance.EntityManager.HasComponent<PlayerCharacter>(e_Owner)) continue;
                 Entity e_User = __instance.EntityManager.GetComponentData<PlayerCharacter>(e_Owner).UserEntity._Entity;
-                HunterHunted.HeatManager(e_User, e_Owner, true);
+                if (HunterHunted.isActive) HunterHunted.HeatManager(e_User, e_Owner, true);
+                if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.LoopMastery(e_User, e_Owner);
             }
         }
     }

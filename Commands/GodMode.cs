@@ -18,7 +18,7 @@ namespace RPGMods.Commands
             UpdateGodMode(ctx, isGodMode);
             string s = isGodMode ? "Activated" : "Deactivated";
             ctx.Event.User.SendSystemMessage($"God mode <color=#ffff00ff>{s}</color>");
-            CommandHelper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
+            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 
         public static bool UpdateGodMode(Context ctx, bool isGodMode)
@@ -57,12 +57,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.godmode = JsonSerializer.Deserialize<Dictionary<ulong, bool>>(json);
-                Plugin.Logger.LogWarning("God Mode List Populated.");
+                Plugin.Logger.LogWarning("GodMode DB Populated.");
             }
             catch
             {
                 Database.godmode = new Dictionary<ulong, bool>();
-                Plugin.Logger.LogWarning("New God Mode List Created.");
+                Plugin.Logger.LogWarning("GodMode DB Created.");
             }
         }
     }

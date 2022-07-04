@@ -22,7 +22,7 @@ namespace RPGMods.Commands
             UpdateImmunity(ctx, isSunImmune);
             string s = isSunImmune ? "Activated" : "Deactivated";
             ctx.Event.User.SendSystemMessage($"Sun Immunity <color=#ffff00ff>{s}</color>");
-            CommandHelper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
+            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 
         public static bool UpdateImmunity(Context ctx, bool isSunImmune)
@@ -62,12 +62,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.sunimmunity = JsonSerializer.Deserialize<Dictionary<ulong, bool>>(json);
-                Plugin.Logger.LogWarning("Sun Immunity List Populated.");
+                Plugin.Logger.LogWarning("SunImmunity DB Populated.");
             }
             catch
             {
                 Database.sunimmunity = new Dictionary<ulong, bool>();
-                Plugin.Logger.LogWarning("New Sun Immunity List Created.");
+                Plugin.Logger.LogWarning("SunImmunity DB Created.");
             }
         }
     }

@@ -8,6 +8,20 @@ Read the changelog for extra details.
 Disable the VRising Gear Level system and replace it with a traditional RPG experience system,\
 complete with exp sharing between clan members or other player designated as ally.
 
+## Mastery System
+### Weapon Mastery (NEW - Should be tested first!)
+Mastering a weapon will now progressively give extra bonus to the character stats.
+- Physical weapon (Sword, Spear, Fist, Schyte, Axes, Slashers, Mace, Fishing Pole) will give extra physical power. (100% -> 10 Power)
+- Spell (Global/All Spells) will reduce the cooldown of all skills. (100% -> 50% cooldown reduction)
+
+Weapon mastery will increase when the weapon is used to kill a creature, and while in combat to a maximum of 60 seconds. (0.001%/Sec)\
+Spell mastery can only increase and take effect when no weapon is equipped.
+### Defensive Mastery
+TBA
+### Mastery Decay
+When the vampire goes to sleep (offline), all their mastery will continuously decay per minute passed while offline.\
+This decay will keep on counting even while the server is offline.
+
 ## HunterHunted System
 A new system where every NPC you killed contribute to a heat system,\
 if you kill too many NPC from that faction, eventually your heat level will raise higher and higher.
@@ -71,6 +85,26 @@ Set the modifier for EXP gained for each ally(player) in vicinity.\
 Example if you have 2 ally nearby, EXPGained = ((EXPGained * Modifier)*Modifier)
 - `Ally Max Distance` [default `50`]\
 Set the maximum distance an ally(player) has to be from the player for them to share EXP with the player
+### Mastery
+- `Enable Weapon Mastery` [default `true`]\
+Enable/disable the weapon mastery system.
+- `Enable Mastery Decay` [default `true`]\
+Enable/disable the decay of weapon mastery when the user is offline.
+- `Max Mastery Value` [default `100000`]\
+Configure the maximum mastery the user can atain. (100000 is 100%)
+- `Mastery Value/Combat Ticks` [default `5`]\
+Configure the amount of mastery gained per combat ticks. (5 -> 0.005%)
+- `Max Combat Ticks` [default `12`]\
+Mastery will no longer increase after this many ticks is reached in combat. (1 tick = 5 seconds)
+- `Mastery Multiplier` [default `1`]\
+Multiply the gained mastery value by this amount.
+- `VBlood Mastery Multiplier` [default `15`]\
+Multiply Mastery gained from VBlood kill.
+- `Decay Interval` [default `60`]\
+Every amount of seconds the user is offline by the configured value will translate as 1 decay tick.
+- `Decay Value` [default `1`]\
+Mastery will decay by this amount for every decay tick. (1 -> 0.001%)
+
 
 ## Permissions
 You can only decide whether a command is admin only or not at this time.\
@@ -107,7 +141,10 @@ The permissions are saved in `BepInEx/config/RPGMods/permissions.json` and look 
   "godmode": true,
   "god": true,
   "experience": false,
-  "xp": false
+  "exp": false,
+  "xp": false,
+  "mastery": false,
+  "m": false
 }
 ```
 Removing a command from the list will automatically set it's value to `false`.
@@ -170,21 +207,36 @@ Removing a command from the list will automatically set it's value to `false`.
 &ensp;&ensp;**Admin Only Params -> `[<All>|<PlayerName>]`** `Toggle the auto respawn for specified player or server wide.
 
 `heat`: Checks your heat/wanted level by the factions.\
-&ensp;&ensp;**Admin Only Params -> `[<debug>|<value>] [<value>]`** `Display current configuration or set your heat value`\
-&ensp;&ensp;**Example:** `heat 500 500`
+&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]] `** `Display current configuration or set your or the specified player heat value`\
+&ensp;&ensp;**Example:** `heat 500 500`\
+&ensp;&ensp;**Example:** `heat 500 500 LegendaryVampire`
 
 `ping`: Show you your latency to the server.\
 `pvp [<on>|<off>]`: Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
-`experience`: Diplays your current exp and progression to the next level.\
+`experience [<log> <on>|<off>]`: Diplays your current exp and progression to the next level, or toggle the exp gain notification.\
 &ensp;&ensp;**Admin Only Params -> `[<set>] [<value>] [<PlayerName>]`** `Set your or the specified player experience value`\
 &ensp;&ensp;**Example:** `experience set 1000`\
 &ensp;&ensp;**Example:** `experience set 2000 LegendaryVampire`
+
+`mastery [<log> <on>|<off>]`: Display your current mastery progression, or toggle the mastery gain notification.\
+&ensp;&ensp;**Admin Only Params -> `[<set>] [<type>] [<value>] [<PlayerName>]`** `Set your or the specified player mastery value`\
+&ensp;&ensp;**Example:** `mastery set sword 100000`\
+&ensp;&ensp;**Example:** `mastery set spear 2000 LegendaryVampire`
 
 `save`: Trigger the database saving manually.
 
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.1.4`
+- Added Weapon Mastery system.
+- Disabled EXP/Mastery gain from summoned creatures.
+- Added EXP & Mastery gain logs for players.
+- Changed some 'notification' type of message into Lore chat type.
+- Added capabilities to change other player heat values.
+- Added mastery command.
+- Added a new abreviation for experience command. (exp)
 
 `0.0.3`
 - Fixed bug with chat cooldown being applied twice the value of the config
@@ -224,6 +276,18 @@ Removing a command from the list will automatically set it's value to `false`.
 </details>
 
 <details>
+<summary>Contributor</summary>
+
+### [Discord](https://discord.gg/XY5bNtNm4w)
+#### Without these people, this project will just be a dream. (In no particular order)
+- Dimentox#1154
+- Nopey#1337
+- syllabicat#0692
+- errox#7604
+
+</details>
+
+<details>
 <summary>Known Issues</summary>
 
 ### General
@@ -231,7 +295,7 @@ Removing a command from the list will automatically set it's value to `false`.
 - Blood command cannot apply "fragile" blood type.
 
 ### Experience System
-- Some blood buff give a gear level to the character, which would be fixed once they kill something.
+- Some blood buff give a gear level to the character, which would be fixed once they kill something or re-equip accessory.
 
 ### HunterHunted System
 - There's no known issue yet. Heat level does get reset if you reload the plugin/restart server, this is an intended behaviour.
@@ -247,5 +311,6 @@ Removing a command from the list will automatically set it's value to `false`.
 - Add ban command with duration.
 - Explore team/alliance in VRising.
 - Hook into whatever system possible to add a tag to player names.
+- Other defensive mastery system.
 
 </details>

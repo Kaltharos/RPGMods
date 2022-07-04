@@ -18,7 +18,7 @@ namespace RPGMods.Commands
                     float quality = 100;
                     int value = 100;
 
-                    if (ctx.Args.Length >= 1) type = CommandHelper.GetSourceTypeFromName(ctx.Args[0]);
+                    if (ctx.Args.Length >= 1) type = Helper.GetSourceTypeFromName(ctx.Args[0]);
                     if (ctx.Args.Length >= 2)
                     {
                         quality = float.Parse(ctx.Args[1]);
@@ -38,13 +38,13 @@ namespace RPGMods.Commands
                 }
                 catch
                 {
-                    Utils.CommandOutput.InvalidArguments(ctx);
+                    Utils.Output.InvalidArguments(ctx);
                 }
 
             }
             else
             {
-                Utils.CommandOutput.MissingArguments(ctx);
+                Utils.Output.MissingArguments(ctx);
             }
         }
     }

@@ -18,9 +18,9 @@ namespace RPGMods.Commands
         {
             var PlayerEntity = ctx.Event.SenderCharacterEntity;
             var SteamID = ctx.Event.User.PlatformId;
-            if (CommandHelper.IsPlayerInCombat(PlayerEntity))
+            if (Helper.IsPlayerInCombat(PlayerEntity))
             {
-                CommandOutput.CustomErrorMessage(ctx, "Unable to use waypoint! You're in combat!");
+                Output.CustomErrorMessage(ctx, "Unable to use waypoint! You're in combat!");
                 return;
             }
             if (ctx.Args.Length < 1)
@@ -39,7 +39,7 @@ namespace RPGMods.Commands
                     if (ctx.Args[2].ToLower().Equals("true") && ctx.Event.User.IsAdmin) global = true;
                     else
                     {
-                        CommandOutput.CustomErrorMessage(ctx, "You do not have permission to edit a global waypoint.");
+                        Output.CustomErrorMessage(ctx, "You do not have permission to edit a global waypoint.");
                         return;
                     }
                 }
@@ -47,7 +47,7 @@ namespace RPGMods.Commands
                 {
                     if (Database.globalWaypoint.TryGetValue(wp_name, out _))
                     {
-                        CommandOutput.CustomErrorMessage(ctx, $"A global waypoint with the \"{wp_name}\" name existed. Please rename your waypoint.");
+                        Output.CustomErrorMessage(ctx, $"A global waypoint with the \"{wp_name}\" name existed. Please rename your waypoint.");
                         return;
                     }
                     if (!global)
@@ -56,14 +56,14 @@ namespace RPGMods.Commands
                         {
                             if (total >= WaypointLimit)
                             {
-                                CommandOutput.CustomErrorMessage(ctx, "You already have reached your total waypoint limit.");
+                                Output.CustomErrorMessage(ctx, "You already have reached your total waypoint limit.");
                                 return;
                             }
                         }
                         wp_name = wp_name + "_" +SteamID;
                         if (Database.waypoints.TryGetValue(wp_name, out _))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, $"You already have a waypoint with the same name.");
+                            Output.CustomErrorMessage(ctx, $"You already have a waypoint with the same name.");
                             return;
                         }
                     }
@@ -77,7 +77,7 @@ namespace RPGMods.Commands
                 {
                     if (!Database.globalWaypoint.TryGetValue(wp_name, out _) && global)
                     {
-                        CommandOutput.CustomErrorMessage(ctx, $"Global \"{wp_name}\" waypoint not found.");
+                        Output.CustomErrorMessage(ctx, $"Global \"{wp_name}\" waypoint not found.");
                         return;
                     }
                     if (!global)
@@ -85,7 +85,7 @@ namespace RPGMods.Commands
                         wp_name = wp_name + "_" + SteamID;
                         if (!Database.waypoints.TryGetValue(wp_name, out _))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, $"You do not have any waypoint with this name.");
+                            Output.CustomErrorMessage(ctx, $"You do not have any waypoint with this name.");
                             return;
                         }
                     }
@@ -108,23 +108,23 @@ namespace RPGMods.Commands
                     ctx.Event.User.SendSystemMessage($" - <color=#ffff00ff>{wp.Value.Name}</color>");
                     total_wp++;
                 }
-                if (total_wp == 0) CommandOutput.CustomErrorMessage(ctx, "No waypoint available.");
+                if (total_wp == 0) Output.CustomErrorMessage(ctx, "No waypoint available.");
                 return;
             }
 
             string waypoint = ctx.Args[0].ToLower();
             if (Database.globalWaypoint.TryGetValue(waypoint, out var WPData))
             {
-                CommandHelper.TeleportTo(ctx, WPData.Location);
+                Helper.TeleportTo(ctx, WPData.Location);
                 return;
             }
 
             if (Database.waypoints.TryGetValue(waypoint + "_" + SteamID, out var WPData_))
             {
-                CommandHelper.TeleportTo(ctx, WPData_.Location);
+                Helper.TeleportTo(ctx, WPData_.Location);
                 return;
             }
-            CommandOutput.CustomErrorMessage(ctx, "Waypoint not found.");
+            Output.CustomErrorMessage(ctx, "Waypoint not found.");
         }
 
         public static void AddWaypoint(ulong owner, Float2 location, string name, string true_name, bool isGlobal)
@@ -165,12 +165,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.waypoints = JsonSerializer.Deserialize<Dictionary<string, WaypointData>>(json);
-                Plugin.Logger.LogWarning("Waypoints Loaded");
+                Plugin.Logger.LogWarning("Waypoints DB Populated");
             }
             catch
             {
                 Database.waypoints = new Dictionary<string, WaypointData>();
-                Plugin.Logger.LogWarning("New Waypoints Created");
+                Plugin.Logger.LogWarning("Waypoints DB Created");
             }
 
             if (!File.Exists("BepInEx/config/RPGMods/Saves/global_waypoints.json"))
@@ -183,12 +183,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.globalWaypoint = JsonSerializer.Deserialize<Dictionary<string, WaypointData>>(json);
-                Plugin.Logger.LogWarning("Global Waypoints Loaded");
+                Plugin.Logger.LogWarning("GlobalWaypoints DB Populated");
             }
             catch
             {
                 Database.globalWaypoint = new Dictionary<string, WaypointData>();
-                Plugin.Logger.LogWarning("New Global Waypoints Created");
+                Plugin.Logger.LogWarning("GlobalWaypoints DB Created");
             }
 
             if (!File.Exists("BepInEx/config/RPGMods/Saves/total_waypoints.json"))
@@ -201,12 +201,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.waypoints_owned = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
-                Plugin.Logger.LogWarning("Total Waypoints Loaded");
+                Plugin.Logger.LogWarning("TotalWaypoints DB Populated");
             }
             catch
             {
                 Database.waypoints_owned = new Dictionary<ulong, int>();
-                Plugin.Logger.LogWarning("New Total Waypoints Created");
+                Plugin.Logger.LogWarning("TotalWaypoints DB Created");
             }
         }
 

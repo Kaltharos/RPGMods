@@ -1,4 +1,5 @@
 ﻿using RPGMods.Commands;
+using RPGMods.Systems;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,9 @@ namespace RPGMods.Utils
 
             ExperienceSystem.SaveEXPData();
             PvPStatistics.SavePvPStat();
+            WeaponMasterSystem.SaveWeaponMastery();
+
+            Plugin.Logger.LogWarning("All database saved to JSON file.");
         }
 
         public static void LoadDatabase()
@@ -38,6 +42,8 @@ namespace RPGMods.Utils
             //-- System Related
             PvPStatistics.LoadPvPStat();
             ExperienceSystem.LoadEXPData();
+            WeaponMasterSystem.LoadWeaponMastery();
+            Plugin.Logger.LogWarning("All database is now loaded.");
         }
     }
 }

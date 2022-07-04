@@ -37,7 +37,7 @@ namespace RPGMods.Commands
                     foreach (var result in SortedKD.Take(5))
                     {
                         i++;
-                        user.SendSystemMessage($"{i}. <color=#ffffffff>{CommandHelper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
+                        user.SendSystemMessage($"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
                     }
                     if (i == 0) user.SendSystemMessage($"<color=#ffffffff>No Result</color>");
                     user.SendSystemMessage($"===================================");
@@ -51,18 +51,18 @@ namespace RPGMods.Commands
                 else if (ctx.Args[0].ToLower().Equals("off")) isPvPShieldON = true;
                 else
                 {
-                    Utils.CommandOutput.InvalidArguments(ctx);
+                    Utils.Output.InvalidArguments(ctx);
                     return;
                 }
 
                 if (ctx.Args.Length == 1)
                 {
-                    if (CommandHelper.IsPlayerInCombat(charEntity))
+                    if (Helper.IsPlayerInCombat(charEntity))
                     {
-                        Utils.CommandOutput.CustomErrorMessage(ctx, $"Unable to change PvP Toggle, you are in combat!");
+                        Utils.Output.CustomErrorMessage(ctx, $"Unable to change PvP Toggle, you are in combat!");
                         return;
                     }
-                    CommandHelper.SetPvPShield(charEntity, isPvPShieldON);
+                    Helper.SetPvPShield(charEntity, isPvPShieldON);
                     string s = isPvPShieldON ? "OFF" : "ON";
                     user.SendSystemMessage($"PvP is now {s}");
                     return;
@@ -72,20 +72,20 @@ namespace RPGMods.Commands
                     try
                     {
                         string name = ctx.Args[2];
-                        if (CommandHelper.FindPlayer(name,true,out Entity targetChar, out Entity targetUser))
+                        if (Helper.FindPlayer(name,true,out Entity targetChar, out Entity targetUser))
                         {
-                            CommandHelper.SetPvPShield(targetChar, isPvPShieldON);
+                            Helper.SetPvPShield(targetChar, isPvPShieldON);
                             string s = isPvPShieldON ? "OFF" : "ON";
                             user.SendSystemMessage($"Player \"{name}\" PvP is now {s}");
                         }
                         else
                         {
-                            Utils.CommandOutput.CustomErrorMessage(ctx, $"Unable to find the specified player!");
+                            Utils.Output.CustomErrorMessage(ctx, $"Unable to find the specified player!");
                         }
                     }
                     catch
                     {
-                        Utils.CommandOutput.InvalidArguments(ctx);
+                        Utils.Output.InvalidArguments(ctx);
                     }
                 }
             }

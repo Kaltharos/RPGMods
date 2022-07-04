@@ -1,7 +1,6 @@
 ﻿using ProjectM;
 using ProjectM.Network;
 using ProjectM.Scripting;
-using RPGMods;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +10,9 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 using Wetstone.API;
+using RPGMods.Utils;
 
-namespace RPGMods.Utils
+namespace RPGMods.Systems
 {
     public class ExperienceSystem
     {
@@ -36,13 +36,15 @@ namespace RPGMods.Utils
             bool isVictimNPC = entityManager.HasComponent<UnitLevel>(victimEntity);
             if (isVictimNPC)
             {
+                if (entityManager.HasComponent<Minion>(victimEntity)) return;
+
                 PlayerCharacter player = entityManager.GetComponentData<PlayerCharacter>(killerEntity);
                 Entity userEntity = player.UserEntity._Entity;
                 User user = entityManager.GetComponentData<User>(userEntity);
-                ulong SteamID = user.PlatformId; 
+                ulong SteamID = user.PlatformId;
 
                 UnitLevel UnitLevel = entityManager.GetComponentData<UnitLevel>(victimEntity);
-                
+
                 bool isVBlood;
                 if (entityManager.HasComponent<BloodConsumeSource>(victimEntity))
                 {
@@ -53,10 +55,10 @@ namespace RPGMods.Utils
                 {
                     isVBlood = false;
                 }
-                
+
                 int EXPGained;
                 if (isVBlood) EXPGained = (int)(UnitLevel.Level * VBloodMultiplier);
-                else EXPGained = (int)UnitLevel.Level;
+                else EXPGained = UnitLevel.Level;
 
                 Database.player_experience.TryGetValue(SteamID, out int exp);
                 int level_diff = UnitLevel.Level - convertXpToLevel(exp);
@@ -82,7 +84,12 @@ namespace RPGMods.Utils
                 else Database.player_experience[SteamID] = exp + EXPGained;
 
                 SetLevel(killerEntity, SteamID);
-                //user.SendSystemMessage($"<color=#ffffffff>EXP Gained: {EXPGained}</color>");
+                bool isDatabaseEXPLog = Database.player_log_exp.TryGetValue(SteamID, out bool isLogging);
+                if (isDatabaseEXPLog)
+                {
+                    if (!isLogging) return;
+                }
+                Output.SendLore(userEntity, $"<color=#ffdd00ff>You gain {EXPGained} experience points by slaying a Lv.{UnitLevel.Level} enemy.</color>");
                 //user.SendSystemMessage($"<color=#ffffffff>Total EXP: {player_experience[SteamID]} - Level: {level} ({getLevelProgress(SteamID)}%)</color>");
             }
         }
@@ -93,7 +100,7 @@ namespace RPGMods.Utils
             if (EXPGain > 0)
             {
                 Database.player_experience.TryGetValue(user_component.PlatformId, out var exp);
-                Database.player_experience[user_component.PlatformId] = exp+EXPGain;
+                Database.player_experience[user_component.PlatformId] = exp + EXPGain;
                 SetLevel(user_component.LocalCharacter._Entity, user_component.PlatformId);
             }
         }
@@ -127,7 +134,7 @@ namespace RPGMods.Utils
                     }
                 }
             }
-            catch {};
+            catch { };
             if (i == 0) return false;
             else return true;
         }
@@ -144,14 +151,14 @@ namespace RPGMods.Utils
             if (exp <= 0) EXPLost = 0;
             else
             {
-                int variableEXP = convertLevelToXp(convertXpToLevel(exp)+1) - convertLevelToXp(convertXpToLevel(exp));
+                int variableEXP = convertLevelToXp(convertXpToLevel(exp) + 1) - convertLevelToXp(convertXpToLevel(exp));
                 EXPLost = (int)(variableEXP * EXPLostOnDeath);
             }
 
             Database.player_experience[SteamID] = exp - EXPLost;
 
             SetLevel(playerEntity, SteamID);
-            user.SendSystemMessage($"You've died, <color=#ffffffff>{EXPLostOnDeath*100}%</color> experience is lost.");
+            user.SendSystemMessage($"You've died, <color=#ffffffff>{EXPLostOnDeath * 100}%</color> experience is lost.");
         }
 
         public static void SetLevel(Entity entity, ulong SteamID)
@@ -204,6 +211,7 @@ namespace RPGMods.Utils
         public static void SaveEXPData()
         {
             File.WriteAllText("BepInEx/config/RPGMods/Saves/player_experience.json", JsonSerializer.Serialize(Database.player_experience, Database.JSON_options));
+            File.WriteAllText("BepInEx/config/RPGMods/Saves/player_log_exp.json", JsonSerializer.Serialize(Database.player_log_exp, Database.JSON_options));
         }
 
         public static void LoadEXPData()
@@ -217,12 +225,29 @@ namespace RPGMods.Utils
             try
             {
                 Database.player_experience = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
-                Plugin.Logger.LogWarning("PlayerEXP List Populated.");
+                Plugin.Logger.LogWarning("PlayerEXP DB Populated.");
             }
             catch
             {
                 Database.player_experience = new Dictionary<ulong, int>();
-                Plugin.Logger.LogWarning("PlayerEXP List Created.");
+                Plugin.Logger.LogWarning("PlayerEXP DB Created.");
+            }
+
+            if (!File.Exists("BepInEx/config/RPGMods/Saves/player_log_exp.json"))
+            {
+                FileStream stream = File.Create("BepInEx/config/RPGMods/Saves/player_log_exp.json");
+                stream.Dispose();
+            }
+            json = File.ReadAllText("BepInEx/config/RPGMods/Saves/player_log_exp.json");
+            try
+            {
+                Database.player_log_exp = JsonSerializer.Deserialize<Dictionary<ulong, bool>>(json);
+                Plugin.Logger.LogWarning("PlayerEXP_Log_Switch DB Populated.");
+            }
+            catch
+            {
+                Database.player_log_exp = new Dictionary<ulong, bool>();
+                Plugin.Logger.LogWarning("PlayerEXP_Log_Switch DB Created.");
             }
         }
     }

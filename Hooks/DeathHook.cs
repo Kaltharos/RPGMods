@@ -2,6 +2,7 @@
 using ProjectM;
 using ProjectM.Network;
 using RPGMods.Commands;
+using RPGMods.Systems;
 using RPGMods.Utils;
 using Unity.Collections;
 using Unity.Entities;
@@ -31,6 +32,7 @@ public class DeathEventListenerSystem_Patch
                 {
                     if (ExperienceSystem.isEXPActive) ExperienceSystem.UpdateEXP(ev.Killer, ev.Died);
                     if (HunterHunted.isActive) HunterHunted.PlayerUpdateHeat(ev.Killer, ev.Died);
+                    if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.UpdateMastery(ev.Killer, ev.Died);
                 }
                 //-- ----------------------
 

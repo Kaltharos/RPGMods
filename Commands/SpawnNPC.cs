@@ -37,17 +37,17 @@ namespace RPGMods.Commands
                     var pos = ctx.EntityManager.GetComponentData<LocalToWorld>(ctx.Event.SenderCharacterEntity).Position;
                     if (isUsingGUID)
                     {
-                        if (!CommandHelper.SpawnAtPosition(ctx.Event.SenderUserEntity, GUID, count, new(pos.x, pos.z), 1, 2, 1800))
+                        if (!Helper.SpawnAtPosition(ctx.Event.SenderUserEntity, GUID, count, new(pos.x, pos.z), 1, 2, 1800))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, $"Failed to spawn: {name}");
+                            Output.CustomErrorMessage(ctx, $"Failed to spawn: {name}");
                             return;
                         }
                     }
                     else
                     {
-                        if (!CommandHelper.SpawnAtPosition(ctx.Event.SenderUserEntity, name, count, new(pos.x, pos.z), 1, 2, 1800))
+                        if (!Helper.SpawnAtPosition(ctx.Event.SenderUserEntity, name, count, new(pos.x, pos.z), 1, 2, 1800))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
+                            Output.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
                             return;
                         }
                     }
@@ -62,9 +62,9 @@ namespace RPGMods.Commands
                     if (Database.globalWaypoint.TryGetValue(waypoint, out var WPData))
                     {
                         Float2 wp = WPData.Location;
-                        if (!CommandHelper.SpawnAtPosition(ctx.Event.SenderUserEntity, name, count, new(wp.x, wp.y), 1, 2, 1800))
+                        if (!Helper.SpawnAtPosition(ctx.Event.SenderUserEntity, name, count, new(wp.x, wp.y), 1, 2, 1800))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
+                            Output.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
                             return;
                         }
                         ctx.Event.User.SendSystemMessage($"Spawning {count} {name} at <{wp.x}, {wp.y}>");
@@ -74,20 +74,20 @@ namespace RPGMods.Commands
                     if (Database.waypoints.TryGetValue(waypoint+"_"+SteamID, out var WPData_))
                     {
                         Float2 wp = WPData_.Location;
-                        if (!CommandHelper.SpawnAtPosition(ctx.Event.SenderUserEntity, name, count, new(wp.x, wp.y), 1, 2, 1800))
+                        if (!Helper.SpawnAtPosition(ctx.Event.SenderUserEntity, name, count, new(wp.x, wp.y), 1, 2, 1800))
                         {
-                            CommandOutput.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
+                            Output.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
                             return;
                         }
                         ctx.Event.User.SendSystemMessage($"Spawning {count} {name} at <{wp.x}, {wp.y}>");
                         return;
                     }
-                    CommandOutput.CustomErrorMessage(ctx, "This waypoint doesn't exist.");
+                    Output.CustomErrorMessage(ctx, "This waypoint doesn't exist.");
                 }
             }
             else
             {
-                CommandOutput.MissingArguments(ctx);
+                Output.MissingArguments(ctx);
             }
         }
     }

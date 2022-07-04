@@ -32,6 +32,34 @@ namespace RPGMods.Utils
         }
     }
 
+    public struct WeaponMasterData
+    {
+        public int Spear { get; set; }
+        public int Sword { get; set; }
+        public int Scythe { get; set; }
+        public int Crossbow { get; set; }
+        public int Mace { get; set; }
+        public int Slashers { get; set; }
+        public int Axes { get; set; }
+        public int None { get; set; }
+        public int FishingPole { get; set; }
+        public int Spell { get; set; }
+
+        public WeaponMasterData(int spear = 0, int sword = 0, int scythe = 0, int crossbow = 0, int mace = 0, int slashers = 0, int axes = 0, int none = 0, int fishingpole = 0, int spell = 0)
+        {
+            Spear = spear;
+            Sword = sword;
+            Scythe = scythe;
+            Crossbow = crossbow;
+            Mace = mace;
+            Slashers = slashers;
+            Axes = axes;
+            None = none;
+            FishingPole = fishingpole;
+            Spell = spell;
+        }
+    }
+
     public class Cache
     {
         //-- Cache (Wiped on plugin reload, server restart, and shutdown.)
@@ -43,6 +71,8 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, DateTime> player_heat_timestamp = new Dictionary<ulong, DateTime>();
         public static Dictionary<ulong, DateTime> player_last_ambushed = new Dictionary<ulong, DateTime>();
         public static Dictionary<ulong, DateTime> bandit_last_ambushed = new Dictionary<ulong, DateTime>();
+        public static Dictionary<ulong, DateTime> player_last_combat = new Dictionary<ulong, DateTime>();
+        public static Dictionary<ulong, int> player_combat_ticks = new Dictionary<ulong, int>();
     }
 
     public class Database
@@ -54,6 +84,7 @@ namespace RPGMods.Utils
         };
         //-- Dynamic Database (Saved on a JSON file on plugin reload, server restart, and shutdown.)
         //-- Initialization for the data loading is on each command or related CS file.
+
         //-- -- Commands
         public static Dictionary<ulong, bool> sunimmunity { get; set; }
         public static Dictionary<ulong, bool> nocooldownlist { get; set; }
@@ -63,12 +94,20 @@ namespace RPGMods.Utils
         public static Dictionary<string, WaypointData> globalWaypoint { get; set; }
         public static Dictionary<string, WaypointData> waypoints { get; set; }
         public static Dictionary<ulong, int> waypoints_owned { get; set; }
+
         //-- -- EXP System
         public static Dictionary<ulong, int> player_experience { get; set; }
+        public static Dictionary<ulong, bool>  player_log_exp { get; set; }
+
         //-- -- PvP Stats
         public static Dictionary<ulong, int> pvpkills { get; set; }
         public static Dictionary<ulong, int> pvpdeath { get; set; }
         public static Dictionary<ulong, double> pvpkd { get; set; }
+
+        //-- -- Mastery System
+        public static Dictionary<ulong, WeaponMasterData> player_weaponmastery { get; set; }
+        public static Dictionary<ulong, DateTime> player_decaymastery_logout { get; set; }
+        public static Dictionary<ulong, bool> player_log_mastery { get; set; }
 
         //-- Static Database (Data that will never be changed in runtime)
         public static Dictionary<string, PrefabGUID> database_units = new Dictionary<string, PrefabGUID>()
@@ -358,19 +397,29 @@ namespace RPGMods.Utils
             public static PrefabGUID WolfStygian = new PrefabGUID(-1158884666);
             public static PrefabGUID WolfNormal = new PrefabGUID(-351718282);
             public static PrefabGUID BloodSight = new PrefabGUID(1199823151);
+
             public static PrefabGUID InCombat = new PrefabGUID(581443919);
             public static PrefabGUID InCombat_PvP = new PrefabGUID(697095869);
-            public static PrefabGUID OutofCombat = new PrefabGUID(897325455);
+            public static PrefabGUID OutofCombat = new PrefabGUID(897325455);                   //-- Question, where can I intercept the Buff_OutOfCombat??
+
             public static PrefabGUID BloodMoon = new PrefabGUID(-560523291);
             public static PrefabGUID PerkMoose = new PrefabGUID(-1464851863);
-            public static PrefabGUID BatForm = new PrefabGUID(1205505492); //-- AB_Shapeshift_Bat_Buff
+            public static PrefabGUID BatForm = new PrefabGUID(1205505492);
             public static PrefabGUID NormalForm = new PrefabGUID(1352541204);
             public static PrefabGUID RatForm = new PrefabGUID(902394170);
             public static PrefabGUID DownedBuff = new PrefabGUID(-1992158531);
 
+            public static PrefabGUID Buff_VBlood_Perk_Moose = new PrefabGUID(-1464851863);      //-- Using this for commands & mastery buff
+
             //-- Possible Buff use
-            public static PrefabGUID Buff_VBlood_Perk_Moose = new PrefabGUID(-1464851863);
-            public static PrefabGUID Admin_Observe_Ghost_Buff = new PrefabGUID(77473184);
+            public static PrefabGUID EquipBuff_Chest_Base = new PrefabGUID(1872694456);         //-- Hmm... not sure what to do with this right now...
+            public static PrefabGUID Buff_VBlood_Perk_ProgTest = new PrefabGUID(1614409699);    //-- What does this do??
+            public static PrefabGUID AB_BloodBuff_VBlood_0 = new PrefabGUID(20081801);          //-- Does it do anything negative...? How can i check for this, seems like it's a total blank o.o
+
+            //-- Just putting it here for no reason at all...
+            public static PrefabGUID Admin_Observe_Ghost_Buff = new PrefabGUID(77473184);       //-- Not sure what to do with it
+
+            
         }
     }
 }

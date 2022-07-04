@@ -27,7 +27,7 @@ namespace RPGMods.Commands
                 }
                 else
                 {
-                    if (CommandHelper.FindPlayer(TargetName, false, out Entity targetEntity, out Entity targetUserEntity))
+                    if (Helper.FindPlayer(TargetName, false, out Entity targetEntity, out Entity targetUserEntity))
                     {
                         var user_component = entityManager.GetComponentData<User>(targetUserEntity);
                         SteamID = user_component.PlatformId;
@@ -35,7 +35,7 @@ namespace RPGMods.Commands
                     }
                     else
                     {
-                        Utils.CommandOutput.CustomErrorMessage(ctx, $"Player \"{TargetName}\" not found!");
+                        Utils.Output.CustomErrorMessage(ctx, $"Player \"{TargetName}\" not found!");
                         return;
                     }
                 }
@@ -89,12 +89,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.autoRespawn = JsonSerializer.Deserialize<Dictionary<ulong, bool>>(json);
-                Plugin.Logger.LogWarning("AutoRespawn List Populated.");
+                Plugin.Logger.LogWarning("AutoRespawn DB Populated.");
             }
             catch
             {
                 Database.autoRespawn = new Dictionary<ulong, bool>();
-                Plugin.Logger.LogWarning("New AutoRespawn List Created.");
+                Plugin.Logger.LogWarning("AutoRespawn DB Created.");
             }
         }
     }

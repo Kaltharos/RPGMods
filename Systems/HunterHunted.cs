@@ -1,11 +1,12 @@
 ﻿using ProjectM;
 using ProjectM.Network;
+using RPGMods.Utils;
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Wetstone.API;
 
-namespace RPGMods.Utils
+namespace RPGMods.Systems
 {
     public class HunterHunted
     {
@@ -58,14 +59,14 @@ namespace RPGMods.Utils
             TimeSpan elapsed_time = DateTime.Now - last_update;
             if (elapsed_time.TotalSeconds > cooldown_timer)
             {
-                int heat_ticks = (int)elapsed_time.TotalSeconds/cooldown_timer;
+                int heat_ticks = (int)elapsed_time.TotalSeconds / cooldown_timer;
                 if (heat_ticks < 0) heat_ticks = 0;
 
                 int player_heat;
                 Cache.heatlevel.TryGetValue(SteamID, out player_heat);
                 if (player_heat > 0)
                 {
-                    player_heat = player_heat - (heat_cooldown * heat_ticks);
+                    player_heat = player_heat - heat_cooldown * heat_ticks;
                     if (player_heat < 0) player_heat = 0;
                     Cache.heatlevel[SteamID] = player_heat;
 
@@ -78,7 +79,7 @@ namespace RPGMods.Utils
                             {
                                 SquadList.SpawnSquad(playerEntity, 4, rand.Next(10, 20));
                                 SquadList.SpawnSquad(playerEntity, 5, 2);
-                                user.SendSystemMessage("<color=#c90e21ff>An extermination squad has found you and wants you DEAD.</color>");
+                                Output.SendLore(userEntity,"<color=#c90e21ff>An extermination squad has found you and wants you DEAD.</color>");
                             }
                             else if (player_heat >= 2000)
                             {
@@ -91,22 +92,22 @@ namespace RPGMods.Utils
                                 {
                                     SquadList.SpawnSquad(playerEntity, 4, rand.Next(15, 20));
                                 }
-                                user.SendSystemMessage("<color=#c90e21ff>The Vampire Hunters are ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>The Vampire Hunters are ambushing you!</color>");
                             }
                             else if (player_heat >= 1000)
                             {
                                 SquadList.SpawnSquad(playerEntity, 3, rand.Next(10, 15));
-                                user.SendSystemMessage("<color=#c90e21ff>An ambush squad from the Church has been sent to kill you!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>An ambush squad from the Church has been sent to kill you!</color>");
                             }
                             else if (player_heat >= 500)
                             {
                                 SquadList.SpawnSquad(playerEntity, 2, rand.Next(10, 15));
-                                user.SendSystemMessage("<color=#c4515cff>A squad of soldiers is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c4515cff>A squad of soldiers is ambushing you!</color>");
                             }
                             else if (player_heat >= 250)
                             {
                                 SquadList.SpawnSquad(playerEntity, 1, rand.Next(5, 10));
-                                user.SendSystemMessage("<color=#c9999eff>A militia squad is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c9999eff>A militia squad is ambushing you!</color>");
                             }
                             Cache.player_last_ambushed[SteamID] = DateTime.Now;
                         }
@@ -117,7 +118,7 @@ namespace RPGMods.Utils
                 Cache.bandit_heatlevel.TryGetValue(SteamID, out player_banditheat);
                 if (player_banditheat > 0)
                 {
-                    player_banditheat = player_banditheat - (bandit_heat_cooldown * heat_ticks);
+                    player_banditheat = player_banditheat - bandit_heat_cooldown * heat_ticks;
                     if (player_banditheat < 0) player_banditheat = 0;
                     Cache.bandit_heatlevel[SteamID] = player_banditheat;
 
@@ -129,22 +130,22 @@ namespace RPGMods.Utils
                             if (player_banditheat >= 2000)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, rand.Next(20, 25));
-                                user.SendSystemMessage("<color=#c90e21ff>The bandits is ambushing you and is not taking chances!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>The bandits is ambushing you and is not taking chances!</color>");
                             }
                             else if (player_banditheat >= 1000)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, rand.Next(10, 15));
-                                user.SendSystemMessage("<color=#c90e21ff>A large bandit squads is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>A large bandit squads is ambushing you!</color>");
                             }
                             else if (player_banditheat >= 500)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, 5);
-                                user.SendSystemMessage("<color=#c4515cff>A small bandit squads is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c4515cff>A small bandit squads is ambushing you!</color>");
                             }
                             else if (player_banditheat >= 250)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, 3);
-                                user.SendSystemMessage("<color=#c9999eff>The bandits is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c9999eff>The bandits is ambushing you!</color>");
                             }
                             Cache.bandit_last_ambushed[SteamID] = DateTime.Now;
                         }

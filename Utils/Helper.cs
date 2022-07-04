@@ -18,7 +18,7 @@ using static RPGMods.Utils.Database;
 
 namespace RPGMods.Utils
 {
-    public static class CommandHelper
+    public static class Helper
     {
         private static Entity empty_entity = new Entity();
 

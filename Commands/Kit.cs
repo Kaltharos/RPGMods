@@ -30,7 +30,7 @@ namespace RPGMods.Commands
                 ItemKit kit = kits.First(x => x.Name.ToLower() == name.ToLower());
                 foreach (var guid in kit.PrefabGUIDs)
                 {
-                    CommandHelper.AddItemToInventory(ctx, new PrefabGUID(guid.Key), guid.Value);
+                    Helper.AddItemToInventory(ctx, new PrefabGUID(guid.Key), guid.Value);
                 }
                 ctx.Event.User.SendSystemMessage($"You got the kit: <color=#ffff00ff>{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
             }

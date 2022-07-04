@@ -74,12 +74,12 @@ namespace RPGMods.Utils
             try
             {
                 Database.pvpkills = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
-                Plugin.Logger.LogWarning("PvP Kills List Populated.");
+                Plugin.Logger.LogWarning("PvPKills DB Populated.");
             }
             catch
             {
                 Database.pvpkills = new Dictionary<ulong, int>();
-                Plugin.Logger.LogWarning("PvP Kills List Created.");
+                Plugin.Logger.LogWarning("PvPKills DB Created.");
             }
 
             if (!File.Exists("BepInEx/config/RPGMods/Saves/pvpdeath.json"))
@@ -91,12 +91,12 @@ namespace RPGMods.Utils
             try
             {
                 Database.pvpdeath = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
-                Plugin.Logger.LogWarning("PvP Death List Populated.");
+                Plugin.Logger.LogWarning("PvPDeath DB Populated.");
             }
             catch
             {
                 Database.pvpdeath = new Dictionary<ulong, int>();
-                Plugin.Logger.LogWarning("PvP Death List Created.");
+                Plugin.Logger.LogWarning("PvPDeath DB Created.");
             }
 
             if (!File.Exists("BepInEx/config/RPGMods/Saves/pvpkd.json"))
@@ -108,12 +108,12 @@ namespace RPGMods.Utils
             try
             {
                 Database.pvpkd = JsonSerializer.Deserialize<Dictionary<ulong, double>>(json);
-                Plugin.Logger.LogWarning("PvP K/D List Populated.");
+                Plugin.Logger.LogWarning("PvPKD DB Populated.");
             }
             catch
             {
                 Database.pvpkd = new Dictionary<ulong, double>();
-                Plugin.Logger.LogWarning("PvP K/D List Created.");
+                Plugin.Logger.LogWarning("PvPKD DB Created.");
             }
         }
     }

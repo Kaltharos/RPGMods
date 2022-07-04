@@ -18,7 +18,7 @@ namespace RPGMods.Commands
             {
                 if (!int.TryParse(ctx.Args[0], out Value))
                 {
-                    Utils.CommandOutput.InvalidArguments(ctx);
+                    Utils.Output.InvalidArguments(ctx);
                     return;
                 }
                 else Value = int.Parse(ctx.Args[0]);
@@ -27,7 +27,7 @@ namespace RPGMods.Commands
             if (ctx.Args.Length == 2)
             {
                 var targetName = ctx.Args[1];
-                if (CommandHelper.FindPlayer(targetName, true, out var targetEntity, out var targetUserEntity))
+                if (Helper.FindPlayer(targetName, true, out var targetEntity, out var targetUserEntity))
                 {
                     PlayerName = targetName;
                     UserIndex = VWorld.Server.EntityManager.GetComponentData<User>(targetUserEntity).Index;
@@ -35,7 +35,7 @@ namespace RPGMods.Commands
                 }
                 else
                 {
-                    Utils.CommandOutput.CustomErrorMessage(ctx, $"Player \"{targetName}\" not found.");
+                    Utils.Output.CustomErrorMessage(ctx, $"Player \"{targetName}\" not found.");
                     return;
                 }
             }

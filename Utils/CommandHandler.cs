@@ -67,7 +67,7 @@ namespace RPGMods.Utils
                 Log.LogInfo($"[CommandHandler] {ev.User.CharacterName} used command: {command.ToLower()}");
                 return;
             }
-            CommandOutput.InvalidCommand(ev);
+            Output.InvalidCommand(ev);
         }
 
         private bool NameExists(Type type, string command)
@@ -93,12 +93,12 @@ namespace RPGMods.Utils
             try
             {
                 Permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(json);
-                Plugin.Logger.LogWarning("Permissions dictionary loaded");
+                Plugin.Logger.LogWarning("Permissions DB Populated");
             }
             catch
             {
                 Permissions = new Dictionary<string, bool>();
-                Plugin.Logger.LogWarning("New Permission dictionary created.");
+                Plugin.Logger.LogWarning("Permission DB Created.");
             }
         }
 

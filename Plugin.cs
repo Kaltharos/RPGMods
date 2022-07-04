@@ -4,6 +4,7 @@ using BepInEx.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
 using RPGMods.Commands;
+using RPGMods.Systems;
 using RPGMods.Utils;
 using System.IO;
 using System.Reflection;
@@ -40,6 +41,15 @@ namespace RPGMods
         private ConfigEntry<float> EXPFormula_1;
         private ConfigEntry<double> EXPGroupModifier;
         private ConfigEntry<float> EXPGroupMaxDistance;
+        private ConfigEntry<bool> EnableWeaponMaster;
+        private ConfigEntry<bool> EnableWeaponMasterDecay;
+        private ConfigEntry<float> WeaponMasterMultiplier;
+        private ConfigEntry<int> WeaponDecayInterval;
+        private ConfigEntry<int> WeaponMaxMastery;
+        private ConfigEntry<float> WeaponMastery_VBloodMultiplier;
+        private ConfigEntry<int> Offline_Weapon_MasteryDecayValue;
+        private ConfigEntry<int> MasteryCombatTick;
+        private ConfigEntry<int> MasteryMaxCombatTicks;
 
         public static ManualLogSource Logger;
 
@@ -70,6 +80,16 @@ namespace RPGMods
             EXPGroupModifier = Config.Bind("Experience", "Group Modifier", 0.75, "Set the modifier for EXP gained for each ally(player) in vicinity.\n" +
                 "Example if you have 2 ally nearby, EXPGained = ((EXPGained * Modifier)*Modifier)");
             EXPGroupMaxDistance = Config.Bind("Experience", "Ally Max Distance", 50f, "Set the maximum distance an ally(player) has to be from the player for them to share EXP with the player");
+
+            EnableWeaponMaster = Config.Bind("Mastery", "Enable Weapon Mastery", true, "Enable/disable the weapon mastery system.");
+            EnableWeaponMasterDecay = Config.Bind("Mastery", "Enable Mastery Decay", true, "Enable/disable the decay of weapon mastery when the user is offline.");
+            WeaponMaxMastery = Config.Bind("Mastery", "Max Mastery Value", 100000, "Configure the maximum mastery the user can atain. (100000 is 100%)");
+            MasteryCombatTick = Config.Bind("Mastery", "Mastery Value/Combat Ticks", 5, "Configure the amount of mastery gained per combat ticks. (5 -> 0.005%)");
+            MasteryMaxCombatTicks = Config.Bind("Mastery", "Max Combat Ticks", 12, "Mastery will no longer increase after this many ticks is reached in combat. (1 tick = 5 seconds)");
+            WeaponMasterMultiplier = Config.Bind("Mastery", "Mastery Multiplier", 1f, "Multiply the gained mastery value by this amount.");
+            WeaponMastery_VBloodMultiplier = Config.Bind("Mastery", "VBlood Mastery Multiplier", 15f, "Multiply Mastery gained from VBlood kill.");
+            WeaponDecayInterval = Config.Bind("Mastery", "Decay Interval", 60, "Every amount of seconds the user is offline by the configured value will translate as 1 decay tick.");
+            Offline_Weapon_MasteryDecayValue = Config.Bind("Mastery", "Decay Value", 1, "Mastery will decay by this amount for every decay tick.(1 -> 0.001%)");
 
             if (!Directory.Exists("BepInEx/config/RPGMods/Saves")) Directory.CreateDirectory("BepInEx/config/RPGMods/Saves");
 
@@ -134,6 +154,16 @@ namespace RPGMods
             ExperienceSystem.EXPConstant = EXPFormula_1.Value;
             ExperienceSystem.GroupModifier = EXPGroupModifier.Value;
             ExperienceSystem.GroupMaxDistance = EXPGroupMaxDistance.Value;
+
+            WeaponMasterSystem.isMasteryEnabled = EnableWeaponMaster.Value;
+            WeaponMasterSystem.isDecaySystemEnabled = EnableWeaponMasterDecay.Value;
+            WeaponMasterSystem.Offline_DecayValue = Offline_Weapon_MasteryDecayValue.Value;
+            WeaponMasterSystem.DecayInterval = WeaponDecayInterval.Value;
+            WeaponMasterSystem.VBloodMultiplier = WeaponMastery_VBloodMultiplier.Value;
+            WeaponMasterSystem.MasteryMultiplier = WeaponMasterMultiplier.Value;
+            WeaponMasterSystem.MaxMastery = WeaponMaxMastery.Value;
+            WeaponMasterSystem.MasteryCombatTick = MasteryCombatTick.Value;
+            WeaponMasterSystem.MaxCombatTick = MasteryMaxCombatTicks.Value;
         }
 
         private void HandleChatMessage(VChatEvent ev)

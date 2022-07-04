@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # Specific file
+/Commands/debug.cs
 
 # User-specific files
 *.rsuser

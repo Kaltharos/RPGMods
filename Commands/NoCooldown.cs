@@ -21,7 +21,7 @@ namespace RPGMods.Commands
             UpdateCooldownList(ctx, isNoCD);
             string p = isNoCD ? "Activated" : "Deactivated";
             ctx.Event.User.SendSystemMessage($"No Cooldown is now <color=#ffff00ff>{p}</color>");
-            CommandHelper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
+            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 
         public static bool UpdateCooldownList(Context ctx, bool isNoCooldown)
@@ -60,12 +60,12 @@ namespace RPGMods.Commands
             try
             {
                 Database.nocooldownlist = JsonSerializer.Deserialize<Dictionary<ulong, bool>>(json);
-                Plugin.Logger.LogWarning("NoCooldown List Populated.");
+                Plugin.Logger.LogWarning("NoCooldown DB Populated.");
             }
             catch
             {
                 Database.nocooldownlist = new Dictionary<ulong, bool>();
-                Plugin.Logger.LogWarning("NoCooldown List Created.");
+                Plugin.Logger.LogWarning("NoCooldown DB Created.");
             }
         }
     }

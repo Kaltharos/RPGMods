@@ -14,10 +14,10 @@ namespace RPGMods.Commands
             {
                 try
                 {
-                    CommandHelper.BloodType type = CommandHelper.BloodType.Warrior;
+                    Helper.BloodType type = Helper.BloodType.Warrior;
                     float quality = 100;
 
-                    if (ctx.Args.Length >= 1) type = CommandHelper.GetBloodTypeFromName(ctx.Args[0]);
+                    if (ctx.Args.Length >= 1) type = Helper.GetBloodTypeFromName(ctx.Args[0]);
                     if (ctx.Args.Length >= 2)
                     {
                         quality = float.Parse(ctx.Args[1]);
@@ -25,7 +25,7 @@ namespace RPGMods.Commands
                         if (float.Parse(ctx.Args[1]) > 100) quality = 100;
                     }
 
-                    Entity entity = CommandHelper.AddItemToInventory(ctx, new PrefabGUID(828432508), 1);
+                    Entity entity = Helper.AddItemToInventory(ctx, new PrefabGUID(828432508), 1);
                     var blood = ctx.EntityManager.GetComponentData<StoredBlood>(entity);
                     blood.BloodQuality = quality;
                     blood.BloodType = new PrefabGUID((int)type);
@@ -35,13 +35,13 @@ namespace RPGMods.Commands
                 }
                 catch
                 {
-                    CommandOutput.InvalidArguments(ctx);
+                    Output.InvalidArguments(ctx);
                 }
 
             }
             else
             {
-                CommandOutput.MissingArguments(ctx);
+                Output.MissingArguments(ctx);
             }
         }
     }

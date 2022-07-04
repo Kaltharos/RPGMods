@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Collections;
 using ProjectM.Network;
 using ProjectM;
+using RPGMods.Systems;
 using RPGMods.Utils;
 
 namespace RPGMods.Hooks;
@@ -32,17 +33,31 @@ public class WeaponLevelSystem_Spawn_Patch
 {
     private static void Prefix(WeaponLevelSystem_Spawn __instance)
     {
-        if (ExperienceSystem.isEXPActive)
+        if (ExperienceSystem.isEXPActive || WeaponMasterSystem.isMasteryEnabled)
         {
             EntityManager entityManager = __instance.EntityManager;
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in entities)
             {
-                WeaponLevel level = entityManager.GetComponentData<WeaponLevel>(entity);
-                level.Level = 0;
-                entityManager.SetComponentData(entity, level);
+                if (ExperienceSystem.isEXPActive)
+                {
+                    WeaponLevel level = entityManager.GetComponentData<WeaponLevel>(entity);
+                    level.Level = 0;
+                    entityManager.SetComponentData(entity, level);
+                }
+                if (WeaponMasterSystem.isMasteryEnabled)
+                {
+                    Entity Owner = entityManager.GetComponentData<EntityOwner>(entity).Owner;
+                    if (!entityManager.HasComponent<PlayerCharacter>(Owner)) continue;
+
+                    PlayerCharacter playerCharacter = entityManager.GetComponentData<PlayerCharacter>(Owner);
+                    Entity User = playerCharacter.UserEntity._Entity;
+
+                    Helper.ApplyBuff(User, Owner, Database.buff.Buff_VBlood_Perk_Moose);
+                }
             }
         }
+
     }
 }
 

@@ -19,14 +19,14 @@ namespace RPGMods.Commands
             if (ctx.Args.Length >= 1)
             {
                 string name = string.Join(' ', ctx.Args);
-                if (CommandHelper.FindPlayer(name, true, out var targetEntity, out var targetUserEntity))
+                if (Helper.FindPlayer(name, true, out var targetEntity, out var targetUserEntity))
                 {
                     PlayerCharacter = targetEntity;
                     CharName = name;
                 }
                 else
                 {
-                    Utils.CommandOutput.CustomErrorMessage(ctx, $"Could not find the specified player \"{name}\".");
+                    Utils.Output.CustomErrorMessage(ctx, $"Could not find the specified player \"{name}\".");
                     return;
                 }
             }
@@ -38,7 +38,7 @@ namespace RPGMods.Commands
                 var ActiveAbility = entityManager.GetComponentData<AbilityGroupSlot>(AbilitySlot);
                 var ActiveAbility_Entity = ActiveAbility.StateEntity._Entity;
 
-                var b = CommandHelper.GetPrefabGUID(ActiveAbility_Entity);
+                var b = Helper.GetPrefabGUID(ActiveAbility_Entity);
                 if (b.GuidHash == 0) continue;
 
                 var AbilityStateBuffer = entityManager.GetBuffer<AbilityStateBuffer>(ActiveAbility_Entity);

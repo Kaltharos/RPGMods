@@ -204,7 +204,7 @@ Removing a command from the list will automatically set it's value to `false`.
 `resetcooldown [<PlayerName>]`: Reset all skills & abilities cooldown for you or the specified player.\
 `teleport <PlayerName>`: Teleport to another online player within your clan.\
 `godmode`: Toggles god mode for you.\
-`autorespawn [<All>|<PlayerName>]`: Toggles auto respawn on same position on death.`\
+`autorespawn`: Toggles auto respawn on same position on death.\
 &ensp;&ensp;**Admin Only Params -> `[<All>|<PlayerName>]`** `Toggle the auto respawn for specified player or server wide.
 
 `heat`: Checks your heat/wanted level by the factions.\

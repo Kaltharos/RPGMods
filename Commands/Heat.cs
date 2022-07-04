@@ -1,6 +1,7 @@
 ﻿using ProjectM.Network;
 using RPGMods.Systems;
 using RPGMods.Utils;
+using Unity.Entities;
 using Wetstone.API;
 
 namespace RPGMods.Commands

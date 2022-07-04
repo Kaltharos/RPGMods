@@ -203,23 +203,23 @@ Removing a command from the list will automatically set it's value to `false`.
 `resetcooldown [<PlayerName>]`: Reset all skills & abilities cooldown for you or the specified player.\
 `teleport <PlayerName>`: Teleport to another online player within your clan.\
 `godmode`: Toggles god mode for you.\
-`autorespawn [<All>|<PlayerName>]`: Toggles auto respawn on same position on death.\
+`autorespawn [<All>|<PlayerName>]`: Toggles auto respawn on same position on death.`\
 &ensp;&ensp;**Admin Only Params -> `[<All>|<PlayerName>]`** `Toggle the auto respawn for specified player or server wide.
 
 `heat`: Checks your heat/wanted level by the factions.\
-&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display current configuration or set your or the specified player heat value`\
+&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display current configuration or set your or the specified player heat value.`\
 &ensp;&ensp;**Example:** `heat 500 500`\
 &ensp;&ensp;**Example:** `heat 500 500 LegendaryVampire`
 
 `ping`: Show you your latency to the server.\
 `pvp [<on>|<off>]`: Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
 `experience [<log> <on>|<off>]`: Diplays your current exp and progression to the next level, or toggle the exp gain notification.\
-&ensp;&ensp;**Admin Only Params -> `[<set>] [<value>] [<PlayerName>]`** `Set your or the specified player experience value`\
+&ensp;&ensp;**Admin Only Params -> `[<set>] [<value>] [<PlayerName>]`** `Set your or the specified player experience value.`\
 &ensp;&ensp;**Example:** `experience set 1000`\
 &ensp;&ensp;**Example:** `experience set 2000 LegendaryVampire`
 
 `mastery [<log> <on>|<off>]`: Display your current mastery progression, or toggle the mastery gain notification.\
-&ensp;&ensp;**Admin Only Params -> `[<set>] [<type>] [<value>] [<PlayerName>]`** `Set your or the specified player mastery value`\
+&ensp;&ensp;**Admin Only Params -> `[<set>] [<type>] [<value>] [<PlayerName>]`** `Set your or the specified player mastery value.`\
 &ensp;&ensp;**Example:** `mastery set sword 100000`\
 &ensp;&ensp;**Example:** `mastery set spear 2000 LegendaryVampire`
 

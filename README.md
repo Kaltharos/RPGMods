@@ -207,7 +207,7 @@ Removing a command from the list will automatically set it's value to `false`.
 &ensp;&ensp;**Admin Only Params -> `[<All>|<PlayerName>]`** `Toggle the auto respawn for specified player or server wide.
 
 `heat`: Checks your heat/wanted level by the factions.\
-&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]] `** `Display current configuration or set your or the specified player heat value`\
+&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display current configuration or set your or the specified player heat value`\
 &ensp;&ensp;**Example:** `heat 500 500`\
 &ensp;&ensp;**Example:** `heat 500 500 LegendaryVampire`
 

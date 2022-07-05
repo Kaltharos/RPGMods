@@ -178,16 +178,18 @@ Removing a command from the list will automatically set it's value to `false`.
 ## Chat Commands
 
 <details>
-<summary>help [<command>]</summary>
+<summary>help</summary>
 
+`help [<command>]`\
 Shows a list of all commands.\
 &ensp;&ensp;**Example:** `help experience`
 
 </details>
 
 <details>
-<summary>kit <name></summary>
+<summary>kit</summary>
 
+`kit <name>`\
 Gives you a previously specified set of items.\
 &ensp;&ensp;**Example:** `kit starterset`
 
@@ -219,24 +221,27 @@ Gives you a previously specified set of items.\
 </details>
 
 <details>
-<summary>blood <bloodtype> [<quality>] [<value>]</summary>
+<summary>blood</summary>
 
+`blood <bloodtype> [<quality>] [<value>]`\
 Sets your Blood type to the specified Type, Quality and Value.\
 &ensp;&ensp;**Example:** `blood Scholar 100 100`
 
 </details>
 
 <details>
-<summary>bloodpotion <bloodtype> [<quality>]</summary>
+<summary>bloodpotion</summary>
 
+`bloodpotion <bloodtype> [<quality>]`\
 Creates a Potion with specified Blood Type, Quality and Value.\
 &ensp;&ensp;**Example:** `bloodpotion Scholar 100`
 
 </details>
 
 <details>
-<summary>waypoint <name|set|remove|list> [<name>] [global]</summary>
+<summary>waypoint</summary>
 
+`waypoint <name|set|remove|list> [<name>] [global]`\
 Teleports you to previously created waypoints.\
 &ensp;&ensp;**Example:** `waypoint set home` <-- Creates a local waypoint just for you.\
 &ensp;&ensp;**Example:** `waypoint set arena global` <-- Creates a global waypoint for everyone (Admin-Only).\
@@ -247,24 +252,27 @@ Teleports you to previously created waypoints.\
 </details>
 
 <details>
-<summary>give <itemname> [<amount>]</summary>
+<summary>give</summary>
 
+`give <itemname> [<amount>]`\
 Adds the specified Item to your Inventory.\
 &ensp;&ensp;**Example:** `give Stone Brick 17`
 
 </details>
 
 <details>
-<summary>spawnnpc <prefabname> [<amount>] [<waypoint>]</summary>
+<summary>spawnnpc</summary>
 
+`spawnnpc <prefabname> [<amount>] [<waypoint>]`\
 Spawns a NPC. Optional: To a previously created waypoint.\
 &ensp;&ensp;**Example:** `spawnnpc CHAR_Cursed_MountainBeast_VBlood 1 arena`
 
 </details>
 
 <details>
-<summary>health <percentage> [<playername>]</summary>
+<summary>health</summary>
 
+`health <percentage> [<playername>]`\
 Sets your health to the specified percentage (0 will kill the player).\
 &ensp;&ensp;**Example:** `health 100`\
 &ensp;&ensp;**Example:** `health 0 LegendaryVampire`
@@ -274,6 +282,7 @@ Sets your health to the specified percentage (0 will kill the player).\
 <details>
 <summary>speed</summary>
 
+`speed`\
 Toggles speed buff.
 
 </details>
@@ -281,6 +290,7 @@ Toggles speed buff.
 <details>
 <summary>sunimmunity</summary>
 
+`sunimmunity`\
 Toggles sun immunity.
 
 </details>
@@ -288,13 +298,15 @@ Toggles sun immunity.
 <details>
 <summary>nocooldown</summary>
 
+`nocooldown`\
 Toggles all skills & abilities to have no cooldown.
 
 </details>
 
 <details>
-<summary>resetcooldown [<playername>]</summary>
+<summary>resetcooldown</summary>
 
+`resetcooldown [<playername>]`\
 Reset all skills & abilities cooldown for you or the specified player.\
 &ensp;&ensp;**Example:** `resetcooldown`\
 &ensp;&ensp;**Example:** `resetcooldown LegendaryVampire`
@@ -302,8 +314,9 @@ Reset all skills & abilities cooldown for you or the specified player.\
 </details>
 
 <details>
-<summary>teleport <playername></summary>
+<summary>teleport</summary>
 
+`teleport <playername>`\
 Teleport to another online player within your clan.\
 &ensp;&ensp;**Example:** `teleport LegendaryVampire`
 
@@ -312,6 +325,7 @@ Teleport to another online player within your clan.\
 <details>
 <summary>godmode</summary>
 
+`godmode`\
 Toggles god mode for you.
 
 </details>
@@ -319,6 +333,7 @@ Toggles god mode for you.
 <details>
 <summary>autorespawn</summary>
 
+`autorespawn`\
 Toggles auto respawn on same position on death.\
 &ensp;&ensp;**Admin Only Params -> `[<all>|<playername>]`** `Toggle the auto respawn for specified player or server wide.`\
 &ensp;&ensp;**Example:** `autorespawn all`\
@@ -329,6 +344,7 @@ Toggles auto respawn on same position on death.\
 <details>
 <summary>heat</summary>
 
+`heat`\
 Checks your heat/wanted level by the factions.\
 &ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display numeric heat or set your or the specified player heat.`\
 &ensp;&ensp;**Example:** `heat 500 500`\
@@ -339,13 +355,15 @@ Checks your heat/wanted level by the factions.\
 <details>
 <summary>ping</summary>
 
+`ping`\
 Show you your latency to the server.
 
 </details>
 
 <details>
-<summary>pvp [<on>|<off>]</summary>
+<summary>pvp</summary>
 
+`pvp [<on>|<off>]`\
 Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
 &ensp;&ensp;**Example:** `pvp`\
 &ensp;&ensp;**Example:** `pvp off`
@@ -353,8 +371,9 @@ Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
 </details>
 
 <details>
-<summary>experience [<log> <on>|<off>]</summary>
+<summary>experience</summary>
 
+`experience [<log> <on>|<off>]`\
 Diplays your current exp and progression to the next level, or toggle the exp gain notification.\
 &ensp;&ensp;**Example:** `experience`\
 &ensp;&ensp;**Example:** `experience log off`
@@ -366,8 +385,9 @@ Diplays your current exp and progression to the next level, or toggle the exp ga
 </details>
 
 <details>
-<summary>mastery [<log> <on>|<off>]</summary>
+<summary>mastery</summary>
 
+`mastery [<log> <on>|<off>]`\
 Display your current mastery progression, or toggle the mastery gain notification.\
 &ensp;&ensp;**Example:** `mastery`\
 &ensp;&ensp;**Example:** `mastery log off`
@@ -381,6 +401,7 @@ Display your current mastery progression, or toggle the mastery gain notificatio
 <details>
 <summary>save</summary>
 
+`save`\
 Trigger the database saving manually.
 
 </details>

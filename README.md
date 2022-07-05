@@ -410,6 +410,9 @@ Trigger the database saving manually.
 <details>
 <summary>Changelog</summary>
 
+`0.1.6`
+- Commands & permission are no longer case sensitive. F*ck...
+
 `0.1.5`
 - Introduced a mechanic to randomize mastery gain from creature kills.
 - Fixed issue on mastery gain on player death.

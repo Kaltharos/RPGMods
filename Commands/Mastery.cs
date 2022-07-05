@@ -100,16 +100,16 @@ namespace RPGMods.Commands
                 }
 
                 ctx.Event.User.SendSystemMessage("-- <color=#ffffffff>Weapon Mastery</color> --");
-                ctx.Event.User.SendSystemMessage($"Sword: <color=#ffffffff>{(double)MasteryData.Sword * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Spear: <color=#ffffffff>{(double)MasteryData.Spear * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Axe: <color=#ffffffff>{(double)MasteryData.Axes * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Scythe: <color=#ffffffff>{(double)MasteryData.Scythe * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Slasher: <color=#ffffffff>{(double)MasteryData.Slashers * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Mace: <color=#ffffffff>{(double)MasteryData.Mace * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Fist: <color=#ffffffff>{(double)MasteryData.None * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Spell: <color=#ffffffff>{(double)MasteryData.Spell * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Crossbow: <color=#ffffffff>{(double)MasteryData.Crossbow * 0.001}%</color>");
-                ctx.Event.User.SendSystemMessage($"Fishing Pole: <color=#ffffffff>{(double)MasteryData.FishingPole * 0.001}%</color>");
+                ctx.Event.User.SendSystemMessage($"Sword: <color=#ffffffff>{(double)MasteryData.Sword * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, SPL <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Spear: <color=#ffffffff>{(double)MasteryData.Spear * 0.001}%</color> (ATK <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Axe: <color=#ffffffff>{(double)MasteryData.Axes * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, HP <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Scythe: <color=#ffffffff>{(double)MasteryData.Scythe * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, CRIT <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Slasher: <color=#ffffffff>{(double)MasteryData.Slashers * 0.001}%</color> (CRIT <color=#75FF33FF>↑</color>, MOV <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Mace: <color=#ffffffff>{(double)MasteryData.Mace * 0.001}%</color> (HP <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Fist: <color=#ffffffff>{(double)MasteryData.None * 0.001}%</color> (ATK <color=#75FF33FF>↑↑</color>, MOV <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Spell: <color=#ffffffff>{(double)MasteryData.Spell * 0.001}%</color> (CD <color=#75FF33FF>↓↓</color>)");
+                ctx.Event.User.SendSystemMessage($"Crossbow: <color=#ffffffff>{(double)MasteryData.Crossbow * 0.001}%</color> (CRIT <color=#75FF33FF>↑↑</color>)");
+                //ctx.Event.User.SendSystemMessage($"Fishing Pole: <color=#ffffffff>{(double)MasteryData.FishingPole * 0.001}%</color> (??? ↑↑)");
             }
         }
     }

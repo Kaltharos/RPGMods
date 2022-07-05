@@ -26,8 +26,11 @@ namespace RPGMods.Systems
 
         private static PrefabGUID vBloodType = new PrefabGUID(1557174542);
 
+        private static Random rand = new Random();
+
         public static void UpdateMastery(Entity Killer, Entity Victim)
         {
+            if (Killer == Victim) return;
             if (em.HasComponent<Minion>(Victim)) return;
 
             Entity userEntity = em.GetComponentData<PlayerCharacter>(Killer).UserEntity._Entity;
@@ -39,6 +42,8 @@ namespace RPGMods.Systems
             var VictimStats = em.GetComponentData<UnitStats>(Victim);
             if (WeaponType == WeaponType.None) MasteryValue = (int)VictimStats.SpellPower;
             else MasteryValue = (int)VictimStats.PhysicalPower;
+
+            MasteryValue = (int)(MasteryValue * (rand.Next(10, 100) * 0.01));
 
             bool isVBlood;
             if (em.HasComponent<BloodConsumeSource>(Victim))
@@ -122,32 +127,128 @@ namespace RPGMods.Systems
             var isMastered = ConvertMastery(SteamID, WeaponType, out var PMastery, out var SMastery);
             if (isMastered)
             {
-                Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                switch (WeaponType)
                 {
-                    StatType = UnitStatType.PhysicalPower,
-                    Value = (float)(PMastery*0.1),
-                    ModificationType = ModificationType.Add,
-                    Id = ModificationId.NewId(0)
-                });
-                if (WeaponType == WeaponType.None)
-                {
-                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
-                    {
-                        StatType = UnitStatType.MovementSpeed,
-                        Value = (float)(PMastery * 0.01),
-                        ModificationType = ModificationType.Add,
-                        Id = ModificationId.NewId(0)
-                    });
-                }
-                if (SMastery > 0)
-                {
-                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
-                    {
-                        StatType = UnitStatType.CooldownModifier,
-                        Value = (float)(1-SMastery * 0.01 * 0.5),
-                        ModificationType = ModificationType.Set,
-                        Id = ModificationId.NewId(0)
-                    });
+                    case WeaponType.Sword:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.SpellPower,
+                            Value = (float)(PMastery * 0.125),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalPower,
+                            Value = (float)(PMastery * 0.125),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.Spear:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalPower,
+                            Value = (float)(PMastery * 0.25),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.Axes:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalPower,
+                            Value = (float)(PMastery * 0.125),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.MaxHealth,
+                            Value = (float)(PMastery * 0.5),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.Scythe:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalPower,
+                            Value = (float)(PMastery * 0.125),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalCriticalStrikeChance,
+                            Value = (float)(PMastery * 0.125),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.Slashers:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalCriticalStrikeChance,
+                            Value = (float)(PMastery * 0.125),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.MovementSpeed,
+                            Value = (float)(PMastery * 0.01),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.Mace:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.MaxHealth,
+                            Value = (float)(PMastery),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.Crossbow:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalCriticalStrikeChance,
+                            Value = (float)(PMastery * 0.25),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        break;
+                    case WeaponType.None:
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.MovementSpeed,
+                            Value = (float)(PMastery * 0.02),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                        {
+                            StatType = UnitStatType.PhysicalPower,
+                            Value = (float)(PMastery * 0.25),
+                            ModificationType = ModificationType.Add,
+                            Id = ModificationId.NewId(0)
+                        });
+                        if (SMastery > 0)
+                        {
+                            Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                            {
+                                StatType = UnitStatType.CooldownModifier,
+                                Value = (float)(1 - SMastery * 0.01 * 0.5),
+                                ModificationType = ModificationType.Set,
+                                Id = ModificationId.NewId(0)
+                            });
+                        }
+                        break;
+                    default:
+                        break;
+                    //-- Nothing for Fishing Pole
                 }
             }
         }

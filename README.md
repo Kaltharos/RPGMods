@@ -10,15 +10,10 @@ Disable the VRising Gear Level system and replace it with a traditional RPG expe
 complete with exp sharing between clan members or other player designated as ally.
 
 ## Mastery System
-### Weapon Mastery (NEW - Should be tested first!)
-Mastering a weapon will now progressively give extra bonus to the character stats.
-- Physical weapon (Sword, Spear, Fist, Schyte, Axes, Slashers, Mace, Fishing Pole) will give extra physical power. (100% -> 10 Power)
-- Spell (Global/All Spells) will reduce the cooldown of all skills. (100% -> 50% cooldown reduction)
-
+### Weapon Mastery
+Mastering a weapon will now progressively give extra bonus to the character stats.\
 Weapon mastery will increase when the weapon is used to kill a creature, and while in combat to a maximum of 60 seconds. (0.001%/Sec)\
 Spell mastery can only increase and take effect when no weapon is equipped.
-### Defensive Mastery
-TBA
 ### Mastery Decay
 When the vampire goes to sleep (offline), all their mastery will continuously decay per minute passed while offline.\
 This decay will keep on counting even while the server is offline.
@@ -39,7 +34,9 @@ Every PvP kill will be announced server wide to all users.\
 Kill/Death will also be recorded, and a ladder board for the Top 5 K/D in the server.
 
 ## Config
-### Basic
+<details>
+<summary>Basic</summary>
+
 - `Prefix` [default `.`]\
 The prefix use for chat commands.
 - `Command Delay` [default `5`]\
@@ -49,12 +46,22 @@ Admin will always bypass this.
 Enter command names to disable them. Seperated by commas.
 - `WayPoint Limits` [default `3`]\
 Set a waypoint limit per user.
-### PvP
+
+</details>
+
+<details>
+<summary>PvP</summary>
+
 - `Announce PvP Kills` [default `true`]\
 Do I really need to explain this...?
 - `Enable the PvP Ladder` [default `true`]\
 Hmm... well it enables the ladder board in .pvp command
-### Hunter Hunted
+
+</details>
+
+<details>
+<summary>HunterHunted</summary>
+
 - `Enable` [default `true`]\
 Enable/disable the HunterHunted system.
 - `Heat Cooldown Value` [default `35`]\
@@ -67,7 +74,12 @@ Set every how many seconds should the cooldown interval trigger.
 Set how many seconds player can be ambushed again since last ambush.
 - `Ambush Chance` [default `50`]\
 Set the percentage that an ambush may occur for every cooldown interval.
-### Experience
+
+</details>
+
+<details>
+<summary>Experience</summary>
+
 - `Enable` [default `true`]\
 Enable/disable the Experience system.
 - `Max Level` [default `80`]\
@@ -86,7 +98,12 @@ Set the modifier for EXP gained for each ally(player) in vicinity.\
 Example if you have 2 ally nearby, EXPGained = ((EXPGained * Modifier)*Modifier)
 - `Ally Max Distance` [default `50`]\
 Set the maximum distance an ally(player) has to be from the player for them to share EXP with the player
-### Mastery
+
+</details>
+
+<details>
+<summary>Mastery</summary>
+
 - `Enable Weapon Mastery` [default `true`]\
 Enable/disable the weapon mastery system.
 - `Enable Mastery Decay` [default `true`]\
@@ -106,10 +123,15 @@ Every amount of seconds the user is offline by the configured value will transla
 - `Decay Value` [default `1`]\
 Mastery will decay by this amount for every decay tick. (1 -> 0.001%)
 
+</details>
 
 ## Permissions
 You can only decide whether a command is admin only or not at this time.\
 The permissions are saved in `BepInEx/config/RPGMods/permissions.json` and look like this:
+
+<details>
+<summary>Default Permission - Don't forget to copy!</summary>
+
 ```json
 {
   "help": false,
@@ -148,11 +170,27 @@ The permissions are saved in `BepInEx/config/RPGMods/permissions.json` and look 
   "m": false
 }
 ```
+
+</details>
+
 Removing a command from the list will automatically set it's value to `false`.
 
 ## Chat Commands
-`help [<Command>]`: Shows a list of all commands.\
-`kit <Name>`: Gives you a previously specified set of items.
+
+<details>
+<summary>help [<command>]</summary>
+
+Shows a list of all commands.\
+&ensp;&ensp;**Example:** `help experience`
+
+</details>
+
+<details>
+<summary>kit <name></summary>
+
+Gives you a previously specified set of items.\
+&ensp;&ensp;**Example:** `kit starterset`
+
 <details>
 <summary>How does kit work?</summary>
 
@@ -178,57 +216,183 @@ Removing a command from the list will automatically set it's value to `false`.
 
 </details>
 
-`blood <BloodType> [<Quality>] [<Value>]`: Sets your Blood type to the specified Type, Quality and Value.\
+</details>
+
+<details>
+<summary>blood <bloodtype> [<quality>] [<value>]</summary>
+
+Sets your Blood type to the specified Type, Quality and Value.\
 &ensp;&ensp;**Example:** `blood Scholar 100 100`
 
-`bloodpotion <BloodType> [<Quality>]`: Creates a Potion with specified Blood Type, Quality and Value.\
+</details>
+
+<details>
+<summary>bloodpotion <bloodtype> [<quality>]</summary>
+
+Creates a Potion with specified Blood Type, Quality and Value.\
 &ensp;&ensp;**Example:** `bloodpotion Scholar 100`
 
-`waypoint <Name|Set|Remove|List> [<Name>] [global]`: Teleports you to previously created waypoints.\
+</details>
+
+<details>
+<summary>waypoint <name|set|remove|list> [<name>] [global]</summary>
+
+Teleports you to previously created waypoints.\
 &ensp;&ensp;**Example:** `waypoint set home` <-- Creates a local waypoint just for you.\
 &ensp;&ensp;**Example:** `waypoint set arena global` <-- Creates a global waypoint for everyone (Admin-Only).\
 &ensp;&ensp;**Example:** `waypoint home` <-- Teleports you to your local waypoint.\
 &ensp;&ensp;**Example:** `waypoint remove home` <-- Removes your local waypoint.\
 &ensp;&ensp;**Example:** `waypoint list` <-- Shows a list of all to you accessible waypoints.
 
-`give <Item Name> [<Amount>]`: Adds the specified Item to your Inventory.\
+</details>
+
+<details>
+<summary>give <itemname> [<amount>]</summary>
+
+Adds the specified Item to your Inventory.\
 &ensp;&ensp;**Example:** `give Stone Brick 17`
 
-`spawnnpc <Prefab Name> [<Amount>] [<Waypoint>]`: Spawns a NPC. Optional: To a previously created waypoint.\
+</details>
+
+<details>
+<summary>spawnnpc <prefabname> [<amount>] [<waypoint>]</summary>
+
+Spawns a NPC. Optional: To a previously created waypoint.\
 &ensp;&ensp;**Example:** `spawnnpc CHAR_Cursed_MountainBeast_VBlood 1 arena`
 
-`health <Amount>`: Sets your health to the specified amount.\
-`speed`: Toggles speed buff.\
-`sunimmunity`: Toggles sun immunity.\
-`nocooldown`: Toggles all skills & abilities to have no cooldown.\
-`resetcooldown [<PlayerName>]`: Reset all skills & abilities cooldown for you or the specified player.\
-`teleport <PlayerName>`: Teleport to another online player within your clan.\
-`godmode`: Toggles god mode for you.\
-`autorespawn`: Toggles auto respawn on same position on death.\
-&ensp;&ensp;**Admin Only Params -> `[<All>|<PlayerName>]`** `Toggle the auto respawn for specified player or server wide.
+</details>
 
-`heat`: Checks your heat/wanted level by the factions.\
-&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display current configuration or set your or the specified player heat value.`\
+<details>
+<summary>health <percentage> [<playername>]</summary>
+
+Sets your health to the specified percentage (0 will kill the player).\
+&ensp;&ensp;**Example:** `health 100`\
+&ensp;&ensp;**Example:** `health 0 LegendaryVampire`
+
+</details>
+
+<details>
+<summary>speed</summary>
+
+Toggles speed buff.
+
+</details>
+
+<details>
+<summary>sunimmunity</summary>
+
+Toggles sun immunity.
+
+</details>
+
+<details>
+<summary>nocooldown</summary>
+
+Toggles all skills & abilities to have no cooldown.
+
+</details>
+
+<details>
+<summary>resetcooldown [<playername>]</summary>
+
+Reset all skills & abilities cooldown for you or the specified player.\
+&ensp;&ensp;**Example:** `resetcooldown`\
+&ensp;&ensp;**Example:** `resetcooldown LegendaryVampire`
+
+</details>
+
+<details>
+<summary>teleport <playername></summary>
+
+Teleport to another online player within your clan.\
+&ensp;&ensp;**Example:** `teleport LegendaryVampire`
+
+</details>
+
+<details>
+<summary>godmode</summary>
+
+Toggles god mode for you.
+
+</details>
+
+<details>
+<summary>autorespawn</summary>
+
+Toggles auto respawn on same position on death.\
+&ensp;&ensp;**Admin Only Params -> `[<all>|<playername>]`** `Toggle the auto respawn for specified player or server wide.`\
+&ensp;&ensp;**Example:** `autorespawn all`\
+&ensp;&ensp;**Example:** `autorespawn LegendaryVampire`
+
+</details>
+
+<details>
+<summary>heat</summary>
+
+Checks your heat/wanted level by the factions.\
+&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display numeric heat or set your or the specified player heat.`\
 &ensp;&ensp;**Example:** `heat 500 500`\
 &ensp;&ensp;**Example:** `heat 500 500 LegendaryVampire`
 
-`ping`: Show you your latency to the server.\
-`pvp [<on>|<off>]`: Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
-`experience [<log> <on>|<off>]`: Diplays your current exp and progression to the next level, or toggle the exp gain notification.\
-&ensp;&ensp;**Admin Only Params -> `[<set>] [<value>] [<PlayerName>]`** `Set your or the specified player experience value.`\
+</details>
+
+<details>
+<summary>ping</summary>
+
+Show you your latency to the server.
+
+</details>
+
+<details>
+<summary>pvp [<on>|<off>]</summary>
+
+Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
+&ensp;&ensp;**Example:** `pvp`\
+&ensp;&ensp;**Example:** `pvp off`
+
+</details>
+
+<details>
+<summary>experience [<log> <on>|<off>]</summary>
+
+Diplays your current exp and progression to the next level, or toggle the exp gain notification.\
+&ensp;&ensp;**Example:** `experience`\
+&ensp;&ensp;**Example:** `experience log off`
+
+&ensp;&ensp;**Admin Only Params -> `[<set> <value> [<PlayerName>]]`** `Set your or the specified player experience value.`\
 &ensp;&ensp;**Example:** `experience set 1000`\
 &ensp;&ensp;**Example:** `experience set 2000 LegendaryVampire`
 
-`mastery [<log> <on>|<off>]`: Display your current mastery progression, or toggle the mastery gain notification.\
-&ensp;&ensp;**Admin Only Params -> `[<set>] [<type>] [<value>] [<PlayerName>]`** `Set your or the specified player mastery value.`\
+</details>
+
+<details>
+<summary>mastery [<log> <on>|<off>]</summary>
+
+Display your current mastery progression, or toggle the mastery gain notification.\
+&ensp;&ensp;**Example:** `mastery`\
+&ensp;&ensp;**Example:** `mastery log off`
+
+&ensp;&ensp;**Admin Only Params -> `[<set> <type> <value> [<PlayerName>]]`** `Set your or the specified player mastery value.`\
 &ensp;&ensp;**Example:** `mastery set sword 100000`\
 &ensp;&ensp;**Example:** `mastery set spear 2000 LegendaryVampire`
 
-`save`: Trigger the database saving manually.
+</details>
+
+<details>
+<summary>save</summary>
+
+Trigger the database saving manually.
+
+</details>
 
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.1.5`
+- Introduced a mechanic to randomize mastery gain from creature kills.
+- Fixed issue on mastery gain on player death.
+- Fleshed out the weapon mastery bonus.
 
 `0.1.4`
 - Added Weapon Mastery system.
@@ -312,6 +476,5 @@ Removing a command from the list will automatically set it's value to `false`.
 - Add ban command with duration.
 - Explore team/alliance in VRising.
 - Hook into whatever system possible to add a tag to player names.
-- Other defensive mastery system.
 
 </details>

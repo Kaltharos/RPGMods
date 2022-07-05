@@ -42,8 +42,8 @@ namespace RPGMods.Utils
             {
                 ev.Cancel();
 
-                string command = ev.Message.Split(' ')[0].Remove(0, 1);
-                if (DisabledCommands.Split(',').Any(x => x.ToLower() == command.ToLower())) continue;
+                string command = ev.Message.Split(' ')[0].Remove(0, 1).ToLower();
+                if (DisabledCommands.Split(',').Any(x => x.ToLower() == command)) continue;
                 if (!NameExists(type, command)) continue;
                 
                 Permissions.TryGetValue(command, out bool isAdminOnly);

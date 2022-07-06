@@ -205,6 +205,88 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
 [HarmonyPatch(typeof(BuffSystem_Spawn_Server), nameof(BuffSystem_Spawn_Server.OnUpdate))]
 public class BuffSystem_Spawn_Server_Patch
 {
+    private static ModifyUnitStatBuff_DOTS PResist = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.PhysicalResistance,
+        Value = -15,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS FResist = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.FireResistance,
+        Value = -15,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS HResist = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.HolyResistance,
+        Value = -15,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS SPResist = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.SpellResistance,
+        Value = -15,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS SunResist = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.SunResistance,
+        Value = -15,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS PPower = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.PhysicalPower,
+        Value = 0.75f,
+        ModificationType = ModificationType.Multiply,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS SPPower = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.SpellPower,
+        Value = 0.75f,
+        ModificationType = ModificationType.Multiply,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static void Prefix(BuffSystem_Spawn_Server __instance)
+    {
+        if (PvPSystem.isPunishEnabled)
+        {
+            NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
+            foreach (var entity in entities)
+            {
+                PrefabGUID GUID = __instance.EntityManager.GetComponentData<PrefabGUID>(entity);
+                if (GUID.Equals(Database.buff.Severe_GarlicDebuff))
+                {
+                    var lifeTime_component = __instance.EntityManager.GetComponentData<LifeTime>(entity);
+                    lifeTime_component.Duration = PvPSystem.PunishDuration;
+                    __instance.EntityManager.SetComponentData(entity, lifeTime_component);
+
+                    var Buffer = __instance.EntityManager.AddBuffer<ModifyUnitStatBuff_DOTS>(entity);
+                    Buffer.Add(PPower);
+                    Buffer.Add(SPPower);
+                    Buffer.Add(HResist);
+                    Buffer.Add(FResist);
+                    Buffer.Add(SPResist);
+                    Buffer.Add(PResist);
+                }
+            }
+        }
+    }
+
     private static void Postfix(BuffSystem_Spawn_Server __instance)
     {
         if (HunterHunted.isActive || WeaponMasterSystem.isMasteryEnabled)

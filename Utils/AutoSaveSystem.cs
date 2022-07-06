@@ -21,7 +21,7 @@ namespace RPGMods.Utils
             //Kit.SaveKits();   //-- Nothing to save here for now.
 
             ExperienceSystem.SaveEXPData();
-            PvPStatistics.SavePvPStat();
+            PvPSystem.SavePvPStat();
             WeaponMasterSystem.SaveWeaponMastery();
 
             Plugin.Logger.LogWarning("All database saved to JSON file.");
@@ -40,7 +40,7 @@ namespace RPGMods.Utils
             Kit.LoadKits();
 
             //-- System Related
-            PvPStatistics.LoadPvPStat();
+            PvPSystem.LoadPvPStat();
             ExperienceSystem.LoadEXPData();
             WeaponMasterSystem.LoadWeaponMastery();
             Plugin.Logger.LogWarning("All database is now loaded.");

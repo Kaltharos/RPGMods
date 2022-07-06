@@ -60,7 +60,6 @@ namespace RPGMods.Systems
 
             if (em.HasComponent<PlayerCharacter>(Victim))
             {
-                PlayerCharacter Character = em.GetComponentData<PlayerCharacter>(Victim);
                 Equipment VictimGear = em.GetComponentData<Equipment>(Victim);
                 var BonusMastery = VictimGear.ArmorLevel + VictimGear.WeaponLevel + VictimGear.SpellLevel;
                 MasteryValue *= (int)(1 + (BonusMastery * 0.01));

@@ -73,6 +73,8 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, DateTime> bandit_last_ambushed = new Dictionary<ulong, DateTime>();
         public static Dictionary<ulong, DateTime> player_last_combat = new Dictionary<ulong, DateTime>();
         public static Dictionary<ulong, int> player_combat_ticks = new Dictionary<ulong, int>();
+        public static Dictionary<ulong, int> punish_killer_offense = new Dictionary<ulong, int>();
+        public static Dictionary<ulong, DateTime> punish_killer_last_offense = new Dictionary<ulong, DateTime>();
     }
 
     public class Database
@@ -413,6 +415,9 @@ namespace RPGMods.Utils
             public static PrefabGUID NormalForm = new PrefabGUID(1352541204);
             public static PrefabGUID RatForm = new PrefabGUID(902394170);
             public static PrefabGUID DownedBuff = new PrefabGUID(-1992158531);
+
+            public static PrefabGUID Severe_GarlicDebuff = new PrefabGUID(1582196539);
+            public static PrefabGUID General_GarlicDebuff = new PrefabGUID(-1701323826);
 
             public static PrefabGUID Buff_VBlood_Perk_Moose = new PrefabGUID(-1464851863);      //-- Using this for commands & mastery buff
 

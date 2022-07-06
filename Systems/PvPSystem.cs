@@ -1,28 +1,37 @@
 ﻿using ProjectM;
 using ProjectM.Network;
+using RPGMods.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Unity.Entities;
 using Wetstone.API;
 
-namespace RPGMods.Utils
+namespace RPGMods.Systems
 {
-    public class PvPStatistics
+    public class PvPSystem
     {
         public static bool announce_kills = true;
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+
+        public static bool isPunishEnabled = true;
+        public static int PunishLevelDiff = -10;
+        public static float PunishDuration = 1800f;
+        public static int OffenseLimit = 3;
+        public static float Offense_Cooldown = 300f;
+
+        public static EntityManager em = VWorld.Server.EntityManager;
         public static void Monitor(Entity KillerEntity, Entity VictimEntity)
         {
-            var killer = entityManager.GetComponentData<PlayerCharacter>(KillerEntity);
+            var killer = em.GetComponentData<PlayerCharacter>(KillerEntity);
             var killer_userEntity = killer.UserEntity._Entity;
-            var killer_user = entityManager.GetComponentData<User>(killer_userEntity);
+            var killer_user = em.GetComponentData<User>(killer_userEntity);
             var killer_name = killer_user.CharacterName.ToString();
             var killer_id = killer_user.PlatformId;
 
-            var victim = entityManager.GetComponentData<PlayerCharacter>(VictimEntity);
+            var victim = em.GetComponentData<PlayerCharacter>(VictimEntity);
             var victim_userEntity = victim.UserEntity._Entity;
-            var victim_user = entityManager.GetComponentData<User>(victim_userEntity);
+            var victim_user = em.GetComponentData<User>(victim_userEntity);
             var victim_name = victim_user.CharacterName.ToString();
             var victim_id = victim_user.PlatformId;
 
@@ -38,7 +47,7 @@ namespace RPGMods.Utils
             UpdateKD(killer_id, victim_id);
 
             //-- Announce Kills
-            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(entityManager, $"Vampire \"{killer_name}\" has killed \"{victim_name}\"!");
+            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire \"{killer_name}\" has killed \"{victim_name}\"!");
         }
 
         public static void UpdateKD(ulong killer_id, ulong victim_id)
@@ -49,11 +58,36 @@ namespace RPGMods.Utils
             isExist = Database.pvpkills.TryGetValue(victim_id, out _);
             if (!isExist) Database.pvpkills[victim_id] = 0;
 
-            if (Database.pvpdeath[killer_id] != 0) Database.pvpkd[killer_id] = (double) Database.pvpkills[killer_id] / Database.pvpdeath[killer_id];
+            if (Database.pvpdeath[killer_id] != 0) Database.pvpkd[killer_id] = (double)Database.pvpkills[killer_id] / Database.pvpdeath[killer_id];
             else Database.pvpkd[killer_id] = Database.pvpkills[killer_id];
 
-            if (Database.pvpkills[victim_id] != 0) Database.pvpkd[victim_id] = (double) Database.pvpkills[victim_id] / Database.pvpdeath[victim_id];
+            if (Database.pvpkills[victim_id] != 0) Database.pvpkd[victim_id] = (double)Database.pvpkills[victim_id] / Database.pvpdeath[victim_id];
             else Database.pvpkd[victim_id] = 0;
+        }
+
+        public static void PunishCheck(Entity Killer, Entity Victim)
+        {
+            Entity KillerUser = em.GetComponentData<PlayerCharacter>(Killer).UserEntity._Entity;
+            ulong KillerSteamID = em.GetComponentData<User>(KillerUser).PlatformId;
+            Equipment KillerGear = em.GetComponentData<Equipment>(Killer);
+            float KillerLevel = KillerGear.ArmorLevel + KillerGear.WeaponLevel + KillerGear.SpellLevel;
+
+            Equipment VictimGear = em.GetComponentData<Equipment>(Victim);
+            float VictimLevel = VictimGear.ArmorLevel + VictimGear.WeaponLevel + VictimGear.SpellLevel;
+
+            if (VictimLevel - KillerLevel <= PunishLevelDiff)
+            {
+                Cache.punish_killer_last_offense.TryGetValue(KillerSteamID, out var last_offense);
+                TimeSpan timeSpan = DateTime.Now - last_offense;
+                if (timeSpan.TotalSeconds > Offense_Cooldown) Cache.punish_killer_offense[KillerSteamID] = 1;
+                else Cache.punish_killer_offense[KillerSteamID] += 1;
+                Cache.punish_killer_last_offense[KillerSteamID] = DateTime.Now;
+
+                if (Cache.punish_killer_offense[KillerSteamID] >= OffenseLimit)
+                {
+                    Helper.ApplyBuff(Killer, KillerUser, Database.buff.Severe_GarlicDebuff);
+                }
+            }
         }
 
         public static void SavePvPStat()

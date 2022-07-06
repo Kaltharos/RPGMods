@@ -21,7 +21,7 @@ namespace RPGMods.Hooks
             bool isNewVampire = userData.CharacterName.IsEmpty;
             if (!isNewVampire)
             {
-                if (WeaponMasterSystem.isDecaySystemEnabled)
+                if (WeaponMasterSystem.isDecaySystemEnabled && WeaponMasterSystem.isMasteryEnabled)
                 {
                     WeaponMasterSystem.DecayMastery(userEntity);
                 }

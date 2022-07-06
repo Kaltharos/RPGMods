@@ -25,14 +25,23 @@ namespace RPGMods
         private ConfigEntry<string> DisabledCommands;
         private ConfigEntry<float> DelayedCommands;
         private ConfigEntry<int> WaypointLimit;
+        
+
+        private ConfigEntry<bool> AnnouncePvPKills;
+        private ConfigEntry<bool> EnablePvPLadder;
+        private ConfigEntry<bool> EnablePvPPunish;
+        private ConfigEntry<int> PunishLevelDiff;
+        private ConfigEntry<float> PunishDuration;
+        private ConfigEntry<int> PunishOffenseLimit;
+        private ConfigEntry<float> PunishOffenseCooldown;
+
+        private ConfigEntry<bool> HunterHuntedEnabled;
         private ConfigEntry<int> HeatCooldown;
         private ConfigEntry<int> BanditHeatCooldown;
         private ConfigEntry<int> CoolDown_Interval;
         private ConfigEntry<int> Ambush_Interval;
         private ConfigEntry<int> Ambush_Chance;
-        private ConfigEntry<bool> AnnouncePvPKills;
-        private ConfigEntry<bool> EnablePvPLadder;
-        private ConfigEntry<bool> HunterHuntedEnabled;
+
         private ConfigEntry<bool> EnableExperienceSystem;
         private ConfigEntry<int> MaxLevel;
         private ConfigEntry<float> EXPMultiplier;
@@ -41,6 +50,7 @@ namespace RPGMods
         private ConfigEntry<float> EXPFormula_1;
         private ConfigEntry<double> EXPGroupModifier;
         private ConfigEntry<float> EXPGroupMaxDistance;
+
         private ConfigEntry<bool> EnableWeaponMaster;
         private ConfigEntry<bool> EnableWeaponMasterDecay;
         private ConfigEntry<float> WeaponMasterMultiplier;
@@ -62,6 +72,11 @@ namespace RPGMods
 
             AnnouncePvPKills = Config.Bind("PvP", "Announce PvP Kills", true, "Do I really need to explain this...?");
             EnablePvPLadder = Config.Bind("PvP", "Enable PvP Ladder", true, "Enables the PvP Ladder in the PvP command.");
+            EnablePvPPunish = Config.Bind("PvP", "Enable PvP Punishment", true, "Enables the punishment system for killing lower level player.");
+            PunishLevelDiff = Config.Bind("PvP", "Punish Level Difference", -10, "Only punish the killer if the victim level is this much lower.");
+            PunishOffenseLimit = Config.Bind("PvP", "Offense Limit", 3, "Killer must make this many offense before the punishment debuff is applied.");
+            PunishOffenseCooldown = Config.Bind("PvP", "Offense Cooldown", 300f, "Reset the offense counter after this many seconds has passed since last offense.");
+            PunishDuration = Config.Bind("PvP", "Debuff Duration", 1800f, "Apply the punishment debuff for this amount of time.");
 
             HunterHuntedEnabled = Config.Bind("HunterHunted", "Enable", true, "Enable/disable the HunterHunted system.");
             HeatCooldown = Config.Bind("HunterHunted", "Heat Cooldown", 35, "Set the reduction value for player heat for every cooldown interval.");
@@ -144,7 +159,12 @@ namespace RPGMods
             HunterHunted.ambush_chance = Ambush_Chance.Value;
 
             PvP.isLadderEnabled = EnablePvPLadder.Value;
-            PvPStatistics.announce_kills = AnnouncePvPKills.Value;
+            PvPSystem.announce_kills = AnnouncePvPKills.Value;
+            PvPSystem.isPunishEnabled = EnablePvPPunish.Value;
+            PvPSystem.PunishLevelDiff = PunishLevelDiff.Value;
+            PvPSystem.PunishDuration = PunishDuration.Value;
+            PvPSystem.OffenseLimit = PunishOffenseLimit.Value;
+            PvPSystem.Offense_Cooldown = PunishOffenseCooldown.Value;
 
             ExperienceSystem.isEXPActive = EnableExperienceSystem.Value;
             ExperienceSystem.MaxLevel = MaxLevel.Value;

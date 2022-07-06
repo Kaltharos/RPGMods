@@ -29,9 +29,15 @@ space your kills so you don't get hunter by an extremely elite group of assassin
 Otherwise, if you are dead for any reason at all, your heat/wanted level will reset back to anonymous.\
 `-- Note` Ambush may only occur when the player is in combat.
 
-## Kill Announcer & PvP Statistics
-Every PvP kill will be announced server wide to all users.\
+## PvP System
+Configurable PvP kill serverwide announcement.\
 Kill/Death will also be recorded, and a ladder board for the Top 5 K/D in the server.
+
+Additionally there's a punishment system which can be used to punish player who kill lower level player,\
+which is configurable in the config.\
+Punishment will apply a debuff that reduce player combat effeciency.
+- `-25%` Physical & Spell Power
+- `-15` Physical, Spell, Holy, and Fire resistance
 
 ## Config
 <details>
@@ -56,6 +62,17 @@ Set a waypoint limit per user.
 Do I really need to explain this...?
 - `Enable the PvP Ladder` [default `true`]\
 Hmm... well it enables the ladder board in .pvp command
+- `Enable PvP Punishment` [default `true`]\
+Enables the punishment system for killing lower level player.
+- `Punish Level Difference` [default `-10`]\
+Only punish the killer if the victim level is this much lower.
+- `Offense Limit` [default `3`]\
+Killer must make this many offense before the punishment debuff is applied.
+- `Offense Cooldown` [default `300`]\
+Reset the offense counter after this many seconds has passed since last offense.
+- `Debuff Duration` [default `1800`]\
+Apply the punishment debuff for this amount of time.
+
 
 </details>
 
@@ -142,7 +159,8 @@ The permissions are saved in `BepInEx/config/RPGMods/permissions.json` and look 
   "ping": false,
   "pvp": false,
   "save": true,
-  "autorespawn": false,
+  "punish": true,
+  "autorespawn": true,
   "waypoint": false,
   "wp": false,
   "health": true,
@@ -406,9 +424,27 @@ Trigger the database saving manually.
 
 </details>
 
+<details>
+<summary>punish</summary>
+
+`punish <playername> [<remove>]`\
+Manually punish someone or lift their debuff.\
+This command may still be used even when punishment system is disabled.\
+&ensp;&ensp;**Example:** `punish LegendaryVampire`\
+&ensp;&ensp;**Example:** `punish LegendaryVampire remove`
+
+</details>
+
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.2.0`
+- Fixed typo in mastery commands for setting Schyte mastery.
+- Added PvP punishment system.
+- Changed PvP system to hook from downed player instead of killed player.
+- Fixed bug in mastery decay not being disabled when mastery system is not enabled.
+- Fixed bug in mastery command that still report mastery status even when the system is disabled.
 
 `0.1.6`
 - Commands & permission are no longer case sensitive. F*ck...

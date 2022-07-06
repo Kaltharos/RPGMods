@@ -16,6 +16,7 @@ namespace RPGMods.Commands
             if (!WeaponMasterSystem.isMasteryEnabled)
             {
                 Output.CustomErrorMessage(ctx, "Weapon Mastery system is not enabled.");
+                return;
             }
             var SteamID = ctx.Event.User.PlatformId;
 
@@ -50,7 +51,7 @@ namespace RPGMods.Commands
                         else if (ctx.Args[1].ToLower().Equals("spear")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Spear, value);
                         else if (ctx.Args[1].ToLower().Equals("crossbow")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Crossbow, value);
                         else if (ctx.Args[1].ToLower().Equals("slashers")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Slashers, value);
-                        else if (ctx.Args[1].ToLower().Equals("schyte")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Scythe, value);
+                        else if (ctx.Args[1].ToLower().Equals("scythe")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Scythe, value);
                         else if (ctx.Args[1].ToLower().Equals("fishingpole")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.FishingPole, value);
                         else if (ctx.Args[1].ToLower().Equals("mace")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Mace, value);
                         else if (ctx.Args[1].ToLower().Equals("axes")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Axes, value);

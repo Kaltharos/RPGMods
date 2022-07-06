@@ -21,10 +21,10 @@ public class DeathEventListenerSystem_Patch
             foreach (DeathEvent ev in deathEvents)
             {
                 //-- Player Kill Announce Begin
-                if (__instance.EntityManager.HasComponent<PlayerCharacter>(ev.Killer) && __instance.EntityManager.HasComponent<PlayerCharacter>(ev.Died) && !ev.Killer.Equals(ev.Died))
-                {
-                    PvPStatistics.Monitor(ev.Killer, ev.Died);
-                }
+                //if (__instance.EntityManager.HasComponent<PlayerCharacter>(ev.Killer) && __instance.EntityManager.HasComponent<PlayerCharacter>(ev.Died) && !ev.Killer.Equals(ev.Died))
+                //{
+                //    PvPStatistics.Monitor(ev.Killer, ev.Died);
+                //}
                 //-- --------------------------
 
                 //-- Creature Kill Tracking

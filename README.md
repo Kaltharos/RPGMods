@@ -440,6 +440,9 @@ This command may still be used even when punishment system is disabled.\
 <details>
 <summary>Changelog</summary>
 
+`0.2.1`
+- Renamed the list in mastery to be in accordance with the mastery in game types.
+
 `0.2.0`
 - Fixed typo in mastery commands for setting Schyte mastery.
 - Added PvP punishment system.
@@ -527,18 +530,21 @@ This command may still be used even when punishment system is disabled.\
 - There's no known issue yet. Heat level does get reset if you reload the plugin/restart server, this is an intended behaviour.
 
 ### PvP System
-- Punishment debuff lower the player gear level, which will be override by the experience system if the exp system is active.
+- Punishment debuff lower the player gear level, which will be overriden by the experience system if the exp system is active.
 
 </details>
 
 <details>
 <summary>Planned Features</summary>
 
-- Chat permission roles.
-- Kits Option: Limited Uses.
-- More optimization! It never hurts to optimize!
-- Add ban command with duration.
-- Explore team/alliance in VRising.
-- Hook into whatever system possible to add a tag to player names.
+- Chat permission roles. (On hold)
+- Kits Option: Limited Uses. (On hold)
+- More optimization! It never hurts to optimize! 
+- Add ban command with duration. (On hold)
+- Explore team/alliance in VRising. (On hold)
+- Hook into whatever system possible to add a tag to player names. (On hold)
+- More dynamic events
+- Bloodline
+- Dynamic mob stats adjustment
 
 </details>

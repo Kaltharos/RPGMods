@@ -421,6 +421,9 @@ namespace RPGMods.Utils
 
             public static PrefabGUID Buff_VBlood_Perk_Moose = new PrefabGUID(-1464851863);      //-- Using this for commands & mastery buff
 
+            public static PrefabGUID SiegeGolem_T01 = new PrefabGUID(-148535031);
+            public static PrefabGUID SiegeGolem_T02 = new PrefabGUID(914043867);
+
             //-- Possible Buff use
             public static PrefabGUID EquipBuff_Chest_Base = new PrefabGUID(1872694456);         //-- Hmm... not sure what to do with this right now...
             public static PrefabGUID Buff_VBlood_Perk_ProgTest = new PrefabGUID(1614409699);    //-- What does this do??

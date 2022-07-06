@@ -21,6 +21,63 @@ namespace RPGMods.Systems
         public static float Offense_Cooldown = 300f;
 
         public static EntityManager em = VWorld.Server.EntityManager;
+
+        private static ModifyUnitStatBuff_DOTS PResist = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.PhysicalResistance,
+            Value = -15,
+            ModificationType = ModificationType.Add,
+            Id = ModificationId.NewId(0)
+        };
+
+        private static ModifyUnitStatBuff_DOTS FResist = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.FireResistance,
+            Value = -15,
+            ModificationType = ModificationType.Add,
+            Id = ModificationId.NewId(0)
+        };
+
+        private static ModifyUnitStatBuff_DOTS HResist = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.HolyResistance,
+            Value = -15,
+            ModificationType = ModificationType.Add,
+            Id = ModificationId.NewId(0)
+        };
+
+        private static ModifyUnitStatBuff_DOTS SPResist = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.SpellResistance,
+            Value = -15,
+            ModificationType = ModificationType.Add,
+            Id = ModificationId.NewId(0)
+        };
+
+        private static ModifyUnitStatBuff_DOTS SunResist = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.SunResistance,
+            Value = -15,
+            ModificationType = ModificationType.Add,
+            Id = ModificationId.NewId(0)
+        };
+
+        private static ModifyUnitStatBuff_DOTS PPower = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.PhysicalPower,
+            Value = 0.75f,
+            ModificationType = ModificationType.Multiply,
+            Id = ModificationId.NewId(0)
+        };
+
+        private static ModifyUnitStatBuff_DOTS SPPower = new ModifyUnitStatBuff_DOTS()
+        {
+            StatType = UnitStatType.SpellPower,
+            Value = 0.75f,
+            ModificationType = ModificationType.Multiply,
+            Id = ModificationId.NewId(0)
+        };
+
         public static void Monitor(Entity KillerEntity, Entity VictimEntity)
         {
             var killer = em.GetComponentData<PlayerCharacter>(KillerEntity);
@@ -87,6 +144,25 @@ namespace RPGMods.Systems
                 {
                     Helper.ApplyBuff(Killer, KillerUser, Database.buff.Severe_GarlicDebuff);
                 }
+            }
+        }
+
+        public static void BuffReceiver(Entity BuffEntity)
+        {
+            PrefabGUID GUID = em.GetComponentData<PrefabGUID>(BuffEntity);
+            if (GUID.Equals(Database.buff.Severe_GarlicDebuff))
+            {
+                var lifeTime_component = em.GetComponentData<LifeTime>(BuffEntity);
+                lifeTime_component.Duration = PvPSystem.PunishDuration;
+                em.SetComponentData(BuffEntity, lifeTime_component);
+
+                var Buffer = em.AddBuffer<ModifyUnitStatBuff_DOTS>(BuffEntity);
+                Buffer.Add(PPower);
+                Buffer.Add(SPPower);
+                Buffer.Add(HResist);
+                Buffer.Add(FResist);
+                Buffer.Add(SPResist);
+                Buffer.Add(PResist);
             }
         }
 

@@ -180,7 +180,7 @@ namespace RPGMods.Systems
                         Buffer.Add(new ModifyUnitStatBuff_DOTS()
                         {
                             StatType = UnitStatType.PhysicalCriticalStrikeChance,
-                            Value = (float)(PMastery * 0.125),
+                            Value = (float)(PMastery * 0.00125),
                             ModificationType = ModificationType.Add,
                             Id = ModificationId.NewId(0)
                         });
@@ -189,14 +189,14 @@ namespace RPGMods.Systems
                         Buffer.Add(new ModifyUnitStatBuff_DOTS()
                         {
                             StatType = UnitStatType.PhysicalCriticalStrikeChance,
-                            Value = (float)(PMastery * 0.125),
+                            Value = (float)(PMastery * 0.00125),
                             ModificationType = ModificationType.Add,
                             Id = ModificationId.NewId(0)
                         });
                         Buffer.Add(new ModifyUnitStatBuff_DOTS()
                         {
                             StatType = UnitStatType.MovementSpeed,
-                            Value = (float)(PMastery * 0.01),
+                            Value = (float)(PMastery * 0.005),
                             ModificationType = ModificationType.Add,
                             Id = ModificationId.NewId(0)
                         });
@@ -214,7 +214,7 @@ namespace RPGMods.Systems
                         Buffer.Add(new ModifyUnitStatBuff_DOTS()
                         {
                             StatType = UnitStatType.PhysicalCriticalStrikeChance,
-                            Value = (float)(PMastery * 0.25),
+                            Value = (float)(PMastery * 0.0025),
                             ModificationType = ModificationType.Add,
                             Id = ModificationId.NewId(0)
                         });
@@ -223,7 +223,7 @@ namespace RPGMods.Systems
                         Buffer.Add(new ModifyUnitStatBuff_DOTS()
                         {
                             StatType = UnitStatType.MovementSpeed,
-                            Value = (float)(PMastery * 0.02),
+                            Value = (float)(PMastery * 0.01),
                             ModificationType = ModificationType.Add,
                             Id = ModificationId.NewId(0)
                         });

@@ -1,4 +1,5 @@
 ﻿using ProjectM;
+using RPGMods.Systems;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -98,7 +99,7 @@ namespace RPGMods.Utils
                 var isFound = Database.database_units.TryGetValue(unitName, out var unit);
                 if (isFound)
                 {
-                    VWorld.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, unitSpawn, 1, 5, 300);
+                    VWorld.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, unitSpawn, 1, 5, HunterHunted.ambush_despawn_timer);
                     total_units = total_units + unitSpawn;
                 }
             }

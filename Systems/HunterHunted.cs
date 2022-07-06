@@ -18,6 +18,7 @@ namespace RPGMods.Systems
         public static int cooldown_timer = 60;
         public static int ambush_interval = 300;
         public static int ambush_chance = 50;
+        public static float ambush_despawn_timer = 300;
 
         private static Random rand = new Random();
         public static void PlayerUpdateHeat(Entity killerEntity, Entity victimEntity)

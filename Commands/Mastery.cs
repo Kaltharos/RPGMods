@@ -2,6 +2,7 @@
 using ProjectM.Network;
 using RPGMods.Systems;
 using RPGMods.Utils;
+using System;
 using Unity.Entities;
 using Wetstone.API;
 
@@ -60,7 +61,7 @@ namespace RPGMods.Commands
                             Output.InvalidArguments(ctx);
                             return;
                         }
-                        ctx.Event.User.SendSystemMessage($"{char.ToUpper(ctx.Args[1][0])} Mastery for \"{CharName}\" is now set as {value * 0.001}%");
+                        ctx.Event.User.SendSystemMessage($"{ctx.Args[1].ToUpper()} Mastery for \"{CharName}\" is now set as {value * 0.001}%");
                         Helper.ApplyBuff(UserEntity, CharEntity, Database.buff.Buff_VBlood_Perk_Moose);
                         
                     }

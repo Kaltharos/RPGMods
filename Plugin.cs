@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
+using ProjectM.Scripting;
 using RPGMods.Commands;
 using RPGMods.Systems;
 using RPGMods.Utils;
@@ -35,12 +36,17 @@ namespace RPGMods
         private ConfigEntry<int> PunishOffenseLimit;
         private ConfigEntry<float> PunishOffenseCooldown;
 
+        private ConfigEntry<bool> BuffSiegeGolem;
+        private ConfigEntry<float> GolemPhysicalReduction;
+        private ConfigEntry<float> GolemSpellReduction;
+
         private ConfigEntry<bool> HunterHuntedEnabled;
         private ConfigEntry<int> HeatCooldown;
         private ConfigEntry<int> BanditHeatCooldown;
         private ConfigEntry<int> CoolDown_Interval;
         private ConfigEntry<int> Ambush_Interval;
         private ConfigEntry<int> Ambush_Chance;
+        private ConfigEntry<float> Ambush_Despawn_Unit_Timer;
 
         private ConfigEntry<bool> EnableExperienceSystem;
         private ConfigEntry<int> MaxLevel;
@@ -78,12 +84,18 @@ namespace RPGMods
             PunishOffenseCooldown = Config.Bind("PvP", "Offense Cooldown", 300f, "Reset the offense counter after this many seconds has passed since last offense.");
             PunishDuration = Config.Bind("PvP", "Debuff Duration", 1800f, "Apply the punishment debuff for this amount of time.");
 
+            BuffSiegeGolem = Config.Bind("Siege", "Buff Siege Golem", false, "Enabling this will reduce all incoming physical and spell damage according to config.");
+            GolemPhysicalReduction = Config.Bind("Siege", "Physical Damage Reduction", 0.5f, "Reduce incoming damage by this much. Ex.: 0.25 -> 25%");
+            GolemSpellReduction = Config.Bind("Siege", "Spell Damage Reduction", 0.5f, "Reduce incoming spell damage by this much. Ex.: 0.75 -> 75%");
+
             HunterHuntedEnabled = Config.Bind("HunterHunted", "Enable", true, "Enable/disable the HunterHunted system.");
             HeatCooldown = Config.Bind("HunterHunted", "Heat Cooldown", 35, "Set the reduction value for player heat for every cooldown interval.");
             BanditHeatCooldown = Config.Bind("HunterHunted", "Bandit Heat Cooldown", 35, "Set the reduction value for player heat from the bandits faction for every cooldown interval.");
             CoolDown_Interval = Config.Bind("HunterHunted", "Cooldown Interval", 60, "Set every how many seconds should the cooldown interval trigger.");
             Ambush_Interval = Config.Bind("HunterHunted", "Ambush Interval", 300, "Set how many seconds player can be ambushed again since last ambush.");
             Ambush_Chance = Config.Bind("HunterHunted", "Ambush Chance", 50, "Set the percentage that an ambush may occur for every cooldown interval.");
+            Ambush_Despawn_Unit_Timer = Config.Bind("HunterHunted", "Ambush Despawn Timer", 300f, "Despawn the ambush squad after this many second if they are still alive. Ex.: -1 -> Never Despawn)");
+
 
             EnableExperienceSystem = Config.Bind("Experience", "Enable", true, "Enable/disable the the Experience System.");
             MaxLevel = Config.Bind("Experience", "Max Level", 80, "Configure the experience system max level.");
@@ -157,6 +169,7 @@ namespace RPGMods
             HunterHunted.cooldown_timer = CoolDown_Interval.Value;
             HunterHunted.ambush_interval = Ambush_Interval.Value;
             HunterHunted.ambush_chance = Ambush_Chance.Value;
+            HunterHunted.ambush_despawn_timer = Ambush_Despawn_Unit_Timer.Value;
 
             PvP.isLadderEnabled = EnablePvPLadder.Value;
             PvPSystem.announce_kills = AnnouncePvPKills.Value;
@@ -165,6 +178,10 @@ namespace RPGMods
             PvPSystem.PunishDuration = PunishDuration.Value;
             PvPSystem.OffenseLimit = PunishOffenseLimit.Value;
             PvPSystem.Offense_Cooldown = PunishOffenseCooldown.Value;
+
+            SiegeSystem.isSiegeBuff = BuffSiegeGolem.Value;
+            SiegeSystem.GolemPDef.Value = GolemPhysicalReduction.Value;
+            SiegeSystem.GolemSDef.Value = GolemSpellReduction.Value;
 
             ExperienceSystem.isEXPActive = EnableExperienceSystem.Value;
             ExperienceSystem.MaxLevel = MaxLevel.Value;
@@ -184,6 +201,8 @@ namespace RPGMods
             WeaponMasterSystem.MaxMastery = WeaponMaxMastery.Value;
             WeaponMasterSystem.MasteryCombatTick = MasteryCombatTick.Value;
             WeaponMasterSystem.MaxCombatTick = MasteryMaxCombatTicks.Value;
+
+            ExperienceSystem.sgm = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
         }
 
         private void HandleChatMessage(VChatEvent ev)

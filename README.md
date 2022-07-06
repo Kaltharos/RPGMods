@@ -78,6 +78,18 @@ Apply the punishment debuff for this amount of time.
 </details>
 
 <details>
+<summary>Siege</summary>
+
+- `Buff Siege Golem` [default `false`]\
+Enabling this will reduce all incoming physical and spell damage according to config.
+- `Physical Damage Reduction` [default `0.5`]\
+Reduce incoming damage by this much. Ex.: 0.25 -> 25%
+- `Spell Damage Reduction` [default `0.5`]\
+Reduce incoming spell damage by this much. Ex.: 0.75 -> 75%
+
+</details>
+
+<details>
 <summary>HunterHunted</summary>
 
 - `Enable` [default `true`]\
@@ -439,6 +451,13 @@ This command may still be used even when punishment system is disabled.\
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.2.2`
+- Fixed some stats being bugged in the mastery system.
+- Reduced movement speed bonus from Slashers and None mastery.
+- Fixed mastery set command output only saying the first char of the weapon type.
+- Added Siege Golem buff options in configs.
+- Added ambush unit despawn timer in configs.
 
 `0.2.1`
 - Renamed the list in mastery to be in accordance with the mastery in game types.

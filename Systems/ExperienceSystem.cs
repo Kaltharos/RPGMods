@@ -30,6 +30,7 @@ namespace RPGMods.Systems
         public static double EXPLostOnDeath = 0.10;
 
         private static PrefabGUID vBloodType = new PrefabGUID(1557174542);
+        public static ServerGameManager sgm;
 
         public static void UpdateEXP(Entity killerEntity, Entity victimEntity)
         {
@@ -107,14 +108,13 @@ namespace RPGMods.Systems
 
         public static bool GetAllies(Entity PlayerCharacter, out Dictionary<Entity, float> Group)
         {
-            var serverGameManager = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
             Team team = entityManager.GetComponentData<Team>(PlayerCharacter);
             Group = new Dictionary<Entity, float>();
-            if (serverGameManager._TeamChecker.GetAlliedUsersCount(team) <= 1) return false;
+            if (sgm._TeamChecker.GetAlliedUsersCount(team) <= 1) return false;
 
             LocalToWorld playerPos = entityManager.GetComponentData<LocalToWorld>(PlayerCharacter);
-            NativeList<Entity> allyBuffer = serverGameManager._TeamChecker.GetTeamsChecked();
-            serverGameManager._TeamChecker.GetAlliedUsers(team, allyBuffer);
+            NativeList<Entity> allyBuffer = sgm._TeamChecker.GetTeamsChecked();
+            sgm._TeamChecker.GetAlliedUsers(team, allyBuffer);
             int i = 0;
             try
             {

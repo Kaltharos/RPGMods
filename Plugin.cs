@@ -201,8 +201,6 @@ namespace RPGMods
             WeaponMasterSystem.MaxMastery = WeaponMaxMastery.Value;
             WeaponMasterSystem.MasteryCombatTick = MasteryCombatTick.Value;
             WeaponMasterSystem.MaxCombatTick = MasteryMaxCombatTicks.Value;
-
-            ExperienceSystem.sgm = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
         }
 
         private void HandleChatMessage(VChatEvent ev)

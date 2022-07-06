@@ -36,8 +36,9 @@ Kill/Death will also be recorded, and a ladder board for the Top 5 K/D in the se
 Additionally there's a punishment system which can be used to punish player who kill lower level player,\
 which is configurable in the config.\
 Punishment will apply a debuff that reduce player combat effeciency.
-- `-25%` Physical & Spell Power
-- `-15` Physical, Spell, Holy, and Fire resistance
+- `-25%` Physical & spell power
+- `-15` Physical, spell, holy, and fire resistance
+- Gear level down (Overriden by EXP system if active)
 
 ## Config
 <details>
@@ -524,6 +525,9 @@ This command may still be used even when punishment system is disabled.\
 
 ### HunterHunted System
 - There's no known issue yet. Heat level does get reset if you reload the plugin/restart server, this is an intended behaviour.
+
+### PvP System
+- Punishment debuff lower the player gear level, which will be override by the experience system if the exp system is active.
 
 </details>
 

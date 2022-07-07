@@ -27,9 +27,9 @@ namespace RPGMods
         private ConfigEntry<float> DelayedCommands;
         private ConfigEntry<int> WaypointLimit;
         
-
         private ConfigEntry<bool> AnnouncePvPKills;
         private ConfigEntry<bool> EnablePvPLadder;
+        private ConfigEntry<bool> EnablePvPToggle;
         private ConfigEntry<bool> EnablePvPPunish;
         private ConfigEntry<int> PunishLevelDiff;
         private ConfigEntry<float> PunishDuration;
@@ -78,6 +78,7 @@ namespace RPGMods
 
             AnnouncePvPKills = Config.Bind("PvP", "Announce PvP Kills", true, "Do I really need to explain this...?");
             EnablePvPLadder = Config.Bind("PvP", "Enable PvP Ladder", true, "Enables the PvP Ladder in the PvP command.");
+            EnablePvPToggle = Config.Bind("PvP", "Enable PvP Toggle", true, "Enable/disable the pvp toggle feature in the pvp command.");
             EnablePvPPunish = Config.Bind("PvP", "Enable PvP Punishment", true, "Enables the punishment system for killing lower level player.");
             PunishLevelDiff = Config.Bind("PvP", "Punish Level Difference", -10, "Only punish the killer if the victim level is this much lower.");
             PunishOffenseLimit = Config.Bind("PvP", "Offense Limit", 3, "Killer must make this many offense before the punishment debuff is applied.");
@@ -94,7 +95,7 @@ namespace RPGMods
             CoolDown_Interval = Config.Bind("HunterHunted", "Cooldown Interval", 60, "Set every how many seconds should the cooldown interval trigger.");
             Ambush_Interval = Config.Bind("HunterHunted", "Ambush Interval", 300, "Set how many seconds player can be ambushed again since last ambush.");
             Ambush_Chance = Config.Bind("HunterHunted", "Ambush Chance", 50, "Set the percentage that an ambush may occur for every cooldown interval.");
-            Ambush_Despawn_Unit_Timer = Config.Bind("HunterHunted", "Ambush Despawn Timer", 300f, "Despawn the ambush squad after this many second if they are still alive. Ex.: -1 -> Never Despawn)");
+            Ambush_Despawn_Unit_Timer = Config.Bind("HunterHunted", "Ambush Despawn Timer", 300f, "Despawn the ambush squad after this many second if they are still alive. Ex.: -1 -> Never Despawn");
 
 
             EnableExperienceSystem = Config.Bind("Experience", "Enable", true, "Enable/disable the the Experience System.");
@@ -171,7 +172,8 @@ namespace RPGMods
             HunterHunted.ambush_chance = Ambush_Chance.Value;
             HunterHunted.ambush_despawn_timer = Ambush_Despawn_Unit_Timer.Value;
 
-            PvP.isLadderEnabled = EnablePvPLadder.Value;
+            PvPSystem.isLadderEnabled = EnablePvPLadder.Value;
+            PvPSystem.isPvPToggleEnabled = EnablePvPToggle.Value;
             PvPSystem.announce_kills = AnnouncePvPKills.Value;
             PvPSystem.isPunishEnabled = EnablePvPPunish.Value;
             PvPSystem.PunishLevelDiff = PunishLevelDiff.Value;

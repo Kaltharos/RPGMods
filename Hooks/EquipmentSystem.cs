@@ -94,7 +94,7 @@ public class SpellLevelSystem_Spawn_Patch
                     {
                         Entity User = entityManager.GetComponentData<PlayerCharacter>(Owner).UserEntity._Entity;
                         ulong SteamID = entityManager.GetComponentData<User>(User).PlatformId;
-                        ExperienceSystem.SetLevel(Owner, SteamID);
+                        ExperienceSystem.SetLevel(Owner, User, SteamID);
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class SpellLevelSystem_Destroy_Patch
                     {
                         Entity User = entityManager.GetComponentData<PlayerCharacter>(Owner).UserEntity._Entity;
                         ulong SteamID = entityManager.GetComponentData<User>(User).PlatformId;
-                        ExperienceSystem.SetLevel(Owner, SteamID);
+                        ExperienceSystem.SetLevel(Owner, User, SteamID);
                     }
                 }
             }

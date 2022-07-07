@@ -1,4 +1,5 @@
 ﻿using ProjectM.Network;
+using RPGMods.Systems;
 using RPGMods.Utils;
 using System.Linq;
 using Unity.Entities;
@@ -9,7 +10,6 @@ namespace RPGMods.Commands
     [Command("pvp", Usage = "pvp [<on|off>]", Description = "Toggles PvP Mode for you or display your PvP statistics & the current leaders in the ladder.")]
     public static class PvP
     {
-        public static bool isLadderEnabled = false;
         public static void Initialize(Context ctx)
         {
             var user = ctx.Event.User;
@@ -27,7 +27,7 @@ namespace RPGMods.Commands
                 user.SendSystemMessage($"-- <color=#ffffffff>{CharName}</color> --");
                 user.SendSystemMessage($"K/D: <color=#ffffffff>{pvp_kd} [{pvp_kills}/{pvp_deaths}]</color>");
 
-                if (isLadderEnabled)
+                if (PvPSystem.isLadderEnabled)
                 {
                     var SortedKD = Database.pvpkd.ToList();
                     SortedKD.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
@@ -57,9 +57,14 @@ namespace RPGMods.Commands
 
                 if (ctx.Args.Length == 1)
                 {
+                    if (!PvPSystem.isPvPToggleEnabled)
+                    {
+                        Output.CustomErrorMessage(ctx, "PvP toggling is not enabled!");
+                        return;
+                    }
                     if (Helper.IsPlayerInCombat(charEntity))
                     {
-                        Utils.Output.CustomErrorMessage(ctx, $"Unable to change PvP Toggle, you are in combat!");
+                        Output.CustomErrorMessage(ctx, $"Unable to change PvP Toggle, you are in combat!");
                         return;
                     }
                     Helper.SetPvPShield(charEntity, isPvPShieldON);
@@ -72,7 +77,7 @@ namespace RPGMods.Commands
                     try
                     {
                         string name = ctx.Args[2];
-                        if (Helper.FindPlayer(name,true,out Entity targetChar, out Entity targetUser))
+                        if (Helper.FindPlayer(name,false,out Entity targetChar, out Entity targetUser))
                         {
                             Helper.SetPvPShield(targetChar, isPvPShieldON);
                             string s = isPvPShieldON ? "OFF" : "ON";

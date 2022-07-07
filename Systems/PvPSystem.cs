@@ -14,6 +14,8 @@ namespace RPGMods.Systems
     {
         public static bool announce_kills = true;
 
+        public static bool isLadderEnabled = true;
+        public static bool isPvPToggleEnabled = true;
         public static bool isPunishEnabled = true;
         public static int PunishLevelDiff = -10;
         public static float PunishDuration = 1800f;

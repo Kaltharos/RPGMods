@@ -72,8 +72,8 @@ namespace RPGMods.Systems
             if (isDatabaseEXPLog)
             {
                 if (!isLogging) return;
+                Output.SendLore(userEntity, $"<color=#ffb700ff>Weapon mastery has increased by {MasteryValue * 0.001}%</color>");
             }
-            Output.SendLore(userEntity, $"<color=#ffb700ff>Weapon mastery has increased by {MasteryValue * 0.001}%</color>");
         }
 
         public static void LoopMastery(Entity User, Entity Player)

@@ -212,6 +212,17 @@ public class BuffSystem_Spawn_Server_Patch
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
             foreach (var entity in entities)
             {
+                //var GUID = Helper.GetPrefabGUID(entity);
+                //var Name = Helper.GetPrefabName(GUID);
+                //Plugin.Logger.LogWarning($"Buff Applied: {Name}");
+                //foreach (var t in __instance.EntityManager.GetComponentTypes(entity))
+                //{
+                //    Plugin.Logger.LogWarning(
+                //        $"--{t}");
+                //}
+
+
+                //if (ExperienceSystem.isEXPActive) ExperienceSystem.BuffReceiver(entity);
                 if (PvPSystem.isPunishEnabled) PvPSystem.BuffReceiver(entity);
                 if (SiegeSystem.isSiegeBuff) SiegeSystem.BuffReceiver(entity);
             }

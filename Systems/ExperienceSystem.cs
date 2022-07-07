@@ -83,14 +83,14 @@ namespace RPGMods.Systems
                 if (exp <= 0) Database.player_experience[SteamID] = EXPGained;
                 else Database.player_experience[SteamID] = exp + EXPGained;
 
-                SetLevel(killerEntity, SteamID);
+                SetLevel(killerEntity, userEntity, SteamID);
                 bool isDatabaseEXPLog = Database.player_log_exp.TryGetValue(SteamID, out bool isLogging);
                 if (isDatabaseEXPLog)
                 {
                     if (!isLogging) return;
+                    Output.SendLore(userEntity, $"<color=#ffdd00ff>You gain {EXPGained} experience points by slaying a Lv.{UnitLevel.Level} enemy.</color>");
+                    //user.SendSystemMessage($"<color=#ffffffff>Total EXP: {player_experience[SteamID]} - Level: {level} ({getLevelProgress(SteamID)}%)</color>");
                 }
-                Output.SendLore(userEntity, $"<color=#ffdd00ff>You gain {EXPGained} experience points by slaying a Lv.{UnitLevel.Level} enemy.</color>");
-                //user.SendSystemMessage($"<color=#ffffffff>Total EXP: {player_experience[SteamID]} - Level: {level} ({getLevelProgress(SteamID)}%)</color>");
             }
         }
 
@@ -101,7 +101,7 @@ namespace RPGMods.Systems
             {
                 Database.player_experience.TryGetValue(user_component.PlatformId, out var exp);
                 Database.player_experience[user_component.PlatformId] = exp + EXPGain;
-                SetLevel(user_component.LocalCharacter._Entity, user_component.PlatformId);
+                SetLevel(user_component.LocalCharacter._Entity, user, user_component.PlatformId);
             }
         }
 
@@ -157,19 +157,48 @@ namespace RPGMods.Systems
 
             Database.player_experience[SteamID] = exp - EXPLost;
 
-            SetLevel(playerEntity, SteamID);
-            user.SendSystemMessage($"You've died, <color=#ffffffff>{EXPLostOnDeath * 100}%</color> experience is lost.");
+            SetLevel(playerEntity, userEntity, SteamID);
+            Output.SendLore(userEntity, $"You've died, <color=#ffffffff>{EXPLostOnDeath * 100}%</color> experience is lost.");
         }
 
-        public static void SetLevel(Entity entity, ulong SteamID)
+        public static void BuffReceiver(Entity buffEntity)
+        {
+            PrefabGUID GUID = entityManager.GetComponentData<PrefabGUID>(buffEntity);
+            if (GUID.Equals(Database.buff.LevelUp_Buff)) {
+                Entity Owner = entityManager.GetComponentData<EntityOwner>(buffEntity).Owner;
+                if (entityManager.HasComponent<PlayerCharacter>(Owner))
+                {
+                    LifeTime lifetime = entityManager.GetComponentData<LifeTime>(buffEntity);
+                    lifetime.Duration = 0.0001f;
+                    entityManager.SetComponentData(buffEntity, lifetime);
+                }
+            }
+        }
+
+        public static void SetLevel(Entity entity, Entity user, ulong SteamID)
         {
             if (!Database.player_experience.TryGetValue(SteamID, out int exp)) Database.player_experience[SteamID] = 0;
             float level = convertXpToLevel(Database.player_experience[SteamID]);
             if (level > MaxLevel) level = MaxLevel;
 
+            bool isLastLevel = Cache.player_level.TryGetValue(SteamID, out var level_);
+            if (isLastLevel)
+            {
+                if (level_ < level) 
+                {
+                    Cache.player_level[SteamID] = level;
+                    Helper.ApplyBuff(user, entity, Database.buff.LevelUp_Buff);
+                    Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level </color><color=#ffffffff>{level}</color><color=#ffdd00ff>!</color>");
+                }
+            }
+            else
+            {
+                Cache.player_level[SteamID] = level;
+            }
             Equipment eq_comp = entityManager.GetComponentData<Equipment>(entity);
             level = level - eq_comp.WeaponLevel._Value - eq_comp.ArmorLevel._Value;
             eq_comp.SpellLevel._Value = level;
+            
             entityManager.SetComponentData(entity, eq_comp);
         }
 

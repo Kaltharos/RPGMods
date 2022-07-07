@@ -75,6 +75,7 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, int> player_combat_ticks = new Dictionary<ulong, int>();
         public static Dictionary<ulong, int> punish_killer_offense = new Dictionary<ulong, int>();
         public static Dictionary<ulong, DateTime> punish_killer_last_offense = new Dictionary<ulong, DateTime>();
+        public static Dictionary<ulong, float> player_level = new Dictionary<ulong, float>();
     }
 
     public class Database
@@ -424,15 +425,40 @@ namespace RPGMods.Utils
             public static PrefabGUID SiegeGolem_T01 = new PrefabGUID(-148535031);
             public static PrefabGUID SiegeGolem_T02 = new PrefabGUID(914043867);
 
+            //-- LevelUp Buff
+            public static PrefabGUID LevelUp_Buff = new PrefabGUID(-1133938228);
+
+            //-- Nice Effect...
+            public static PrefabGUID AB_Undead_BishopOfShadows_ShadowSoldier_Minion_Buff = new PrefabGUID(450215391);   //-- Impair cast & movement
+
+            //-- Relic Buff
+            //[-238197495]          AB_Interact_UseRelic_Manticore_Buff
+            //[-1161197991]		    AB_Interact_UseRelic_Paladin_Buff
+
+            //-- Fun
+            public static PrefabGUID HolyNuke = new PrefabGUID(-1807398295);
+            public static PrefabGUID AB_Manticore_Flame_Buff_UNUSED = new PrefabGUID(1502566434); //-- And Dangerous~
+            public static PrefabGUID Pig_Transform_Debuff = new PrefabGUID(1356064917);
+
+            //[505018388]		    AB_Nightlurker_Rush_Buff
+
+
             //-- Possible Buff use
             public static PrefabGUID EquipBuff_Chest_Base = new PrefabGUID(1872694456);         //-- Hmm... not sure what to do with this right now...
             public static PrefabGUID Buff_VBlood_Perk_ProgTest = new PrefabGUID(1614409699);    //-- What does this do??
             public static PrefabGUID AB_BloodBuff_VBlood_0 = new PrefabGUID(20081801);          //-- Does it do anything negative...? How can i check for this, seems like it's a total blank o.o
 
             //-- Just putting it here for no reason at all...
-            public static PrefabGUID Admin_Observe_Ghost_Buff = new PrefabGUID(77473184);       //-- Not sure what to do with it
+            //public static PrefabGUID Admin_Observe_Ghost_Buff = new PrefabGUID(77473184);       //-- Not sure what to do with it
+            //[1258181143]		    AB_Undead_Priest_Elite_RaiseHorde_Minion_Buff
+            //[1502566434]		    AB_Manticore_Flame_Buff_UNUSED
+            //[-1133938228]		    AB_Town_Priest_HealBomb_Buff        //-- Good Heal Effect
+            //[-225445080]          AB_Nun_AoE_ApplyLight_Buff          //-- Low Healing Effect
+            //[-2115732274]		    AB_Manticore_Flying_Buff
 
-            
+            //[-474441982]		    Buff_General_Teleport_Travel        //-- Usefull for imprissoning someone?
+
+
         }
     }
 }

@@ -16,6 +16,7 @@ namespace RPGMods.Commands
             var CharName = user.CharacterName.ToString();
             var SteamID = user.PlatformId;
             var PlayerCharacter = ctx.Event.SenderCharacterEntity;
+            var UserEntity = ctx.Event.SenderUserEntity;
 
             if (!ExperienceSystem.isEXPActive)
             {
@@ -35,6 +36,7 @@ namespace RPGMods.Commands
                             CharName = name;
                             SteamID = entityManager.GetComponentData<User>(targetUserEntity).PlatformId;
                             PlayerCharacter = targetEntity;
+                            UserEntity = targetUserEntity;
                         }
                         else
                         {
@@ -43,7 +45,7 @@ namespace RPGMods.Commands
                         }
                     }
                     Database.player_experience[SteamID] = value;
-                    ExperienceSystem.SetLevel(PlayerCharacter, SteamID);
+                    ExperienceSystem.SetLevel(PlayerCharacter, UserEntity, SteamID);
                     user.SendSystemMessage($"Player \"{CharName}\" Experience is now set to be <color=#ffffffff>{ExperienceSystem.getXp(SteamID)}</color>");
                 }
                 else if (ctx.Args[0].ToLower().Equals("log"))

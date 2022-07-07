@@ -62,7 +62,9 @@ Set a waypoint limit per user.
 - `Announce PvP Kills` [default `true`]\
 Do I really need to explain this...?
 - `Enable the PvP Ladder` [default `true`]\
-Hmm... well it enables the ladder board in .pvp command
+Hmm... well it enables the ladder board in .pvp command.
+- `Enable PvP Toggle` [default `true`]\
+Enable/disable the pvp toggle feature in the pvp command.
 - `Enable PvP Punishment` [default `true`]\
 Enables the punishment system for killing lower level player.
 - `Punish Level Difference` [default `-10`]\
@@ -104,6 +106,8 @@ Set every how many seconds should the cooldown interval trigger.
 Set how many seconds player can be ambushed again since last ambush.
 - `Ambush Chance` [default `50`]\
 Set the percentage that an ambush may occur for every cooldown interval.
+- `Ambush Despawn Timer` [default `300`]\
+Despawn the ambush squad after this many second if they are still alive. Ex.: -1 -> Never Despawn.
 
 </details>
 
@@ -451,6 +455,11 @@ This command may still be used even when punishment system is disabled.\
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.2.3`
+- Added level up effect & notification for the experience system.
+- Added config to disable PvP toggling in the pvp command.
+- Changed the default exp & mastery feed to be off instead of on.
 
 `0.2.2`
 - Fixed some stats being bugged in the mastery system.

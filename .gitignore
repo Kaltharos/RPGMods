@@ -5,7 +5,9 @@
 
 # Specific file
 /Commands/debug.cs
+/Commands/buff.cs
 /Commands/BuffList.cs
+/Systems/Experimental.cs
 
 # User-specific files
 *.rsuser

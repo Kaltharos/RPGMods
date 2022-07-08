@@ -163,6 +163,7 @@ namespace RPGMods
 
             //-- Apply configs
             CommandHandler.delay_Cooldown = DelayedCommands.Value;
+            Waypoint.WaypointLimit = WaypointLimit.Value;
 
             HunterHunted.isActive = HunterHuntedEnabled.Value;
             HunterHunted.heat_cooldown = HeatCooldown.Value;

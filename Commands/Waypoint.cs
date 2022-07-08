@@ -52,7 +52,7 @@ namespace RPGMods.Commands
                     }
                     if (!global)
                     {
-                        if (Database.waypoints_owned.TryGetValue(SteamID, out var total))
+                        if (Database.waypoints_owned.TryGetValue(SteamID, out var total) && !ctx.Event.User.IsAdmin)
                         {
                             if (total >= WaypointLimit)
                             {

@@ -23,7 +23,7 @@ namespace RPGMods.Commands
 
             if (ctx.Args.Length > 1)
             {
-                if (ctx.Args[0].ToLower().Equals("set") && ctx.Args.Length == 3)
+                if (ctx.Args[0].ToLower().Equals("set") && ctx.Args.Length >= 3)
                 {
                     if (!ctx.Event.User.IsAdmin) return;
                     if (int.TryParse(ctx.Args[2], out int value))
@@ -47,15 +47,16 @@ namespace RPGMods.Commands
                                 return;
                             }
                         }
-                        if (ctx.Args[1].ToLower().Equals("sword")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Sword, value);
-                        else if (ctx.Args[1].ToLower().Equals("none")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.None, value);
-                        else if (ctx.Args[1].ToLower().Equals("spear")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Spear, value);
-                        else if (ctx.Args[1].ToLower().Equals("crossbow")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Crossbow, value);
-                        else if (ctx.Args[1].ToLower().Equals("slashers")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Slashers, value);
-                        else if (ctx.Args[1].ToLower().Equals("scythe")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Scythe, value);
-                        else if (ctx.Args[1].ToLower().Equals("fishingpole")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.FishingPole, value);
-                        else if (ctx.Args[1].ToLower().Equals("mace")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Mace, value);
-                        else if (ctx.Args[1].ToLower().Equals("axes")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Axes, value);
+                        string MasteryType = ctx.Args[1].ToLower();
+                        if (MasteryType.Equals("sword")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Sword, value);
+                        else if (MasteryType.Equals("none")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.None, value);
+                        else if (MasteryType.Equals("spear")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Spear, value);
+                        else if (MasteryType.Equals("crossbow")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Crossbow, value);
+                        else if (MasteryType.Equals("slashers")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Slashers, value);
+                        else if (MasteryType.Equals("scythe")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Scythe, value);
+                        else if (MasteryType.Equals("fishingpole")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.FishingPole, value);
+                        else if (MasteryType.Equals("mace")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Mace, value);
+                        else if (MasteryType.Equals("axes")) WeaponMasterSystem.SetMastery(SteamID, WeaponType.Axes, value);
                         else 
                         {
                             Output.InvalidArguments(ctx);
@@ -102,15 +103,15 @@ namespace RPGMods.Commands
                 }
 
                 ctx.Event.User.SendSystemMessage("-- <color=#ffffffff>Weapon Mastery</color> --");
-                ctx.Event.User.SendSystemMessage($"Sword: <color=#ffffffff>{(double)MasteryData.Sword * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, SPL <color=#75FF33FF>↑</color>)");
-                ctx.Event.User.SendSystemMessage($"Spear: <color=#ffffffff>{(double)MasteryData.Spear * 0.001}%</color> (ATK <color=#75FF33FF>↑↑</color>)");
-                ctx.Event.User.SendSystemMessage($"Axes: <color=#ffffffff>{(double)MasteryData.Axes * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, HP <color=#75FF33FF>↑</color>)");
-                ctx.Event.User.SendSystemMessage($"Scythe: <color=#ffffffff>{(double)MasteryData.Scythe * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, CRIT <color=#75FF33FF>↑</color>)");
-                ctx.Event.User.SendSystemMessage($"Slashers: <color=#ffffffff>{(double)MasteryData.Slashers * 0.001}%</color> (CRIT <color=#75FF33FF>↑</color>, MOV <color=#75FF33FF>↑</color>)");
-                ctx.Event.User.SendSystemMessage($"Mace: <color=#ffffffff>{(double)MasteryData.Mace * 0.001}%</color> (HP <color=#75FF33FF>↑↑</color>)");
-                ctx.Event.User.SendSystemMessage($"None: <color=#ffffffff>{(double)MasteryData.None * 0.001}%</color> (ATK <color=#75FF33FF>↑↑</color>, MOV <color=#75FF33FF>↑↑</color>)");
-                ctx.Event.User.SendSystemMessage($"Spell: <color=#ffffffff>{(double)MasteryData.Spell * 0.001}%</color> (CD <color=#75FF33FF>↓↓</color>)");
-                ctx.Event.User.SendSystemMessage($"Crossbow: <color=#ffffffff>{(double)MasteryData.Crossbow * 0.001}%</color> (CRIT <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Sword:<color=#ffffffff> {(double)MasteryData.Sword * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, SPL <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Spear:<color=#ffffffff> {(double)MasteryData.Spear * 0.001}%</color> (ATK <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Axes:<color=#ffffffff> {(double)MasteryData.Axes * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, HP <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Scythe:<color=#ffffffff> {(double)MasteryData.Scythe * 0.001}%</color> (ATK <color=#75FF33FF>↑</color>, CRIT <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Slashers:<color=#ffffffff> {(double)MasteryData.Slashers * 0.001}%</color> (CRIT <color=#75FF33FF>↑</color>, MOV <color=#75FF33FF>↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Mace:<color=#ffffffff> {(double)MasteryData.Mace * 0.001}%</color> (HP <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"None:<color=#ffffffff> {(double)MasteryData.None * 0.001}%</color> (ATK <color=#75FF33FF>↑↑</color>, MOV <color=#75FF33FF>↑↑</color>)");
+                ctx.Event.User.SendSystemMessage($"Spell:<color=#ffffffff> {(double)MasteryData.Spell * 0.001}%</color> (CD <color=#75FF33FF>↓↓</color>)");
+                ctx.Event.User.SendSystemMessage($"Crossbow:<color=#ffffffff> {(double)MasteryData.Crossbow * 0.001}%</color> (CRIT <color=#75FF33FF>↑↑</color>)");
                 //ctx.Event.User.SendSystemMessage($"Fishing Pole: <color=#ffffffff>{(double)MasteryData.FishingPole * 0.001}%</color> (??? ↑↑)");
             }
         }

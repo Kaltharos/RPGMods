@@ -456,6 +456,13 @@ This command may still be used even when punishment system is disabled.\
 <details>
 <summary>Changelog</summary>
 
+`0.2.4`
+- Modified the save command to also force the server to save game.
+- Modified the level up chat notification to be on/off according to the .xp log command.
+- Fixed the waypoint bug, admin will ignore the limit properly now, and config for waypoint is properly set.
+- Fixed bug with .mastery set command not being able to set other player mastery.
+- TBA
+
 `0.2.3`
 - Added level up effect & notification for the experience system.
 - Added config to disable PvP toggling in the pvp command.

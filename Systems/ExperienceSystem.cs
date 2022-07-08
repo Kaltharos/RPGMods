@@ -158,7 +158,7 @@ namespace RPGMods.Systems
             Database.player_experience[SteamID] = exp - EXPLost;
 
             SetLevel(playerEntity, userEntity, SteamID);
-            Output.SendLore(userEntity, $"You've died, <color=#ffffffff>{EXPLostOnDeath * 100}%</color> experience is lost.");
+            Output.SendLore(userEntity, $"You've died,<color=#ffffffff> {EXPLostOnDeath * 100}%</color> experience is lost.");
         }
 
         public static void BuffReceiver(Entity buffEntity)
@@ -188,7 +188,13 @@ namespace RPGMods.Systems
                 {
                     Cache.player_level[SteamID] = level;
                     Helper.ApplyBuff(user, entity, Database.buff.LevelUp_Buff);
-                    Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level </color><color=#ffffffff>{level}</color><color=#ffdd00ff>!</color>");
+                    bool isDatabaseEXPLog = Database.player_log_exp.TryGetValue(SteamID, out bool isLogging);
+                    if (isDatabaseEXPLog)
+                    {
+                        if (!isLogging) return;
+                        Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level</color><color=#ffffffff> {level}</color><color=#ffdd00ff>!</color>");
+                    }
+                    
                 }
             }
             else

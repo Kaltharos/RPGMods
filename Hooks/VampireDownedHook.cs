@@ -30,11 +30,20 @@ namespace RPGMods.Hooks
                 //Prefab_Name = Helper.GetPrefabName(GUID);
                 //Plugin.Logger.LogWarning($"2 Depth - eID: {GUID.GetHashCode()} | eC: {Prefab_Name}");
 
+                //-- Update PvP Stats & Check
                 if (em.HasComponent<PlayerCharacter>(Killer) && em.HasComponent<PlayerCharacter>(Victim) && !Killer.Equals(Victim))
                 {
                     PvPSystem.Monitor(Killer, Victim);
                     if (PvPSystem.isPunishEnabled) PvPSystem.PunishCheck(Killer, Victim);
                 }
+                //-- ------------------------
+
+                //-- Reduce EXP on Death by Mob/Suicide
+                if (em.HasComponent<PlayerCharacter>(Victim) && (!em.HasComponent<PlayerCharacter>(Killer) || Killer.Equals(Victim)))
+                {
+                    ExperienceSystem.LoseEXP(Victim);
+                }
+                //-- ----------------------------------
             }
         }
     }

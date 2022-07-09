@@ -27,7 +27,7 @@ namespace RPGMods.Hooks
                 }
                 //ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire \"{userComponent.CharacterName.ToString()}\" has awaken!");
             }
-            Output.SendLore(userEntity, "<color=#ffffffff>Welcome to our world! Please type the .help command to check out our custom commands and features!</color>");
+            //Output.SendLore(userEntity, "<color=#ffffffff>Welcome to our world! Please type the .help command to check out our custom commands and features!</color>");
         }
     }
 

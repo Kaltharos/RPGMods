@@ -9,7 +9,7 @@ using Wetstone.API;
 
 namespace RPGMods.Commands
 {
-    [Command("help, h", Usage = "help", Description = "Shows a list of commands")]
+    [Command("help, h", Usage = "help [<command>]", Description = "Shows a list of commands, or details about a command.")]
     public static class Help
     {
         public static void Initialize(Context ctx)
@@ -28,15 +28,21 @@ namespace RPGMods.Commands
                     string description = type.GetAttributeValue((CommandAttribute cmd) => cmd.Description);
                     CommandHandler.Permissions.TryGetValue(aliases[0], out bool adminOnly);
 
+                    if (adminOnly && !ctx.Event.User.IsAdmin)
+                    {
+                        ctx.Event.User.SendSystemMessage($"Specified command not found.");
+                        return;
+                    }
                     ctx.Event.User.SendSystemMessage($"Help for <color=#00ff00ff>{ctx.Prefix}{aliases.First()}</color>");
                     ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Aliases: {string.Join(", ", aliases)}</color>");
-                    if (adminOnly) ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Description: <color=#ff0000ff>[ADMIN]</color> {description}</color>");
-                    else ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Description: {description}</color>");
+                    ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Description: {description}</color>");
                     ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Usage: {ctx.Prefix}{usage}</color>");
+                    return;
                 }
                 else
                 {
                     ctx.Event.User.SendSystemMessage($"Specified command not found.");
+                    return;
                 }
             }
             catch

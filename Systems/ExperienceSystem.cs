@@ -158,7 +158,7 @@ namespace RPGMods.Systems
             Database.player_experience[SteamID] = exp - EXPLost;
 
             SetLevel(playerEntity, userEntity, SteamID);
-            Output.SendLore(userEntity, $"You've died,<color=#ffffffff> {EXPLostOnDeath * 100}%</color> experience is lost.");
+            Output.SendLore(userEntity, $"You've been defeated,<color=#ffffffff> {EXPLostOnDeath * 100}%</color> experience is lost.");
         }
 
         public static void BuffReceiver(Entity buffEntity)

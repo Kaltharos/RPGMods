@@ -20,7 +20,7 @@ namespace RPGMods.Commands
 
             if (!ExperienceSystem.isEXPActive)
             {
-                Utils.Output.CustomErrorMessage(ctx, "Experience system is not enabled.");
+                Output.CustomErrorMessage(ctx, "Experience system is not enabled.");
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace RPGMods.Commands
                     }
                     Database.player_experience[SteamID] = value;
                     ExperienceSystem.SetLevel(PlayerCharacter, UserEntity, SteamID);
-                    user.SendSystemMessage($"Player \"{CharName}\" Experience is now set to be <color=#ffffffff>{ExperienceSystem.getXp(SteamID)}</color>");
+                    user.SendSystemMessage($"Player \"{CharName}\" Experience is now set to be<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>");
                 }
                 else if (ctx.Args[0].ToLower().Equals("log"))
                 {
@@ -74,8 +74,8 @@ namespace RPGMods.Commands
                 int userLevel = ExperienceSystem.getLevel(SteamID);
                 user.SendSystemMessage($"-- <color=#ffffffff>{CharName}</color> --");
                 user.SendSystemMessage(
-                    $"Level: <color=#ffffffff>{userLevel}</color>  (<color=#ffffffff>{ExperienceSystem.getLevelProgress(SteamID)}%</color>) " +
-                    $" [ XP: <color=#ffffffff>{ExperienceSystem.getXp(SteamID)}</color>/<color=#ffffffff>{ExperienceSystem.convertLevelToXp(userLevel + 1)}</color> ]");
+                    $"Level:<color=#ffffffff> {userLevel}</color> (<color=#ffffffff>{ExperienceSystem.getLevelProgress(SteamID)}%</color>) " +
+                    $" [ XP:<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>/<color=#ffffffff>{ExperienceSystem.convertLevelToXp(userLevel + 1)}</color> ]");
             }
         }
     }

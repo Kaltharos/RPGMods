@@ -461,7 +461,9 @@ This command may still be used even when punishment system is disabled.\
 - Modified the level up chat notification to be on/off according to the .xp log command.
 - Fixed the waypoint bug, admin will ignore the limit properly now, and config for waypoint is properly set.
 - Fixed bug with .mastery set command not being able to set other player mastery.
-- TBA
+- Moved EXP lost on death to downed event to avoid people suiciding after pvp and losing exp.
+- Attempt to fix rare broken string that is totally unknown how it can occurs.
+- Commands `.help [<command>]` will no longer show details if the user doesn't have sufficient priviledge.
 
 `0.2.3`
 - Added level up effect & notification for the experience system.

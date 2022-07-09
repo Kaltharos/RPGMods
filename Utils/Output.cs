@@ -61,5 +61,38 @@ namespace RPGMods.Utils
 
             em.SetComponentData(entity, ev);
         }
+
+        //-- Not Really Functional/Usefull?
+        public static void SendRegion(Entity userEntity, string message)
+        {
+            EntityManager em = VWorld.Server.EntityManager;
+            int index = em.GetComponentData<User>(userEntity).Index;
+            NetworkId id = em.GetComponentData<NetworkId>(userEntity);
+
+            var entity = em.CreateEntity(
+                ComponentType.ReadOnly<NetworkEventType>(),
+                ComponentType.ReadOnly<SendEventToUser>(),
+                ComponentType.ReadOnly<ChatMessageServerEvent>()
+            );
+
+            var ev = new ChatMessageServerEvent();
+            ev.MessageText = message;
+            ev.MessageType = ServerChatMessageType.Region;
+            ev.FromUser = id;
+            ev.TimeUTC = DateTime.Now.ToFileTimeUtc();
+
+            em.SetComponentData<SendEventToUser>(entity, new()
+            {
+                UserIndex = index
+            });
+            em.SetComponentData<NetworkEventType>(entity, new()
+            {
+                EventId = NetworkEvents.EventId_ChatMessageServerEvent,
+                IsAdminEvent = false,
+                IsDebugEvent = false
+            });
+
+            em.SetComponentData(entity, ev);
+        }
     }
 }

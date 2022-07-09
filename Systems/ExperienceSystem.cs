@@ -191,8 +191,7 @@ namespace RPGMods.Systems
                     bool isDatabaseEXPLog = Database.player_log_exp.TryGetValue(SteamID, out bool isLogging);
                     if (isDatabaseEXPLog)
                     {
-                        if (!isLogging) return;
-                        Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level</color><color=#ffffffff> {level}</color><color=#ffdd00ff>!</color>");
+                        if (isLogging) Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level</color><color=#ffffffff> {level}</color><color=#ffdd00ff>!</color>");
                     }
                     
                 }

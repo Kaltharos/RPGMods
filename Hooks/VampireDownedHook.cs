@@ -41,7 +41,7 @@ namespace RPGMods.Hooks
                 //-- Reduce EXP on Death by Mob/Suicide
                 if (em.HasComponent<PlayerCharacter>(Victim) && (!em.HasComponent<PlayerCharacter>(Killer) || Killer.Equals(Victim)))
                 {
-                    ExperienceSystem.LoseEXP(Victim);
+                    if (ExperienceSystem.isEXPActive) ExperienceSystem.LoseEXP(Victim);
                 }
                 //-- ----------------------------------
             }

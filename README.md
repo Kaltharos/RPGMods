@@ -456,6 +456,9 @@ This command may still be used even when punishment system is disabled.\
 <details>
 <summary>Changelog</summary>
 
+`0.2.5`
+- Emergency patch release to fix that losing exp on death is still active even when the exp system is disabled.
+
 `0.2.4`
 - Modified the save command to also force the server to save game.
 - Modified the level up chat notification to be on/off according to the .xp log command.

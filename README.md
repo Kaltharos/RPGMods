@@ -454,7 +454,7 @@ Manage commands and user permissions level.
 &ensp;&ensp;**Example:** `permission save` -> Save the most recent user permission list.\
 &ensp;&ensp;**Example:** `permission reload` -> Directly reload user permission and command permission from the JSON file.\
 &ensp;&ensp;**Example:** `permission set 100 LegendaryVampire`\
-&ensp;&ensp;**Example:** `permission set 0 LegendaryVampire`\
+&ensp;&ensp;**Example:** `permission set 0 LegendaryVampire`
 
 </details>
 
@@ -467,7 +467,7 @@ Check the status of specified player, or ban them. 0 days will translate to perm
 `unban <playername>`\
 Remove the specified player from the ban list.
 
-<details>
+</details>
 
 <details>
 <summary>kick</summary>

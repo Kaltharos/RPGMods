@@ -54,7 +54,7 @@ and 100 as the highest permission (admin).
 
 ## Custom Ban System
 You can now ban a player for the specified duration in days using the .ban/.unban command.\
-`WARNING` if you remove RPGMods all the banned user will no longer be banned!
+`WARNING` if you remove RPGMods all the banned user via the chat command will no longer be banned!
 
 ## Config
 <details>

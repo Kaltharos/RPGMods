@@ -140,8 +140,26 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
         Id = ModificationId.NewId(0)
     };
 
+    private static ModifyUnitStatBuff_DOTS MaxYield = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.ResourceYield,
+        Value = 10,
+        ModificationType = ModificationType.Multiply,
+        Id = ModificationId.NewId(0)
+    };
+
+    private static ModifyUnitStatBuff_DOTS DurabilityLoss = new ModifyUnitStatBuff_DOTS()
+    {
+        StatType = UnitStatType.ReducedResourceDurabilityLoss,
+        Value = -10000,
+        ModificationType = ModificationType.Add,
+        Id = ModificationId.NewId(0)
+    };
+
     private static void Prefix(ModifyUnitStatBuffSystem_Spawn __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         EntityManager entityManager = __instance.EntityManager;
         NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 
@@ -191,11 +209,11 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
                     Buffer.Add(SPResist);
                     Buffer.Add(PPower);
                     Buffer.Add(SPPower);
-                    //Buffer.Add(PHRegen);
-                    //Buffer.Add(HRecovery);
+                    Buffer.Add(MaxYield);
                     Buffer.Add(MaxHP);
                     Buffer.Add(Hazard);
                     Buffer.Add(SunCharge);
+                    Buffer.Add(DurabilityLoss);
                 }
             }
         }
@@ -207,6 +225,8 @@ public class BuffSystem_Spawn_Server_Patch
 {
     private static void Prefix(BuffSystem_Spawn_Server __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (PvPSystem.isPunishEnabled || SiegeSystem.isSiegeBuff)
         {
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
@@ -231,6 +251,8 @@ public class BuffSystem_Spawn_Server_Patch
 
     private static void Postfix(BuffSystem_Spawn_Server __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (HunterHunted.isActive || WeaponMasterSystem.isMasteryEnabled)
         {
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);

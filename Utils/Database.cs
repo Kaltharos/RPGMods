@@ -60,6 +60,22 @@ namespace RPGMods.Utils
         }
     }
 
+    public struct BanData
+    {
+        public DateTime BanUntil { get; set; }
+        public string Reason { get; set; }
+        public string BannedBy { get; set; }
+        public ulong SteamID { get; set; }
+
+        public BanData(DateTime banUntil = default(DateTime), string reason = "Invalid", string bannedBy = "Default", ulong steamID = 0)
+        {
+            BanUntil = banUntil;
+            Reason = reason;
+            BannedBy = bannedBy;
+            SteamID = steamID;
+        }
+    }
+
     public class Cache
     {
         //-- Cache (Wiped on plugin reload, server restart, and shutdown.)
@@ -102,6 +118,11 @@ namespace RPGMods.Utils
         public static Dictionary<string, WaypointData> globalWaypoint { get; set; }
         public static Dictionary<string, WaypointData> waypoints { get; set; }
         public static Dictionary<ulong, int> waypoints_owned { get; set; }
+        public static Dictionary<ulong, int> user_permission { get; set; }
+        public static Dictionary<string, int> command_permission { get; set; }
+
+        //-- -- Ban System
+        public static Dictionary<ulong, BanData> user_banlist { get; set; }
 
         //-- -- EXP System
         public static Dictionary<ulong, int> player_experience { get; set; }
@@ -404,23 +425,23 @@ namespace RPGMods.Utils
         {
             public static PrefabGUID WolfStygian = new PrefabGUID(-1158884666);
             public static PrefabGUID WolfNormal = new PrefabGUID(-351718282);
+            public static PrefabGUID BatForm = new PrefabGUID(1205505492);
+            public static PrefabGUID NormalForm = new PrefabGUID(1352541204);
+            public static PrefabGUID RatForm = new PrefabGUID(902394170);
+
+            public static PrefabGUID DownedBuff = new PrefabGUID(-1992158531);
             public static PrefabGUID BloodSight = new PrefabGUID(1199823151);
 
             public static PrefabGUID InCombat = new PrefabGUID(581443919);
             public static PrefabGUID InCombat_PvP = new PrefabGUID(697095869);
             public static PrefabGUID OutofCombat = new PrefabGUID(897325455);                   //-- Question, where can I intercept the Buff_OutOfCombat??
-
             public static PrefabGUID BloodMoon = new PrefabGUID(-560523291);
-            public static PrefabGUID PerkMoose = new PrefabGUID(-1464851863);
-            public static PrefabGUID BatForm = new PrefabGUID(1205505492);
-            public static PrefabGUID NormalForm = new PrefabGUID(1352541204);
-            public static PrefabGUID RatForm = new PrefabGUID(902394170);
-            public static PrefabGUID DownedBuff = new PrefabGUID(-1992158531);
 
-            public static PrefabGUID Severe_GarlicDebuff = new PrefabGUID(1582196539);
+            public static PrefabGUID Severe_GarlicDebuff = new PrefabGUID(1582196539);          //-- Using this for PvP Punishment debuff
             public static PrefabGUID General_GarlicDebuff = new PrefabGUID(-1701323826);
 
             public static PrefabGUID Buff_VBlood_Perk_Moose = new PrefabGUID(-1464851863);      //-- Using this for commands & mastery buff
+            public static PrefabGUID PerkMoose = new PrefabGUID(-1464851863);
 
             public static PrefabGUID SiegeGolem_T01 = new PrefabGUID(-148535031);
             public static PrefabGUID SiegeGolem_T02 = new PrefabGUID(914043867);
@@ -434,6 +455,7 @@ namespace RPGMods.Utils
             //-- Relic Buff
             //[-238197495]          AB_Interact_UseRelic_Manticore_Buff
             //[-1161197991]		    AB_Interact_UseRelic_Paladin_Buff
+            //[-1703886455]		    AB_Interact_UseRelic_Behemoth_Buff
 
             //-- Fun
             public static PrefabGUID HolyNuke = new PrefabGUID(-1807398295);

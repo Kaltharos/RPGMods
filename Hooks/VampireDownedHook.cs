@@ -12,6 +12,8 @@ namespace RPGMods.Hooks
     {
         public static void Postfix(VampireDownedServerEventSystem __instance)
         {
+            if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
             EntityManager em = __instance.EntityManager;
             var EventsQuery = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
 

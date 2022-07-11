@@ -36,7 +36,8 @@ namespace RPGMods.Commands
                 bool global = false;
                 if (ctx.Args.Length > 2)
                 {
-                    if (ctx.Args[2].ToLower().Equals("true") && ctx.Event.User.IsAdmin) global = true;
+                    var args_2nd = ctx.Args[2].ToLower();
+                    if ((args_2nd.Equals("true") || args_2nd.Equals("global")) && ctx.Event.User.IsAdmin) global = true;
                     else
                     {
                         Output.CustomErrorMessage(ctx, "You do not have permission to edit a global waypoint.");

@@ -14,6 +14,8 @@ public class ArmorLevelSystem_Spawn_Patch
 {
     private static void Prefix(ArmorLevelSystem_Spawn __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (ExperienceSystem.isEXPActive)
         {
             EntityManager entityManager = __instance.EntityManager;
@@ -33,6 +35,8 @@ public class WeaponLevelSystem_Spawn_Patch
 {
     private static void Prefix(WeaponLevelSystem_Spawn __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (ExperienceSystem.isEXPActive || WeaponMasterSystem.isMasteryEnabled)
         {
             EntityManager entityManager = __instance.EntityManager;
@@ -66,6 +70,8 @@ public class SpellLevelSystem_Spawn_Patch
 {
     private static void Prefix(SpellLevelSystem_Spawn __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (ExperienceSystem.isEXPActive)
         {
             EntityManager entityManager = __instance.EntityManager;
@@ -81,6 +87,8 @@ public class SpellLevelSystem_Spawn_Patch
 
     private static void Postfix(SpellLevelSystem_Spawn __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (ExperienceSystem.isEXPActive)
         {
             EntityManager entityManager = __instance.EntityManager;
@@ -107,6 +115,8 @@ public class SpellLevelSystem_Destroy_Patch
 {
     private static void Prefix(SpellLevelSystem_Destroy __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (ExperienceSystem.isEXPActive)
         {
             EntityManager entityManager = __instance.EntityManager;
@@ -122,6 +132,8 @@ public class SpellLevelSystem_Destroy_Patch
 
     private static void Postfix(SpellLevelSystem_Destroy __instance)
     {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
         if (ExperienceSystem.isEXPActive)
         {
             EntityManager entityManager = __instance.EntityManager;

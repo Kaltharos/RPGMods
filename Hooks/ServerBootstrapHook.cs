@@ -13,21 +13,24 @@ namespace RPGMods.Hooks
     {
         public static void Postfix(ServerBootstrapSystem __instance, NetConnectionId netConnectionId)
         {
-            var em = __instance.EntityManager;
-            var userIndex = __instance._NetEndPointToApprovedUserIndex[netConnectionId];
-            var serverClient = __instance._ApprovedUsersLookup[userIndex];
-            var userEntity = serverClient.UserEntity;
-            var userData = __instance.EntityManager.GetComponentData<User>(userEntity);
-            bool isNewVampire = userData.CharacterName.IsEmpty;
-            if (!isNewVampire)
+            try
             {
-                if (WeaponMasterSystem.isDecaySystemEnabled && WeaponMasterSystem.isMasteryEnabled)
+                var em = __instance.EntityManager;
+                var userIndex = __instance._NetEndPointToApprovedUserIndex[netConnectionId];
+                var serverClient = __instance._ApprovedUsersLookup[userIndex];
+                var userEntity = serverClient.UserEntity;
+                var userData = __instance.EntityManager.GetComponentData<User>(userEntity);
+                bool isNewVampire = userData.CharacterName.IsEmpty;
+
+                if (!isNewVampire)
                 {
-                    WeaponMasterSystem.DecayMastery(userEntity);
+                    if (WeaponMasterSystem.isDecaySystemEnabled && WeaponMasterSystem.isMasteryEnabled)
+                    {
+                        WeaponMasterSystem.DecayMastery(userEntity);
+                    }
                 }
-                //ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire \"{userComponent.CharacterName.ToString()}\" has awaken!");
             }
-            //Output.SendLore(userEntity, "<color=#ffffffff>Welcome to our world! Please type the .help command to check out our custom commands and features!</color>");
+            catch { }
         }
     }
 
@@ -36,20 +39,55 @@ namespace RPGMods.Hooks
     {
         private static void Prefix(ServerBootstrapSystem __instance, NetConnectionId netConnectionId, ConnectionStatusChangeReason connectionStatusReason, string extraData)
         {
-            if (connectionStatusReason != ConnectionStatusChangeReason.IncorrectPassword)
+            bool process = true;
+            switch (connectionStatusReason)
             {
-                var userIndex = __instance._NetEndPointToApprovedUserIndex[netConnectionId];
-                var serverClient = __instance._ApprovedUsersLookup[userIndex];
-                var userData = __instance.EntityManager.GetComponentData<User>(serverClient.UserEntity);
-                bool isNewVampire = userData.CharacterName.IsEmpty;
-                if (!isNewVampire)
+                case ConnectionStatusChangeReason.IncorrectPassword:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.Unknown:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.NoFreeSlots:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.ServerError:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.ServerFull:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.ServerShutdown:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.ServerStartingUp:
+                    process = false;
+                    break;
+                case ConnectionStatusChangeReason.Banned:
+                    process = false;
+                    break;
+                default:
+                    process = true;
+                    break;
+            }
+            if (process)
+            {
+                try
                 {
-                    if (WeaponMasterSystem.isDecaySystemEnabled)
+                    var userIndex = __instance._NetEndPointToApprovedUserIndex[netConnectionId];
+                    var serverClient = __instance._ApprovedUsersLookup[userIndex];
+                    var userData = __instance.EntityManager.GetComponentData<User>(serverClient.UserEntity);
+                    bool isNewVampire = userData.CharacterName.IsEmpty;
+
+                    if (!isNewVampire)
                     {
-                        Database.player_decaymastery_logout[userData.PlatformId] = DateTime.Now;
-                        //Plugin.Logger.LogWarning($"Player {userData.CharacterName} Logged Out. [{Database.player_decaymastery_logout[userData.PlatformId]}]");
+                        if (WeaponMasterSystem.isDecaySystemEnabled)
+                        {
+                            Database.player_decaymastery_logout[userData.PlatformId] = DateTime.Now;
+                        }
                     }
                 }
+                catch { };
             }
         }
     }

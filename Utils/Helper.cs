@@ -80,6 +80,38 @@ namespace RPGMods.Utils
             return new PrefabGUID(0);
         }
 
+        public static void KickPlayer(Entity userEntity)
+        {
+            EntityManager em = VWorld.Server.EntityManager;
+            var userData = em.GetComponentData<User>(userEntity);
+            int index = userData.Index;
+            NetworkId id = em.GetComponentData<NetworkId>(userEntity);
+
+            var entity = em.CreateEntity(
+                ComponentType.ReadOnly<NetworkEventType>(),
+                ComponentType.ReadOnly<SendEventToUser>(),
+                ComponentType.ReadOnly<KickEvent>()
+            );
+
+            var KickEvent = new KickEvent()
+            {
+                PlatformId = userData.PlatformId
+            };
+
+            em.SetComponentData<SendEventToUser>(entity, new()
+            {
+                UserIndex = index
+            });
+            em.SetComponentData<NetworkEventType>(entity, new()
+            {
+                EventId = NetworkEvents.EventId_KickEvent,
+                IsAdminEvent = false,
+                IsDebugEvent = false
+            });
+
+            em.SetComponentData(entity, KickEvent);
+        }
+
         public static Entity AddItemToInventory(Context ctx, PrefabGUID guid, int amount)
         {
             unsafe

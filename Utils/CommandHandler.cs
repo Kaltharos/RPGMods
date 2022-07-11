@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using BepInEx.Logging;
+using RPGMods.Systems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,14 +44,18 @@ namespace RPGMods.Utils
                 ev.Cancel();
 
                 string command = ev.Message.Split(' ')[0].Remove(0, 1).ToLower();
-                if (DisabledCommands.Split(',').Any(x => x.ToLower() == command)) continue;
-                if (!NameExists(type, command)) continue;
-                
-                Permissions.TryGetValue(command, out bool isAdminOnly);
-                if (IsNotAdmin(type, ev, isAdminOnly))
+                if (!NameExists(type, command, out var primary)) continue;
+                if (DisabledCommands.Split(',').Any(x => x.ToLower() == primary)) continue;
+
+                if (!ev.User.IsAdmin)
                 {
-                    ev.User.SendSystemMessage($"<color=#ff0000ff>You do not have the required permissions to use that.</color>");
-                    return;
+                    var userSteamID = ev.User.PlatformId;
+                    if (!Database.command_permission.TryGetValue(primary, out var commandPermission)) commandPermission = 100;
+                    if (PermissionSystem.GetUserPermission(userSteamID) < commandPermission)
+                    {
+                        ev.User.SendSystemMessage($"<color=#ff0000ff>You do not have the required permissions to use that.</color>");
+                        return;
+                    }
                 }
 
                 Cache.command_Cooldown.TryGetValue(ev.User.PlatformId, out float last_Command);
@@ -63,48 +68,21 @@ namespace RPGMods.Utils
                 Cache.command_Cooldown[ev.User.PlatformId] = getCurrentTime + delay_Cooldown;
                 var cmd = type.GetMethod("Initialize");
                 cmd.Invoke(null, new[] { new Context(Prefix, ev, Log, config, args, DisabledCommands) });
-
-                Log.LogInfo($"[CommandHandler] {ev.User.CharacterName} used command: {command.ToLower()}");
                 return;
             }
             Output.InvalidCommand(ev);
         }
 
-        private bool NameExists(Type type, string command)
+        private bool NameExists(Type type, string command, out string primary)
         {
+            primary = "invalid";
             List<string> aliases = type.GetAttributeValue((CommandAttribute cmd) => cmd.Aliases);
             if (aliases.Any(x => x.ToLower() == command.ToLower()))
             {
-                if (!Permissions.ContainsKey(aliases[0])) Permissions.Add(aliases[0], false);
+                primary = aliases.First().ToLower();
                 return true;
             }
             return false;
-        }
-
-        private bool IsNotAdmin(Type type, VChatEvent ev, bool isAdminOnly)
-        {
-            return isAdminOnly && !ev.User.IsAdmin;
-        }
-
-        public static void LoadPermissions()
-        {
-            if (!File.Exists("BepInEx/config/RPGMods/permissions.json")) File.Create("BepInEx/config/RPGMods/permissions.json");
-            string json = File.ReadAllText("BepInEx/config/RPGMods/permissions.json");
-            try
-            {
-                Permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(json);
-                Plugin.Logger.LogWarning("Permissions DB Populated");
-            }
-            catch
-            {
-                Permissions = new Dictionary<string, bool>();
-                Plugin.Logger.LogWarning("Permission DB Created.");
-            }
-        }
-
-        public static void SavePermissions()
-        {
-            File.WriteAllText("BepInEx/config/RPGMods/permissions.json", JsonSerializer.Serialize(Permissions, Database.Pretty_JSON_options));
         }
     }
 
@@ -116,14 +94,14 @@ namespace RPGMods.Utils
         public string Name { get; set; }
         public string Usage { get; set; }
         public string Description { get; set; }
-        public bool AdminOnly { get; set; }
+        public int ReqPermission { get; set; }
 
-        public CommandAttribute(string name, string usage = "", string description = "None", bool adminOnly = false)
+        public CommandAttribute(string name, string usage = "", string description = "None", int reqPermission = 100)
         {
             Name = name;
             Usage = usage;
             Description = description;
-            AdminOnly = adminOnly;
+            ReqPermission = reqPermission;
 
             Aliases = new List<string>();
             Aliases.AddRange(Name.ToLower().Split(", "));

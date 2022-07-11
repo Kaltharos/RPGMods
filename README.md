@@ -40,6 +40,22 @@ Punishment will apply a debuff that reduce player combat effeciency.
 - `-15` Physical, spell, holy, and fire resistance
 - Gear level down (Overriden by EXP system if active)
 
+## Command Permission & VIP Login Whitelist
+Commands be configured to require a minimum level of permission for the user to be able to use them.\
+When there's no minimum permission set in the `command_permission.json`, it will default to a minimum requirement of permission lv. 100.\
+Specialized admin only prefixes in the command function will require SuperAdmin (admin via adminauth console).\
+
+VIP System when enabled, will enable the user with permission level higher or equal to the minimum requirement set in to config,\
+to be able to bypass server capacity.
+
+Permission level range from 0 to 100.\
+With 0 as the default permission for user (lowest),\
+and 100 as the highest permission (admin).
+
+## Custom Ban System
+You can now ban a player for the specified duration in days using the .ban/.unban command.\
+`WARNING` if you remove RPGMods all the banned user will no longer be banned!
+
 ## Config
 <details>
 <summary>Basic</summary>
@@ -159,56 +175,33 @@ Mastery will decay by this amount for every decay tick. (1 -> 0.001%)
 
 </details>
 
-## Permissions
-You can only decide whether a command is admin only or not at this time.\
-The permissions are saved in `BepInEx/config/RPGMods/permissions.json` and look like this:
+## Permissions (Updated since v0.3.0)
+Commands permission uses permission level which start from 0 to 100.\
+Permission level 0 means that it can be used by everyone.\
+User designated as SuperAdmin in your server admin list will always bypass the permission requirement.
+
+All abbreviation of the command are automatically included, you need only to put the primary command string.\
+The permissions are saved in `BepInEx/config/RPGMods/command_permission.json` and look like this:
 
 <details>
 <summary>Default Permission - Don't forget to copy!</summary>
 
 ```json
 {
-  "help": false,
-  "speed": true,
-  "kit": true,
-  "blood": true,
-  "heat": false,
-  "ping": false,
-  "pvp": false,
-  "save": true,
-  "punish": true,
-  "autorespawn": true,
-  "waypoint": false,
-  "wp": false,
-  "health": true,
-  "hp": true,
-  "give": true,
-  "g": true,
-  "bloodpotion": true,
-  "bp": true,
-  "sunimmunity": true,
-  "sun": true,
-  "spawnnpc": true,
-  "snp": true,
-  "nocooldown": true,
-  "nocd": true,
-  "resetcooldown": true,
-  "cd": true,
-  "teleport": false,
-  "tp": false,
-  "godmode": true,
-  "god": true,
-  "experience": false,
-  "exp": false,
-  "xp": false,
-  "mastery": false,
-  "m": false
+  "help": 0,
+  "pvp": 0,
+  "ping": 0,
+  "heat": 0,
+  "waypoint": 0,
+  "teleport": 0,
+  "experience": 0,
+  "mastery": 0
 }
 ```
 
 </details>
 
-Removing a command from the list will automatically set it's value to `false`.
+Removing a command from the list will automatically set it's permission requirement value to `100`.
 
 ## Chat Commands
 
@@ -452,9 +445,48 @@ This command may still be used even when punishment system is disabled.\
 
 </details>
 
+<details>
+<summary>permission</summary>
+
+`permission <list>|<save>|<reload>|<set> <0-100> <playername>|<steamid>`\
+Manage commands and user permissions level.
+&ensp;&ensp;**Example:** `permission list` -> List all users with special permission.\
+&ensp;&ensp;**Example:** `permission save` -> Save the most recent user permission list.\
+&ensp;&ensp;**Example:** `permission reload` -> Directly reload user permission and command permission from the JSON file.\
+&ensp;&ensp;**Example:** `permission set 100 LegendaryVampire`\
+&ensp;&ensp;**Example:** `permission set 0 LegendaryVampire`\
+
+</details>
+
+<details>
+<summary>ban/unban</summary>
+
+`ban <playername> [<days> <reason>]`\
+Check the status of specified player, or ban them. 0 days will translate to permanently banned.
+
+`unban <playername>`\
+Remove the specified player from the ban list.
+
+<details>
+
+<details>
+<summary>kick</summary>
+
+`kick <playername>`\
+Kick the specified player from the server.
+
+</details>
+
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.3.0`
+- Changed command permission to use permission level instead of just checking for admin/not.
+- Permission and disabled commands config now automatically include abbreviation.
+- Added whitelist/vip system which should be able to bypass max connected user config.
+- Added ban command.
+- Added kick command.
 
 `0.2.5`
 - Emergency patch release to fix that losing exp on death is still active even when the exp system is disabled.
@@ -577,7 +609,6 @@ This command may still be used even when punishment system is disabled.\
 <details>
 <summary>Planned Features</summary>
 
-- Chat permission roles. (On hold)
 - Kits Option: Limited Uses. (On hold)
 - More optimization! It never hurts to optimize! 
 - Add ban command with duration. (On hold)

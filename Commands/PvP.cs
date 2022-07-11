@@ -31,7 +31,6 @@ namespace RPGMods.Commands
                 {
                     var SortedKD = Database.pvpkd.ToList();
                     SortedKD.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-                    var Top5Ladder = SortedKD.Take(5);
                     user.SendSystemMessage($"===================================");
                     int i = 0;
                     foreach (var result in SortedKD.Take(5))

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>RPGMods</AssemblyName>
     <Description>RPG Mods combined with ChatCommands</Description>
-    <Version>0.2.5</Version>
+    <Version>0.3.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

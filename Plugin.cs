@@ -26,6 +26,8 @@ namespace RPGMods
         private ConfigEntry<string> DisabledCommands;
         private ConfigEntry<float> DelayedCommands;
         private ConfigEntry<int> WaypointLimit;
+        private ConfigEntry<bool> EnableVIPSystem;
+        private ConfigEntry<int> MinVIPBypass;
         
         private ConfigEntry<bool> AnnouncePvPKills;
         private ConfigEntry<bool> EnablePvPLadder;
@@ -73,8 +75,10 @@ namespace RPGMods
         {
             Prefix = Config.Bind("Config", "Prefix", ".", "The prefix used for chat commands.");
             DelayedCommands = Config.Bind("Config", "Command Delay", 5f, "The number of seconds user need to wait out before sending another command.\nAdmin will always bypass this.");
-            DisabledCommands = Config.Bind("Config", "Disabled Commands", "", "Enter command names to disable them. Seperated by commas.\nEx.: save,godmode,god");
+            DisabledCommands = Config.Bind("Config", "Disabled Commands", "", "Enter command names to disable them, abbreviation are included automatically. Seperated by commas.\nEx.: save,godmode");
             WaypointLimit = Config.Bind("Config", "Waypoint Limit", 3, "Set a waypoint limit per user.");
+            EnableVIPSystem = Config.Bind("Config", "Enable VIP Whitelist", true, "Enable the VIP whitelist system, enabling VIP user to login even when server is at capacity.");
+            MinVIPBypass = Config.Bind("Config", "Minimum VIP Permission", 10, "The minimum permission level required for the user to be considered in the VIP whitelist.");
 
             AnnouncePvPKills = Config.Bind("PvP", "Announce PvP Kills", true, "Do I really need to explain this...?");
             EnablePvPLadder = Config.Bind("PvP", "Enable PvP Ladder", true, "Enables the PvP Ladder in the PvP command.");
@@ -119,19 +123,12 @@ namespace RPGMods
             WeaponDecayInterval = Config.Bind("Mastery", "Decay Interval", 60, "Every amount of seconds the user is offline by the configured value will translate as 1 decay tick.");
             Offline_Weapon_MasteryDecayValue = Config.Bind("Mastery", "Decay Value", 1, "Mastery will decay by this amount for every decay tick.(1 -> 0.001%)");
 
+            if (!Directory.Exists("BepInEx/config/RPGMods")) Directory.CreateDirectory("BepInEx/config/RPGMods");
             if (!Directory.Exists("BepInEx/config/RPGMods/Saves")) Directory.CreateDirectory("BepInEx/config/RPGMods/Saves");
 
             if (!File.Exists("BepInEx/config/RPGMods/kits.json"))
             {
-                if (!Directory.Exists("BepInEx/config/RPGMods")) Directory.CreateDirectory("BepInEx/config/RPGMods");
                 var stream = File.Create("BepInEx/config/RPGMods/kits.json");
-                stream.Dispose();
-            }
-
-            if (!File.Exists("BepInEx/config/RPGMods/permissions.json"))
-            {
-                if (!Directory.Exists("BepInEx/config/RPGMods")) Directory.CreateDirectory("BepInEx/config/RPGMods");
-                var stream = File.Create("BepInEx/config/RPGMods/permissions.json");
                 stream.Dispose();
             }
         }
@@ -164,6 +161,8 @@ namespace RPGMods
             //-- Apply configs
             CommandHandler.delay_Cooldown = DelayedCommands.Value;
             Waypoint.WaypointLimit = WaypointLimit.Value;
+            PermissionSystem.isVIPSystem = EnableVIPSystem.Value;
+            PermissionSystem.min_PermissionBypass_Login = MinVIPBypass.Value;
 
             HunterHunted.isActive = HunterHuntedEnabled.Value;
             HunterHunted.heat_cooldown = HeatCooldown.Value;

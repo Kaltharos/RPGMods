@@ -9,7 +9,7 @@ using Wetstone.API;
 
 namespace RPGMods.Commands
 {
-    [Command("help, h", Usage = "help [<command>]", Description = "Shows a list of commands, or details about a command.")]
+    [Command("help, h", Usage = "help [<command>]", Description = "Shows a list of commands, or details about a command.", ReqPermission = 0)]
     public static class Help
     {
         public static void Initialize(Context ctx)
@@ -26,9 +26,10 @@ namespace RPGMods.Commands
                     if (ctx.DisabledCommands.Any(x => x.ToLower() == aliases.First().ToLower())) return;
                     string usage = type.GetAttributeValue((CommandAttribute cmd) => cmd.Usage);
                     string description = type.GetAttributeValue((CommandAttribute cmd) => cmd.Description);
-                    CommandHandler.Permissions.TryGetValue(aliases[0], out bool adminOnly);
+                    if (!Database.command_permission.TryGetValue(aliases[0], out var reqPermission)) reqPermission = 100;
+                    if (!Database.user_permission.TryGetValue(ctx.Event.User.PlatformId, out var userPermission)) userPermission = 0;
 
-                    if (adminOnly && !ctx.Event.User.IsAdmin)
+                    if (userPermission < reqPermission && !ctx.Event.User.IsAdmin)
                     {
                         ctx.Event.User.SendSystemMessage($"Specified command not found.");
                         return;
@@ -53,17 +54,18 @@ namespace RPGMods.Commands
                     List<string> aliases = type.GetAttributeValue((CommandAttribute cmd) => cmd.Aliases);
                     if (ctx.DisabledCommands.Any(x => x.ToLower() == aliases.First().ToLower())) continue;
                     string description = type.GetAttributeValue((CommandAttribute cmd) => cmd.Description);
-                    CommandHandler.Permissions.TryGetValue(aliases[0], out bool adminOnly);
+                    if (!Database.command_permission.TryGetValue(aliases[0], out var reqPermission)) reqPermission = 100;
+                    if (!Database.user_permission.TryGetValue(ctx.Event.User.PlatformId, out var userPermission)) userPermission = 0;
 
                     string s = "";
                     bool send = false;
-                    if (adminOnly && ctx.Event.User.IsAdmin)
+                    if (userPermission < reqPermission && ctx.Event.User.IsAdmin)
                     {
-                        s = $"<color=#00ff00ff>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#ff0000ff>[ADMIN]</color> <color=#ffffffff>{description}</color>";
+                        s = $"<color=#00ff00ff>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#ff0000ff>[{reqPermission}]</color> <color=#ffffffff>{description}</color>";
                         //s = $"<color=#00ff00ff>{ctx.Prefix}{aliases.First()}/{string.Join(", ", aliases)}</color> - <color=#ff0000ff>[ADMIN]</color> <color=#ffffffff>{description}</color>";
                         send = true;
                     }
-                    else if (!adminOnly)
+                    else if (userPermission >= reqPermission)
                     {
                         s = $"<color=#00ff00ff>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#ffffffff>{description}</color>";
                         //s = $"<color=#00ff00ff>{ctx.Prefix}{aliases.First()}/{string.Join(", ", aliases)}</color> - <color=#ffffffff>{description}</color>";

@@ -11,7 +11,7 @@ namespace RPGMods.Utils
         //-- AutoSave is now directly hooked into the Server game save activity.
         public static void SaveDatabase()
         {
-            //CommandHandler.SavePermissions(); //-- Nothing new to save.
+            PermissionSystem.SaveUserPermission(); //-- Nothing new to save.
             SunImmunity.SaveImmunity();
             Waypoint.SaveWaypoints();
             NoCooldown.SaveCooldown();
@@ -20,9 +20,11 @@ namespace RPGMods.Utils
             AutoRespawn.SaveAutoRespawn();
             //Kit.SaveKits();   //-- Nothing to save here for now.
 
+            //-- System Related
             ExperienceSystem.SaveEXPData();
             PvPSystem.SavePvPStat();
             WeaponMasterSystem.SaveWeaponMastery();
+            BanSystem.SaveBanList();
 
             Plugin.Logger.LogWarning("All database saved to JSON file.");
         }
@@ -30,7 +32,7 @@ namespace RPGMods.Utils
         public static void LoadDatabase()
         {
             //-- Commands Related
-            CommandHandler.LoadPermissions();
+            PermissionSystem.LoadPermissions();
             SunImmunity.LoadSunImmunity();
             Waypoint.LoadWaypoints();
             NoCooldown.LoadNoCooldown();
@@ -43,6 +45,8 @@ namespace RPGMods.Utils
             PvPSystem.LoadPvPStat();
             ExperienceSystem.LoadEXPData();
             WeaponMasterSystem.LoadWeaponMastery();
+            BanSystem.LoadBanList();
+
             Plugin.Logger.LogWarning("All database is now loaded.");
         }
     }

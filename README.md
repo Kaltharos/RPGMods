@@ -6,11 +6,14 @@ Read the changelog for extra details.
 #### [Video Demo of Experience & Mastery](https://streamable.com/k2p3bm)
 
 # Update Warning
-### From v0.2.5 to v0.3.0 and Above.
-Please make sure to thorougly test everything on a test server first, before updating your live server.\
-v0.3.0 brings about a large change in the permission and VIP system,\
-I've tried to test everything as thorough as possibly, but I am just one person.\
+```
+-- From v0.2.5 to v0.3.0 and Above.
+
+Please make sure to thorougly test everything on a test server first, before updating your live server.
+v0.3.0 brings about a large change in the permission and VIP system,
+I've tried to test everything as thorough as possibly, but I am just one person.
 Backup your old `config/RPGMods` folder before trying to update from v0.2.5 and below.
+```
 
 ## Experience System
 Disable the VRising Gear Level system and replace it with a traditional RPG experience system,\

@@ -72,10 +72,8 @@ namespace RPGMods.Systems
             if (!em.HasComponent<PlayerCharacter>(Owner)) return;
 
             var userEntity = em.GetComponentData<PlayerCharacter>(Owner).UserEntity._Entity;
-            var userData = em.GetComponentData<User>(userEntity);
             var SteamID = em.GetComponentData<User>(userEntity).PlatformId;
 
-            Plugin.Logger.LogWarning($"Buff: {Helper.GetPrefabName(GUID)} - {userData.CharacterName.ToString()} {IsUserVIP(SteamID)}");
             if (IsUserVIP(SteamID))
             {
                 var Buffer = em.AddBuffer<ModifyUnitStatBuff_DOTS>(buffEntity);

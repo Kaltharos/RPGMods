@@ -30,8 +30,7 @@ namespace RPGMods.Utils
 
         public void HandleCommands(VChatEvent ev, ManualLogSource Log, ConfigFile config)
         {
-            if (!ev.Message.StartsWith(Prefix)) return;
-            if (!VWorld.IsServer) return;
+            if (!ev.Message.StartsWith(Prefix, StringComparison.Ordinal)) return;
 
             string[] args = { };
             if (ev.Message.Contains(' '))

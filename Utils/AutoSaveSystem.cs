@@ -26,7 +26,7 @@ namespace RPGMods.Utils
             WeaponMasterSystem.SaveWeaponMastery();
             BanSystem.SaveBanList();
 
-            Plugin.Logger.LogWarning("All database saved to JSON file.");
+            Plugin.Logger.LogInfo("All database saved to JSON file.");
         }
 
         public static void LoadDatabase()
@@ -47,7 +47,7 @@ namespace RPGMods.Utils
             WeaponMasterSystem.LoadWeaponMastery();
             BanSystem.LoadBanList();
 
-            Plugin.Logger.LogWarning("All database is now loaded.");
+            Plugin.Logger.LogInfo("All database is now loaded.");
         }
     }
 }

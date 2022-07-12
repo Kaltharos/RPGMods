@@ -5,6 +5,13 @@ Server only mod for RPG system which also include ChatCommands with bug fixes.\
 Read the changelog for extra details.
 #### [Video Demo of Experience & Mastery](https://streamable.com/k2p3bm)
 
+# Update Warning
+### From v0.2.5 to v0.3.0 and Above.
+Please make sure to thorougly test everything on a test server first, before updating your live server.\
+v0.3.0 brings about a large change in the permission and VIP system,\
+I've tried to test everything as thorough as possibly, but I am just one person.\
+Backup your old `config/RPGMods` folder before trying to update from v0.2.5 and below.
+
 ## Experience System
 Disable the VRising Gear Level system and replace it with a traditional RPG experience system,\
 complete with exp sharing between clan members or other player designated as ally.
@@ -80,6 +87,40 @@ Enable the VIP System.
 Enable the VIP user to ignore server capacity limit.
 - `Minimum VIP Permission` [default `10`]\
 The minimum permission level required for the user to be considered as VIP.
+
+<details>
+<summary>VIP.InCombat Buff</summary>
+
+- `Durability Loss Multiplier` [default `0.5`]\
+Multiply durability loss when user is in combat. -1.0 to disable.\
+Does not affect durability loss on death.
+- `Garlic Resistance Multiplier` [default `-1.0`]\
+Multiply garlic resistance when user is in combat. -1.0 to disable.
+- `Silver Resistance Multiplier` [default `-1.0`]\
+Multiply silver resistance when user is in combat. -1.0 to disable.
+- `Move Speed Multiplier` [default `-1.0`]\
+Multiply move speed when user is in combat. -1.0 to disable.
+- `Resource Yield Multiplier` [default `2.0`]\
+Multiply resource yield (not item drop) when user is in combat. -1.0 to disable.
+
+</details>
+
+<details>
+<summary>VIP.OutCombat Buff</summary>
+
+- `Durability Loss Multiplier` [default `0.5`]\
+Multiply durability loss when user is out of combat. -1.0 to disable.\
+Does not affect durability loss on death.
+- `Garlic Resistance Multiplier` [default `2.0`]\
+Multiply garlic resistance when user is out of combat. -1.0 to disable.
+- `Silver Resistance Multiplier` [default `2.0`]\
+Multiply silver resistance when user is out of combat. -1.0 to disable.
+- `Move Speed Multiplier` [default `1.25`]\
+Multiply move speed when user is out of combat. -1.0 to disable.
+- `Resource Yield Multiplier` [default `2.0`]\
+Multiply resource yield (not item drop) when user is out of combat. -1.0 to disable.
+
+</details>
 
 </details>
 

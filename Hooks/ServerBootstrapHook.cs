@@ -51,18 +51,6 @@ namespace RPGMods.Hooks
                 case ConnectionStatusChangeReason.NoFreeSlots:
                     process = false;
                     break;
-                case ConnectionStatusChangeReason.ServerError:
-                    process = false;
-                    break;
-                case ConnectionStatusChangeReason.ServerFull:
-                    process = false;
-                    break;
-                case ConnectionStatusChangeReason.ServerShutdown:
-                    process = false;
-                    break;
-                case ConnectionStatusChangeReason.ServerStartingUp:
-                    process = false;
-                    break;
                 case ConnectionStatusChangeReason.Banned:
                     process = false;
                     break;

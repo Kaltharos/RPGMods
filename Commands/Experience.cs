@@ -26,7 +26,8 @@ namespace RPGMods.Commands
 
             if (ctx.Args.Length >= 2 )
             {
-                if (ctx.Args[0].Equals("set") && user.IsAdmin && int.TryParse(ctx.Args[1], out int value))
+                bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "experience_args");
+                if (ctx.Args[0].Equals("set") && isAllowed && int.TryParse(ctx.Args[1], out int value))
                 {
                     if (ctx.Args.Length == 3)
                     {

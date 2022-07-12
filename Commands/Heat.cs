@@ -23,7 +23,8 @@ namespace RPGMods.Commands
                 return;
             }
 
-            if (ctx.Args.Length >= 2 && user.IsAdmin)
+            bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "heat_args");
+            if (ctx.Args.Length >= 2 && isAllowed)
             {
                 string CharName = ctx.Event.User.CharacterName.ToString();
                 if (ctx.Args.Length == 3)

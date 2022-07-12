@@ -9,9 +9,9 @@ namespace RPGMods.Hooks
     {
         public static void Postfix(ulong platformId, ref bool __result)
         {
-            if (PermissionSystem.isVIPSystem)
+            if (PermissionSystem.isVIPSystem && PermissionSystem.isVIPWhitelist)
             {
-                if (PermissionSystem.GetUserPermission(platformId) >= PermissionSystem.min_PermissionBypass_Login)
+                if (PermissionSystem.IsUserVIP(platformId))
                 {
                     __result = true;
                 }

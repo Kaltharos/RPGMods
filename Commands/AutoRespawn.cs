@@ -1,4 +1,5 @@
 ﻿using ProjectM.Network;
+using RPGMods.Systems;
 using RPGMods.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,9 @@ namespace RPGMods.Commands
             ulong SteamID = ctx.Event.User.PlatformId;
             string PlayerName = ctx.Event.User.CharacterName.ToString();
             bool isServerWide = false;
-            if (ctx.Args.Length > 0 && ctx.Event.User.IsAdmin)
+
+            bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "autorespawn_args");
+            if (ctx.Args.Length > 0 && isAllowed)
             {
                 string TargetName = string.Join(' ', ctx.Args);
                 if (TargetName.ToLower().Equals("all"))

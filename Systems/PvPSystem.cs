@@ -149,9 +149,8 @@ namespace RPGMods.Systems
             }
         }
 
-        public static void BuffReceiver(Entity BuffEntity)
+        public static void BuffReceiver(Entity BuffEntity, PrefabGUID GUID)
         {
-            PrefabGUID GUID = em.GetComponentData<PrefabGUID>(BuffEntity);
             if (GUID.Equals(Database.buff.Severe_GarlicDebuff))
             {
                 var lifeTime_component = em.GetComponentData<LifeTime>(BuffEntity);

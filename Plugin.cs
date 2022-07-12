@@ -5,6 +5,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using ProjectM.Scripting;
 using RPGMods.Commands;
+using RPGMods.Hooks;
 using RPGMods.Systems;
 using RPGMods.Utils;
 using System.IO;
@@ -26,9 +27,23 @@ namespace RPGMods
         private ConfigEntry<string> DisabledCommands;
         private ConfigEntry<float> DelayedCommands;
         private ConfigEntry<int> WaypointLimit;
+
         private ConfigEntry<bool> EnableVIPSystem;
-        private ConfigEntry<int> MinVIPBypass;
-        
+        private ConfigEntry<bool> EnableVIPWhitelist;
+        private ConfigEntry<int> VIP_Permission;
+
+        private ConfigEntry<double> VIP_InCombat_ResYield;
+        private ConfigEntry<double> VIP_InCombat_DurabilityLoss;
+        private ConfigEntry<double> VIP_InCombat_MoveSpeed;
+        private ConfigEntry<double> VIP_InCombat_GarlicResistance;
+        private ConfigEntry<double> VIP_InCombat_SilverResistance;
+
+        private ConfigEntry<double> VIP_OutCombat_ResYield;
+        private ConfigEntry<double> VIP_OutCombat_DurabilityLoss;
+        private ConfigEntry<double> VIP_OutCombat_MoveSpeed;
+        private ConfigEntry<double> VIP_OutCombat_GarlicResistance;
+        private ConfigEntry<double> VIP_OutCombat_SilverResistance;
+
         private ConfigEntry<bool> AnnouncePvPKills;
         private ConfigEntry<bool> EnablePvPLadder;
         private ConfigEntry<bool> EnablePvPToggle;
@@ -77,8 +92,22 @@ namespace RPGMods
             DelayedCommands = Config.Bind("Config", "Command Delay", 5f, "The number of seconds user need to wait out before sending another command.\nAdmin will always bypass this.");
             DisabledCommands = Config.Bind("Config", "Disabled Commands", "", "Enter command names to disable them, abbreviation are included automatically. Seperated by commas.\nEx.: save,godmode");
             WaypointLimit = Config.Bind("Config", "Waypoint Limit", 3, "Set a waypoint limit per user.");
-            EnableVIPSystem = Config.Bind("Config", "Enable VIP Whitelist", true, "Enable the VIP whitelist system, enabling VIP user to login even when server is at capacity.");
-            MinVIPBypass = Config.Bind("Config", "Minimum VIP Permission", 10, "The minimum permission level required for the user to be considered in the VIP whitelist.");
+
+            EnableVIPSystem = Config.Bind("VIP", "Enable VIP System", true, "Enable the VIP System.");
+            EnableVIPWhitelist = Config.Bind("VIP", "Enable VIP Whitelist", true, "Enable the VIP user to ignore server capacity limit.");
+            VIP_Permission = Config.Bind("VIP", "Minimum VIP Permission", 10, "The minimum permission level required for the user to be considered as VIP.");
+
+            VIP_InCombat_DurabilityLoss = Config.Bind("VIP.InCombat", "Durability Loss Multiplier", 0.5, "Multiply durability loss when user is in combat. -1.0 to disable.\nDoes not affect durability loss on death.");
+            VIP_InCombat_GarlicResistance = Config.Bind("VIP.InCombat", "Garlic Resistance Multiplier", -1.0, "Multiply garlic resistance when user is in combat. -1.0 to disable.");
+            VIP_InCombat_SilverResistance = Config.Bind("VIP.InCombat", "Silver Resistance Multiplier", -1.0, "Multiply silver resistance when user is in combat. -1.0 to disable.");
+            VIP_InCombat_MoveSpeed = Config.Bind("VIP.InCombat", "Move Speed Multiplier", -1.0, "Multiply move speed when user is in combat. -1.0 to disable.");
+            VIP_InCombat_ResYield = Config.Bind("VIP.InCombat", "Resource Yield Multiplier", 2.0, "Multiply resource yield (not item drop) when user is in combat. -1.0 to disable.");
+
+            VIP_OutCombat_DurabilityLoss = Config.Bind("VIP.OutCombat", "Durability Loss Multiplier", 0.5, "Multiply durability loss when user is out of combat. -1.0 to disable.\nDoes not affect durability loss on death.");
+            VIP_OutCombat_GarlicResistance = Config.Bind("VIP.OutCombat", "Garlic Resistance Multiplier", 2.0, "Multiply garlic resistance when user is out of combat. -1.0 to disable.");
+            VIP_OutCombat_SilverResistance = Config.Bind("VIP.OutCombat", "Silver Resistance Multiplier", 2.0, "Multiply silver resistance when user is out of combat. -1.0 to disable.");
+            VIP_OutCombat_MoveSpeed = Config.Bind("VIP.OutCombat", "Move Speed Multiplier", 1.25, "Multiply move speed when user is out of combat. -1.0 to disable.");
+            VIP_OutCombat_ResYield = Config.Bind("VIP.OutCombat", "Resource Yield Multiplier", 2.0, "Multiply resource yield (not item drop) when user is out of combat. -1.0 to disable.");
 
             AnnouncePvPKills = Config.Bind("PvP", "Announce PvP Kills", true, "Do I really need to explain this...?");
             EnablePvPLadder = Config.Bind("PvP", "Enable PvP Ladder", true, "Enables the PvP Ladder in the PvP command.");
@@ -159,10 +188,25 @@ namespace RPGMods
             AutoSaveSystem.LoadDatabase();
 
             //-- Apply configs
+            //ChatMessageSystem_Patch.CommandPrefix = Prefix.Value;
             CommandHandler.delay_Cooldown = DelayedCommands.Value;
             Waypoint.WaypointLimit = WaypointLimit.Value;
+
             PermissionSystem.isVIPSystem = EnableVIPSystem.Value;
-            PermissionSystem.min_PermissionBypass_Login = MinVIPBypass.Value;
+            PermissionSystem.isVIPWhitelist = EnableVIPWhitelist.Value;
+            PermissionSystem.VIP_Permission = VIP_Permission.Value;
+
+            PermissionSystem.VIP_InCombat_ResYield = VIP_InCombat_ResYield.Value;
+            PermissionSystem.VIP_InCombat_DurabilityLoss = VIP_InCombat_DurabilityLoss.Value;
+            PermissionSystem.VIP_InCombat_MoveSpeed = VIP_InCombat_MoveSpeed.Value;
+            PermissionSystem.VIP_InCombat_GarlicResistance = VIP_InCombat_GarlicResistance.Value;
+            PermissionSystem.VIP_InCombat_SilverResistance = VIP_InCombat_SilverResistance.Value;
+
+            PermissionSystem.VIP_OutCombat_ResYield = VIP_OutCombat_ResYield.Value;
+            PermissionSystem.VIP_OutCombat_DurabilityLoss = VIP_OutCombat_DurabilityLoss.Value;
+            PermissionSystem.VIP_OutCombat_MoveSpeed = VIP_OutCombat_MoveSpeed.Value;
+            PermissionSystem.VIP_OutCombat_GarlicResistance = VIP_OutCombat_GarlicResistance.Value;
+            PermissionSystem.VIP_OutCombat_SilverResistance = VIP_OutCombat_SilverResistance.Value;
 
             HunterHunted.isActive = HunterHuntedEnabled.Value;
             HunterHunted.heat_cooldown = HeatCooldown.Value;

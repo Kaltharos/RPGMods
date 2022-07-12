@@ -25,7 +25,8 @@ namespace RPGMods.Commands
             {
                 if (ctx.Args[0].ToLower().Equals("set") && ctx.Args.Length >= 3)
                 {
-                    if (!ctx.Event.User.IsAdmin) return;
+                    bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "mastery_args");
+                    if (!isAllowed) return;
                     if (int.TryParse(ctx.Args[2], out int value))
                     {
                         string CharName = ctx.Event.User.CharacterName.ToString();

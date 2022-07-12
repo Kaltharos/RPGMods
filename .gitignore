@@ -8,6 +8,7 @@
 /Commands/buff.cs
 /Commands/BuffList.cs
 /Systems/Experimental.cs
+/Hooks/ChatMessageHook.cs
 
 # User-specific files
 *.rsuser

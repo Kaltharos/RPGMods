@@ -71,7 +71,7 @@ namespace RPGMods.Commands
                     user.SendSystemMessage($"PvP is now {s}");
                     return;
                 }
-                else if (ctx.Args.Length == 2 && ctx.Event.User.IsAdmin)
+                else if (ctx.Args.Length == 2 && (ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "pvp_args")))
                 {
                     try
                     {
@@ -84,12 +84,12 @@ namespace RPGMods.Commands
                         }
                         else
                         {
-                            Utils.Output.CustomErrorMessage(ctx, $"Unable to find the specified player!");
+                            Output.CustomErrorMessage(ctx, $"Unable to find the specified player!");
                         }
                     }
                     catch
                     {
-                        Utils.Output.InvalidArguments(ctx);
+                        Output.InvalidArguments(ctx);
                     }
                 }
             }

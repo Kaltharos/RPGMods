@@ -227,24 +227,16 @@ public class BuffSystem_Spawn_Server_Patch
     {
         if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
 
-        if (PvPSystem.isPunishEnabled || SiegeSystem.isSiegeBuff)
+        if (PvPSystem.isPunishEnabled || SiegeSystem.isSiegeBuff || PermissionSystem.isVIPSystem)
         {
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
             foreach (var entity in entities)
             {
-                //var GUID = Helper.GetPrefabGUID(entity);
-                //var Name = Helper.GetPrefabName(GUID);
-                //Plugin.Logger.LogWarning($"Buff Applied: {Name}");
-                //foreach (var t in __instance.EntityManager.GetComponentTypes(entity))
-                //{
-                //    Plugin.Logger.LogWarning(
-                //        $"--{t}");
-                //}
-
-
-                //if (ExperienceSystem.isEXPActive) ExperienceSystem.BuffReceiver(entity);
-                if (PvPSystem.isPunishEnabled) PvPSystem.BuffReceiver(entity);
-                if (SiegeSystem.isSiegeBuff) SiegeSystem.BuffReceiver(entity);
+                PrefabGUID GUID = __instance.EntityManager.GetComponentData<PrefabGUID>(entity);
+                //if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.BuffReceiver(entity, GUID);
+                if (PermissionSystem.isVIPSystem) PermissionSystem.BuffReceiver(entity, GUID);
+                if (PvPSystem.isPunishEnabled) PvPSystem.BuffReceiver(entity, GUID);
+                if (SiegeSystem.isSiegeBuff) SiegeSystem.BuffReceiver(entity, GUID);
             }
         }
     }
@@ -265,6 +257,25 @@ public class BuffSystem_Spawn_Server_Patch
 
                 if (HunterHunted.isActive) HunterHunted.HeatManager(e_User, e_Owner, true);
                 if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.LoopMastery(e_User, e_Owner);
+            }
+        }
+    }
+}
+
+[HarmonyPatch(typeof(ModifyBloodDrainSystem_Spawn), nameof(ModifyBloodDrainSystem_Spawn.OnUpdate))]
+public class ModifyBloodDrainSystem_Spawn_Patch
+{
+    private static void Prefix(ModifyBloodDrainSystem_Spawn __instance)
+    {
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
+
+        if (PermissionSystem.isVIPSystem)
+        {
+            NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
+            foreach (var entity in entities)
+            {
+                PrefabGUID GUID = __instance.EntityManager.GetComponentData<PrefabGUID>(entity);
+                if (PermissionSystem.isVIPSystem) PermissionSystem.BuffReceiver(entity, GUID);
             }
         }
     }

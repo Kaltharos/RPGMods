@@ -30,9 +30,8 @@ namespace RPGMods.Systems
 
         private static EntityManager em = VWorld.Server.EntityManager;
 
-        public static void BuffReceiver(Entity BuffEntity)
+        public static void BuffReceiver(Entity BuffEntity, PrefabGUID GUID)
         {
-            PrefabGUID GUID = em.GetComponentData<PrefabGUID>(BuffEntity);
             if (GUID.Equals(Database.buff.SiegeGolem_T01) || GUID.Equals(Database.buff.SiegeGolem_T02))
             {
                 var Buffer = em.GetBuffer<ModifyUnitStatBuff_DOTS>(BuffEntity);

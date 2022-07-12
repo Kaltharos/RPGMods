@@ -43,7 +43,6 @@ Punishment will apply a debuff that reduce player combat effeciency.
 ## Command Permission & VIP Login Whitelist
 Commands be configured to require a minimum level of permission for the user to be able to use them.\
 When there's no minimum permission set in the `command_permission.json`, it will default to a minimum requirement of permission lv. 100.\
-Specialized admin only prefixes in the command function will require SuperAdmin (admin via adminauth console).\
 
 VIP System when enabled, will enable the user with permission level higher or equal to the minimum requirement set in to config,\
 to be able to bypass server capacity.
@@ -178,7 +177,8 @@ Mastery will decay by this amount for every decay tick. (1 -> 0.001%)
 ## Permissions (Updated since v0.3.0)
 Commands permission uses permission level which start from 0 to 100.\
 Permission level 0 means that it can be used by everyone.\
-User designated as SuperAdmin in your server admin list will always bypass the permission requirement.
+User designated as SuperAdmin in your server admin list will always bypass the permission requirement.\
+Special commands params that require admin permission can also be adjusted here.
 
 All abbreviation of the command are automatically included, you need only to put the primary command string.\
 The permissions are saved in `BepInEx/config/RPGMods/command_permission.json` and look like this:
@@ -195,7 +195,13 @@ The permissions are saved in `BepInEx/config/RPGMods/command_permission.json` an
   "waypoint": 0,
   "teleport": 0,
   "experience": 0,
-  "mastery": 0
+  "mastery": 0,
+  "heat_args": 100,
+  "experience_args": 100,
+  "mastery_args": 100,
+  "waypoint_args": 100,
+  "autorespawn_args": 100,
+  "pvp_args": 100
 }
 ```
 
@@ -269,13 +275,16 @@ Creates a Potion with specified Blood Type, Quality and Value.\
 <details>
 <summary>waypoint</summary>
 
-`waypoint <name|set|remove|list> [<name>] [global]`\
+`waypoint <name|set|remove|list> [<name>]`\
 Teleports you to previously created waypoints.\
 &ensp;&ensp;**Example:** `waypoint set home` <-- Creates a local waypoint just for you.\
-&ensp;&ensp;**Example:** `waypoint set arena global` <-- Creates a global waypoint for everyone (Admin-Only).\
-&ensp;&ensp;**Example:** `waypoint home` <-- Teleports you to your local waypoint.\
-&ensp;&ensp;**Example:** `waypoint remove home` <-- Removes your local waypoint.\
+&ensp;&ensp;**Example:** `waypoint home` <-- Teleport you to your local waypoint.\
+&ensp;&ensp;**Example:** `waypoint remove home` <-- Remove your local waypoint.\
 &ensp;&ensp;**Example:** `waypoint list` <-- Shows a list of all to you accessible waypoints.
+
+&ensp;&ensp;**Special Params -> `<name|set|remove|list> [<name>] [global]`** ` Creates a global waypoint usable by everyone.`\
+&ensp;&ensp;**Example:** `waypoint set arena global` <-- Creates a global waypoint for everyone (Special Params).\
+&ensp;&ensp;**Example:** `waypoint remove arena global` <-- Remove a global waypoint for everyone (Special Params).
 
 </details>
 
@@ -363,7 +372,7 @@ Toggles god mode for you.
 
 `autorespawn`\
 Toggles auto respawn on same position on death.\
-&ensp;&ensp;**Admin Only Params -> `[<all>|<playername>]`** `Toggle the auto respawn for specified player or server wide.`\
+&ensp;&ensp;**Special Params -> `[<all>|<playername>]`** `Toggle the auto respawn for specified player or server wide.`\
 &ensp;&ensp;**Example:** `autorespawn all`\
 &ensp;&ensp;**Example:** `autorespawn LegendaryVampire`
 
@@ -374,7 +383,7 @@ Toggles auto respawn on same position on death.\
 
 `heat`\
 Checks your heat/wanted level by the factions.\
-&ensp;&ensp;**Admin Only Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display numeric heat or set your or the specified player heat.`\
+&ensp;&ensp;**Special Params -> `[<debug>|<value> <value> [<PlayerName>]]`** `Display numeric heat or set your or the specified player heat.`\
 &ensp;&ensp;**Example:** `heat 500 500`\
 &ensp;&ensp;**Example:** `heat 500 500 LegendaryVampire`
 
@@ -396,6 +405,10 @@ Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
 &ensp;&ensp;**Example:** `pvp`\
 &ensp;&ensp;**Example:** `pvp off`
 
+&ensp;&ensp;**Special Params -> `<on>|<off> <playername>`** `Toggles PvP for the specified player.`\
+&ensp;&ensp;**Example:** `pvp on LegendaryVampire`\
+&ensp;&ensp;**Example:** `pvp off LegendaryVampire`
+
 </details>
 
 <details>
@@ -406,7 +419,7 @@ Diplays your current exp and progression to the next level, or toggle the exp ga
 &ensp;&ensp;**Example:** `experience`\
 &ensp;&ensp;**Example:** `experience log off`
 
-&ensp;&ensp;**Admin Only Params -> `[<set> <value> [<PlayerName>]]`** `Set your or the specified player experience value.`\
+&ensp;&ensp;**Special Params -> `[<set> <value> [<PlayerName>]]`** `Set your or the specified player experience value.`\
 &ensp;&ensp;**Example:** `experience set 1000`\
 &ensp;&ensp;**Example:** `experience set 2000 LegendaryVampire`
 
@@ -420,7 +433,7 @@ Display your current mastery progression, or toggle the mastery gain notificatio
 &ensp;&ensp;**Example:** `mastery`\
 &ensp;&ensp;**Example:** `mastery log off`
 
-&ensp;&ensp;**Admin Only Params -> `[<set> <type> <value> [<PlayerName>]]`** `Set your or the specified player mastery value.`\
+&ensp;&ensp;**Special Params -> `[<set> <type> <value> [<PlayerName>]]`** `Set your or the specified player mastery value.`\
 &ensp;&ensp;**Example:** `mastery set sword 100000`\
 &ensp;&ensp;**Example:** `mastery set spear 2000 LegendaryVampire`
 
@@ -480,6 +493,10 @@ Kick the specified player from the server.
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.3.1`
+- Added configurable permission for special params that previously only usable by admins.
+- Added VIP system that can give a passive buff to VIP players.
 
 `0.3.0`
 - Changed command permission to use permission level instead of just checking for admin/not.

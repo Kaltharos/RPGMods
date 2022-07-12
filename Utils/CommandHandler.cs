@@ -49,9 +49,7 @@ namespace RPGMods.Utils
 
                 if (!ev.User.IsAdmin)
                 {
-                    var userSteamID = ev.User.PlatformId;
-                    if (!Database.command_permission.TryGetValue(primary, out var commandPermission)) commandPermission = 100;
-                    if (PermissionSystem.GetUserPermission(userSteamID) < commandPermission)
+                    if (!PermissionSystem.PermissionCheck(ev.User.PlatformId, primary))
                     {
                         ev.User.SendSystemMessage($"<color=#ff0000ff>You do not have the required permissions to use that.</color>");
                         return;

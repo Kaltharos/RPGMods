@@ -1,4 +1,5 @@
-﻿using RPGMods.Utils;
+﻿using RPGMods.Systems;
+using RPGMods.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,8 @@ namespace RPGMods.Commands
                 if (ctx.Args.Length > 2)
                 {
                     var args_2nd = ctx.Args[2].ToLower();
-                    if ((args_2nd.Equals("true") || args_2nd.Equals("global")) && ctx.Event.User.IsAdmin) global = true;
+                    bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "waypoint_args");
+                    if ((args_2nd.Equals("true") || args_2nd.Equals("global")) && isAllowed) global = true;
                     else
                     {
                         Output.CustomErrorMessage(ctx, "You do not have permission to edit a global waypoint.");

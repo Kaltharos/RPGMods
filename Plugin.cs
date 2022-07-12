@@ -93,8 +93,8 @@ namespace RPGMods
             DisabledCommands = Config.Bind("Config", "Disabled Commands", "", "Enter command names to disable them, abbreviation are included automatically. Seperated by commas.\nEx.: save,godmode");
             WaypointLimit = Config.Bind("Config", "Waypoint Limit", 3, "Set a waypoint limit per user.");
 
-            EnableVIPSystem = Config.Bind("VIP", "Enable VIP System", true, "Enable the VIP System.");
-            EnableVIPWhitelist = Config.Bind("VIP", "Enable VIP Whitelist", true, "Enable the VIP user to ignore server capacity limit.");
+            EnableVIPSystem = Config.Bind("VIP", "Enable VIP System", false, "Enable the VIP System.");
+            EnableVIPWhitelist = Config.Bind("VIP", "Enable VIP Whitelist", false, "Enable the VIP user to ignore server capacity limit.");
             VIP_Permission = Config.Bind("VIP", "Minimum VIP Permission", 10, "The minimum permission level required for the user to be considered as VIP.");
 
             VIP_InCombat_DurabilityLoss = Config.Bind("VIP.InCombat", "Durability Loss Multiplier", 0.5, "Multiply durability loss when user is in combat. -1.0 to disable.\nDoes not affect durability loss on death.");

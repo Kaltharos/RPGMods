@@ -72,6 +72,18 @@ Set a waypoint limit per user.
 </details>
 
 <details>
+<summary>VIP</summary>
+
+- `Enable VIP System` [default `false`]\
+Enable the VIP System.
+- `Enable VIP Whitelist` [default `false`]\
+Enable the VIP user to ignore server capacity limit.
+- `Minimum VIP Permission` [default `10`]\
+The minimum permission level required for the user to be considered as VIP.
+
+</details>
+
+<details>
 <summary>PvP</summary>
 
 - `Announce PvP Kills` [default `true`]\

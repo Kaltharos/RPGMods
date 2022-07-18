@@ -40,6 +40,7 @@ namespace RPGMods.Utils
             Speed.LoadSpeed();
             AutoRespawn.LoadAutoRespawn();
             Kit.LoadKits();
+            LangSystem.Load();
 
             //-- System Related
             PvPSystem.LoadPvPStat();

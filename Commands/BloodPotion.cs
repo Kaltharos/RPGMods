@@ -30,8 +30,7 @@ namespace RPGMods.Commands
                     blood.BloodQuality = quality;
                     blood.BloodType = new PrefabGUID((int)type);
                     ctx.EntityManager.SetComponentData(entity, blood);
-
-                    ctx.Event.User.SendSystemMessage($"Got Blood Potion Type <color=#ffff00ff>{type}</color> with <color=#ffff00ff>{quality}</color>% quality");
+                    Output.CustomMessage(ctx, "Got Blood Potion Type <color=#ffff00ff>{0}</color> with <color=#ffff00ff>{1}</color>% quality", type, quality);
                 }
                 catch
                 {

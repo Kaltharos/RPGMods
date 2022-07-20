@@ -150,7 +150,7 @@ namespace RPGMods
             MasteryMaxCombatTicks = Config.Bind("Mastery", "Max Combat Ticks", 12, "Mastery will no longer increase after this many ticks is reached in combat. (1 tick = 5 seconds)");
             WeaponMasterMultiplier = Config.Bind("Mastery", "Mastery Multiplier", 1f, "Multiply the gained mastery value by this amount.");
             WeaponMastery_VBloodMultiplier = Config.Bind("Mastery", "VBlood Mastery Multiplier", 15f, "Multiply Mastery gained from VBlood kill.");
-            WeaponMastery_NonVBloodMultiplier = Config.Bind("Mastery", "Non VBlood Mastery Multiplier", 15f, "Multiply Mastery gained from non VBlood kill.");
+            WeaponMastery_NonVBloodMultiplier = Config.Bind("Mastery", "Non VBlood Mastery Multiplier", 1f, "Multiply Mastery gained from non VBlood kill.");
             WeaponDecayInterval = Config.Bind("Mastery", "Decay Interval", 60, "Every amount of seconds the user is offline by the configured value will translate as 1 decay tick.");
             Offline_Weapon_MasteryDecayValue = Config.Bind("Mastery", "Decay Value", 1, "Mastery will decay by this amount for every decay tick.(1 -> 0.001%)");
 

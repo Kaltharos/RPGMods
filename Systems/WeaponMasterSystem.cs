@@ -23,6 +23,7 @@ namespace RPGMods.Systems
         public static int Offline_DecayValue = 1;
         public static int MaxMastery = 100000;
         public static float VBloodMultiplier = 15;
+        public static float NonVBloodMultiplier = 1;
 
         private static PrefabGUID vBloodType = new PrefabGUID(1557174542);
 
@@ -56,7 +57,7 @@ namespace RPGMods.Systems
                 isVBlood = false;
             }
 
-            if (isVBlood) MasteryValue = (int)(MasteryValue * VBloodMultiplier);
+            MasteryValue = isVBlood ? (int)(MasteryValue * VBloodMultiplier) : (int)(MasteryValue * NonVBloodMultiplier);
 
             if (em.HasComponent<PlayerCharacter>(Victim))
             {

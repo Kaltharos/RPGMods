@@ -76,13 +76,13 @@ namespace RPGMods.Systems
                     {
                         if (rand.Next(0, 100) < ambush_chance && player_heat >= 250 && InCombat)
                         {
-                            if (player_heat >= 3000)
+                            if (player_heat >= 1500)
                             {
                                 SquadList.SpawnSquad(playerEntity, 4, rand.Next(10, 20));
                                 SquadList.SpawnSquad(playerEntity, 5, 2);
                                 Output.SendLore(userEntity,"<color=#c90e21ff>An extermination squad has found you and wants you DEAD.</color>");
                             }
-                            else if (player_heat >= 2000)
+                            else if (player_heat >= 1000)
                             {
                                 if (rand.Next(0, 100) < 50)
                                 {
@@ -95,17 +95,17 @@ namespace RPGMods.Systems
                                 }
                                 Output.SendLore(userEntity, "<color=#c90e21ff>The Vampire Hunters are ambushing you!</color>");
                             }
-                            else if (player_heat >= 1000)
+                            else if (player_heat >= 500)
                             {
                                 SquadList.SpawnSquad(playerEntity, 3, rand.Next(10, 15));
                                 Output.SendLore(userEntity, "<color=#c90e21ff>An ambush squad from the Church has been sent to kill you!</color>");
                             }
-                            else if (player_heat >= 500)
+                            else if (player_heat >= 250)
                             {
                                 SquadList.SpawnSquad(playerEntity, 2, rand.Next(10, 15));
                                 Output.SendLore(userEntity, "<color=#c4515cff>A squad of soldiers is ambushing you!</color>");
                             }
-                            else if (player_heat >= 250)
+                            else if (player_heat >= 150)
                             {
                                 SquadList.SpawnSquad(playerEntity, 1, rand.Next(5, 10));
                                 Output.SendLore(userEntity, "<color=#c9999eff>A militia squad is ambushing you!</color>");
@@ -128,25 +128,25 @@ namespace RPGMods.Systems
                     {
                         if (rand.Next(0, 100) < ambush_chance && player_banditheat >= 250 && InCombat)
                         {
-                            if (player_banditheat >= 2000)
+                            if (player_banditheat >= 650)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, rand.Next(20, 25));
-                                Output.SendLore(userEntity, "<color=#c90e21ff>The bandits is ambushing you and is not taking chances!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>The bandits are ambushing you and they're not taking chances!</color>");
                             }
-                            else if (player_banditheat >= 1000)
+                            else if (player_banditheat >= 450)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, rand.Next(10, 15));
-                                Output.SendLore(userEntity, "<color=#c90e21ff>A large bandit squads is ambushing you!</color>");
-                            }
-                            else if (player_banditheat >= 500)
-                            {
-                                SquadList.SpawnSquad(playerEntity, 0, 5);
-                                Output.SendLore(userEntity, "<color=#c4515cff>A small bandit squads is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>A large bandit squad is ambushing you!</color>");
                             }
                             else if (player_banditheat >= 250)
                             {
+                                SquadList.SpawnSquad(playerEntity, 0, 5);
+                                Output.SendLore(userEntity, "<color=#c4515cff>A small bandit squad is ambushing you!</color>");
+                            }
+                            else if (player_banditheat >= 150)
+                            {
                                 SquadList.SpawnSquad(playerEntity, 0, 3);
-                                Output.SendLore(userEntity, "<color=#c9999eff>The bandits is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c9999eff>The bandits are ambushing you!</color>");
                             }
                             Cache.bandit_last_ambushed[SteamID] = DateTime.Now;
                         }

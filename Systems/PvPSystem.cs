@@ -144,7 +144,7 @@ namespace RPGMods.Systems
 
                 if (Cache.punish_killer_offense[KillerSteamID] >= OffenseLimit)
                 {
-                    Helper.ApplyBuff(Killer, KillerUser, Database.buff.Severe_GarlicDebuff);
+                    Helper.ApplyBuff(KillerUser, Killer, Database.buff.Severe_GarlicDebuff);
                 }
             }
         }

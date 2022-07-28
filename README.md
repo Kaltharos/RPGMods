@@ -52,7 +52,7 @@ Punishment will apply a debuff that reduce player combat effeciency.
 
 ## Command Permission & VIP Login Whitelist
 Commands be configured to require a minimum level of permission for the user to be able to use them.\
-When there's no minimum permission set in the `command_permission.json`, it will default to a minimum requirement of permission lv. 100.\
+When there's no minimum permission set in the `command_permission.json`, it will default to a minimum requirement of permission lv. 100.
 
 VIP System when enabled, will enable the user with permission level higher or equal to the minimum requirement set in to config,\
 to be able to bypass server capacity.
@@ -549,6 +549,14 @@ Kick the specified player from the server.
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.3.2`
+- Adjustment in EXP System so player don't get more exp if they've reached the max level cap.
+- Adjustment in EXP gain for killing lower level mobs.
+- Adjusted bonus EXP gain for killing higher level mob to be capped at 10 level higher max.
+- User with sufficient permission for waypoint_args will no longer be restricted by the waypoint limit.
+- Reduced the required heat for ambush to occur.
+- Fixed PvP Debuff punishment not applying correctly.
 
 `0.3.1`
 - Added configurable permission for special params that previously only usable by admins.

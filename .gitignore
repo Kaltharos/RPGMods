@@ -9,6 +9,7 @@
 /Commands/BuffList.cs
 /Systems/Experimental.cs
 /Hooks/ChatMessageHook.cs
+/Hooks/DroppedItemHook.cs
 
 # User-specific files
 *.rsuser

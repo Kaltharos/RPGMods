@@ -35,10 +35,10 @@ namespace RPGMods.Commands
                 string wp_name = ctx.Args[1].ToLower();
                 string wp_true_name = ctx.Args[1].ToLower();
                 bool global = false;
+                bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "waypoint_args");
                 if (ctx.Args.Length > 2)
                 {
                     var args_2nd = ctx.Args[2].ToLower();
-                    bool isAllowed = ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "waypoint_args");
                     if ((args_2nd.Equals("true") || args_2nd.Equals("global")) && isAllowed) global = true;
                     else
                     {
@@ -55,7 +55,7 @@ namespace RPGMods.Commands
                     }
                     if (!global)
                     {
-                        if (Database.waypoints_owned.TryGetValue(SteamID, out var total) && !ctx.Event.User.IsAdmin)
+                        if (Database.waypoints_owned.TryGetValue(SteamID, out var total) && !isAllowed)
                         {
                             if (total >= WaypointLimit)
                             {

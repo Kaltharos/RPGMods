@@ -43,6 +43,13 @@ namespace RPGMods.Systems
                 User user = entityManager.GetComponentData<User>(userEntity);
                 ulong SteamID = user.PlatformId;
 
+                int player_level = 0;
+                if (Database.player_experience.TryGetValue(SteamID, out int exp))
+                {
+                    player_level = convertXpToLevel(exp);
+                    if (exp >= convertLevelToXp(MaxLevel)) return;
+                }
+
                 UnitLevel UnitLevel = entityManager.GetComponentData<UnitLevel>(victimEntity);
 
                 bool isVBlood;
@@ -60,11 +67,14 @@ namespace RPGMods.Systems
                 if (isVBlood) EXPGained = (int)(UnitLevel.Level * VBloodMultiplier);
                 else EXPGained = UnitLevel.Level;
 
-                Database.player_experience.TryGetValue(SteamID, out int exp);
-                int level_diff = UnitLevel.Level - convertXpToLevel(exp);
+                int level_diff = UnitLevel.Level - player_level;
+                if (level_diff > 10) level_diff = 10;
 
                 if (level_diff > 0) EXPGained = (int)(EXPGained * (1 + level_diff * 0.1) * EXPMultiplier);
-                else if (level_diff <= -10) EXPGained = (int)(EXPGained * 0.5 * EXPMultiplier);
+                else if (level_diff <= -5) EXPGained = (int)(EXPGained * 0.25 * EXPMultiplier);
+                else if (level_diff <= -10) EXPGained = (int)(EXPGained * 0.50 * EXPMultiplier);
+                else if (level_diff <= -15) EXPGained = (int)(EXPGained * 0.75 * EXPMultiplier);
+                else if (level_diff <= -20) EXPGained = (int)(EXPGained * 0.90 * EXPMultiplier);
                 else EXPGained = (int)(EXPGained * EXPMultiplier);
 
                 bool HasAllies = GetAllies(killerEntity, out var Group);
@@ -179,7 +189,11 @@ namespace RPGMods.Systems
         {
             if (!Database.player_experience.TryGetValue(SteamID, out int exp)) Database.player_experience[SteamID] = 0;
             float level = convertXpToLevel(Database.player_experience[SteamID]);
-            if (level > MaxLevel) level = MaxLevel;
+            if (level > MaxLevel)
+            {
+                level = MaxLevel;
+                Database.player_experience[SteamID] = convertLevelToXp(MaxLevel);
+            }
 
             bool isLastLevel = Cache.player_level.TryGetValue(SteamID, out var level_);
             if (isLastLevel)

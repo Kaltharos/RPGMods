@@ -692,7 +692,6 @@ Kick the specified player from the server.
 
 - Kits Option: Limited Uses. (On hold)
 - More optimization! It never hurts to optimize! 
-- Add ban command with duration. (On hold)
 - Explore team/alliance in VRising. (On hold)
 - Hook into whatever system possible to add a tag to player names. (On hold)
 - More dynamic events

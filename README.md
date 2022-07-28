@@ -284,7 +284,7 @@ Gives you a previously specified set of items.\
 &ensp;&ensp;**Example:** `kit starterset`
 
 <details>
-<summary>How does kit work?</summary>
+<summary>-- How does kit work?</summary>
 
 &ensp;&ensp;You will get a new config file located in `BepInEx/config/RPGMods/kits.json`
 ```json

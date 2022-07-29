@@ -138,6 +138,9 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, DateTime> player_decaymastery_logout { get; set; }
         public static Dictionary<ulong, bool> player_log_mastery { get; set; }
 
+        //-- -- Lang System
+        public static Dictionary<string, string> langs { get; set; }
+
         //-- Static Database (Data that will never be changed in runtime)
         public static Dictionary<string, PrefabGUID> database_units = new Dictionary<string, PrefabGUID>()
         {
@@ -482,5 +485,6 @@ namespace RPGMods.Utils
 
 
         }
+        
     }
 }

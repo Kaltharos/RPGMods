@@ -8,8 +8,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <UnhollowedDllPath>G:\Workshop\VRising\Server\BepInEx\unhollowed</UnhollowedDllPath>
-    <NoWarn>$(NoWarn);NU5104</NoWarn>
+	  <ServerPath>
+		  C:\Program Files (x86)\Steam\steamapps\common\VRisingDedicatedServer
+	  </ServerPath>
+
+	  <UnhollowedDllPath>C:\Program Files (x86)\Steam\steamapps\common\VRisingDedicatedServer\BepInEx\unhollowed</UnhollowedDllPath>
+	  <PluginsPath>$(ServerPath)\BepInEx\plugins</PluginsPath>    
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
 

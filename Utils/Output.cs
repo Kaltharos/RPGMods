@@ -5,6 +5,7 @@ using System.Text;
 using Unity.Entities;
 using Wetstone.API;
 using Wetstone.Hooks;
+using RPGMods.Systems;
 
 namespace RPGMods.Utils
 {
@@ -12,23 +13,31 @@ namespace RPGMods.Utils
     {
         public static void CustomErrorMessage(Context ctx, string message)
         {
+            message = LangSystem.t(message);
             ctx.Event.User.SendSystemMessage($"<color=#ff0000ff>{message}</color>");
+        }
+
+        public static void CustomMessage(Context ctx, string message, params object [] vars)
+        {
+            message = LangSystem.t(message, vars);
+            ctx.Event.User.SendSystemMessage(message);
         }
 
         public static void InvalidCommand(VChatEvent ev)
         {
-            ev.User.SendSystemMessage($"<color=#ff0000ff>Invalid command.</color>");
+            ev.User.SendSystemMessage($"<color=#ff0000ff>{ LangSystem.t("Invalid command.") }</color>");
         }
 
         public static void InvalidArguments(Context ctx)
         {
-            ctx.Event.User.SendSystemMessage($"<color=#ff0000ff>Invalid command parameters. Check {ctx.Prefix}help [<command>] for more information.</color>");
+            ctx.Event.User.SendSystemMessage($"<color=#ff0000ff>{LangSystem.t("Invalid command parameters. Check {0} help [<command>] for more information.</color>", ctx.Prefix)}");
         }
-
+         
         public static void MissingArguments(Context ctx)
         {
-            ctx.Event.User.SendSystemMessage($"<color=#ff0000ff>Missing command parameters. Check {ctx.Prefix}help [<command>] for more information.</color>");
+            ctx.Event.User.SendSystemMessage($"<color=#ff0000ff>{LangSystem.t("Missing command parameters. Check {0} help [<command>] for more information.", ctx.Prefix)}</color>");
         }
+       
 
         public static void SendLore(Entity userEntity, string message)
         {

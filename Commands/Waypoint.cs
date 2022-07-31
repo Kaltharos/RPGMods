@@ -2,11 +2,9 @@
 using RPGMods.Utils;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using Unity.Entities;
 using Unity.Transforms;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -14,7 +12,7 @@ namespace RPGMods.Commands
     public static class Waypoint
     {
         public static int WaypointLimit = 3;
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+        private static EntityManager entityManager = Plugin.Server.EntityManager;
         public static void Initialize(Context ctx)
         {
             var PlayerEntity = ctx.Event.SenderCharacterEntity;
@@ -26,7 +24,7 @@ namespace RPGMods.Commands
             }
             if (ctx.Args.Length < 1)
             {
-                ctx.Event.User.SendSystemMessage("Missing parameters.");
+                Output.MissingArguments(ctx);
                 return;
             }
 
@@ -73,7 +71,7 @@ namespace RPGMods.Commands
                     var location = ctx.EntityManager.GetComponentData<LocalToWorld>(ctx.Event.SenderCharacterEntity).Position;
                     var f2_location = new Float2(location.x, location.z);
                     AddWaypoint(SteamID, f2_location, wp_name, wp_true_name, global);
-                    ctx.Event.User.SendSystemMessage("Successfully added Waypoint.");
+                    Output.SendSystemMessage(ctx, "Successfully added Waypoint.");
                     return;
                 }
                 if (ctx.Args[0].ToLower().Equals("remove"))
@@ -92,7 +90,7 @@ namespace RPGMods.Commands
                             return;
                         }
                     }
-                    ctx.Event.User.SendSystemMessage("Successfully removed Waypoint.");
+                    Output.SendSystemMessage(ctx, "Successfully removed Waypoint.");
                     RemoveWaypoint(SteamID, wp_name, global);
                     return;
                 }
@@ -103,12 +101,12 @@ namespace RPGMods.Commands
                 int total_wp = 0;
                 foreach (var global_wp in Database.globalWaypoint)
                 {
-                    ctx.Event.User.SendSystemMessage($" - <color=#ffff00ff>{global_wp.Key}</color> [<color=#00dd00ff>Global</color>]");
+                    Output.SendSystemMessage(ctx, $" - <color=#ffff00ff>{global_wp.Key}</color> [<color=#00dd00ff>Global</color>]");
                     total_wp++;
                 }
                 foreach (var wp in Database.waypoints)
                 {
-                    ctx.Event.User.SendSystemMessage($" - <color=#ffff00ff>{wp.Value.Name}</color>");
+                    Output.SendSystemMessage(ctx, $" - <color=#ffff00ff>{wp.Value.Name}</color>");
                     total_wp++;
                 }
                 if (total_wp == 0) Output.CustomErrorMessage(ctx, "No waypoint available.");

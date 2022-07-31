@@ -1,11 +1,6 @@
 ﻿using ProjectM;
 using RPGMods.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
 using Unity.Transforms;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -17,7 +12,6 @@ namespace RPGMods.Commands
             if (ctx.Args.Length != 0)
             {
                 string name;
-                int count = 1;
 
                 PrefabGUID type = new PrefabGUID((int)Helper.BloodType.Frailed);
                 float quality = 0;
@@ -36,7 +30,8 @@ namespace RPGMods.Commands
                     if (float.Parse(ctx.Args[2]) > 100) quality = 100;
                 }
 
-                if (ctx.Args.Length >= 2) {
+                if (ctx.Args.Length >= 2)
+                {
                     type = new PrefabGUID((int)Helper.GetBloodTypeFromName(ctx.Args[1]));
                 }
 
@@ -57,7 +52,7 @@ namespace RPGMods.Commands
 
                     Cache.spawnNPC_Listen[npc_id] = NPCData;
 
-                    ctx.Event.User.SendSystemMessage($"Spawning CustomNPC \"{name}\" at <{pos.x}, {pos.z}>");
+                    Output.SendSystemMessage(ctx, $"Spawning CustomNPC {name} at <{pos.x}, {pos.z}>");
                 }
             }
             else

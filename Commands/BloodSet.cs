@@ -1,7 +1,6 @@
 ﻿using ProjectM;
 using ProjectM.Network;
 using RPGMods.Utils;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -33,18 +32,18 @@ namespace RPGMods.Commands
                         Quality = quality,
                         Source = type
                     };
-                    VWorld.Server.GetExistingSystem<DebugEventsSystem>().ChangeBloodEvent(ctx.Event.User.Index, ref BloodEvent);
-                    ctx.Event.User.SendSystemMessage($"Changed Blood Type to <color=#ffff00ff>{ctx.Args[0]}</color> with <color=#ffff00ff>{quality}</color>% quality");
+                    Plugin.Server.GetExistingSystem<DebugEventsSystem>().ChangeBloodEvent(ctx.Event.User.Index, ref BloodEvent);
+                    Output.SendSystemMessage(ctx, $"Changed Blood Type to <color=#ffff00ff>{ctx.Args[0]}</color> with <color=#ffff00ff>{quality}</color>% quality");
                 }
                 catch
                 {
-                    Utils.Output.InvalidArguments(ctx);
+                    Output.InvalidArguments(ctx);
                 }
 
             }
             else
             {
-                Utils.Output.MissingArguments(ctx);
+                Output.MissingArguments(ctx);
             }
         }
     }

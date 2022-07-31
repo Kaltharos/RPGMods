@@ -9,7 +9,6 @@
 /Commands/BuffList.cs
 /Systems/Experimental.cs
 /Hooks/ExperimentalHook.cs
-/Hooks/ChatMessageHook.cs
 /Hooks/DroppedItemHook.cs
 /Hooks/SelfCast.cs
 

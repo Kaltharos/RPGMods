@@ -3,88 +3,122 @@ using BepInEx.Configuration;
 using BepInEx.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
-using ProjectM.Scripting;
 using RPGMods.Commands;
 using RPGMods.Hooks;
 using RPGMods.Systems;
 using RPGMods.Utils;
 using System.IO;
 using System.Reflection;
-using Wetstone.API;
-using Wetstone.Hooks;
+using Unity.Entities;
+using UnityEngine;
+
+#if WETSTONE
+    using Wetstone.API;
+#endif
 
 namespace RPGMods
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    [BepInDependency("xyz.molenzwiebel.wetstone")]
-    [Reloadable]
-    public class Plugin : BasePlugin, IRunOnInitialized
+
+    #if WETSTONE
+        [BepInDependency("xyz.molenzwiebel.wetstone")]
+        [Reloadable]
+    #endif
+
+    public class Plugin : BasePlugin
     {
         private Harmony harmony;
 
-        private CommandHandler cmd;
-        private ConfigEntry<string> Prefix;
-        private ConfigEntry<string> DisabledCommands;
-        private ConfigEntry<float> DelayedCommands;
-        private ConfigEntry<int> WaypointLimit;
+        private static ConfigEntry<string> Prefix;
+        private static ConfigEntry<string> DisabledCommands;
+        private static ConfigEntry<float> DelayedCommands;
+        private static ConfigEntry<int> WaypointLimit;
 
-        private ConfigEntry<bool> EnableVIPSystem;
-        private ConfigEntry<bool> EnableVIPWhitelist;
-        private ConfigEntry<int> VIP_Permission;
+        private static ConfigEntry<bool> EnableVIPSystem;
+        private static ConfigEntry<bool> EnableVIPWhitelist;
+        private static ConfigEntry<int> VIP_Permission;
 
-        private ConfigEntry<double> VIP_InCombat_ResYield;
-        private ConfigEntry<double> VIP_InCombat_DurabilityLoss;
-        private ConfigEntry<double> VIP_InCombat_MoveSpeed;
-        private ConfigEntry<double> VIP_InCombat_GarlicResistance;
-        private ConfigEntry<double> VIP_InCombat_SilverResistance;
+        private static ConfigEntry<double> VIP_InCombat_ResYield;
+        private static ConfigEntry<double> VIP_InCombat_DurabilityLoss;
+        private static ConfigEntry<double> VIP_InCombat_MoveSpeed;
+        private static ConfigEntry<double> VIP_InCombat_GarlicResistance;
+        private static ConfigEntry<double> VIP_InCombat_SilverResistance;
 
-        private ConfigEntry<double> VIP_OutCombat_ResYield;
-        private ConfigEntry<double> VIP_OutCombat_DurabilityLoss;
-        private ConfigEntry<double> VIP_OutCombat_MoveSpeed;
-        private ConfigEntry<double> VIP_OutCombat_GarlicResistance;
-        private ConfigEntry<double> VIP_OutCombat_SilverResistance;
+        private static ConfigEntry<double> VIP_OutCombat_ResYield;
+        private static ConfigEntry<double> VIP_OutCombat_DurabilityLoss;
+        private static ConfigEntry<double> VIP_OutCombat_MoveSpeed;
+        private static ConfigEntry<double> VIP_OutCombat_GarlicResistance;
+        private static ConfigEntry<double> VIP_OutCombat_SilverResistance;
 
-        private ConfigEntry<bool> AnnouncePvPKills;
-        private ConfigEntry<bool> EnablePvPLadder;
-        private ConfigEntry<bool> EnablePvPToggle;
-        private ConfigEntry<bool> EnablePvPPunish;
-        private ConfigEntry<int> PunishLevelDiff;
-        private ConfigEntry<float> PunishDuration;
-        private ConfigEntry<int> PunishOffenseLimit;
-        private ConfigEntry<float> PunishOffenseCooldown;
+        private static ConfigEntry<bool> AnnouncePvPKills;
+        private static ConfigEntry<bool> EnablePvPLadder;
+        private static ConfigEntry<bool> EnablePvPToggle;
+        private static ConfigEntry<bool> EnablePvPPunish;
+        private static ConfigEntry<int> PunishLevelDiff;
+        private static ConfigEntry<float> PunishDuration;
+        private static ConfigEntry<int> PunishOffenseLimit;
+        private static ConfigEntry<float> PunishOffenseCooldown;
 
-        private ConfigEntry<bool> BuffSiegeGolem;
-        private ConfigEntry<float> GolemPhysicalReduction;
-        private ConfigEntry<float> GolemSpellReduction;
+        private static ConfigEntry<bool> BuffSiegeGolem;
+        private static ConfigEntry<float> GolemPhysicalReduction;
+        private static ConfigEntry<float> GolemSpellReduction;
 
-        private ConfigEntry<bool> HunterHuntedEnabled;
-        private ConfigEntry<int> HeatCooldown;
-        private ConfigEntry<int> BanditHeatCooldown;
-        private ConfigEntry<int> CoolDown_Interval;
-        private ConfigEntry<int> Ambush_Interval;
-        private ConfigEntry<int> Ambush_Chance;
-        private ConfigEntry<float> Ambush_Despawn_Unit_Timer;
+        private static ConfigEntry<bool> HunterHuntedEnabled;
+        private static ConfigEntry<int> HeatCooldown;
+        private static ConfigEntry<int> BanditHeatCooldown;
+        private static ConfigEntry<int> CoolDown_Interval;
+        private static ConfigEntry<int> Ambush_Interval;
+        private static ConfigEntry<int> Ambush_Chance;
+        private static ConfigEntry<float> Ambush_Despawn_Unit_Timer;
 
-        private ConfigEntry<bool> EnableExperienceSystem;
-        private ConfigEntry<int> MaxLevel;
-        private ConfigEntry<float> EXPMultiplier;
-        private ConfigEntry<float> VBloodEXPMultiplier;
-        private ConfigEntry<double> EXPLostOnDeath;
-        private ConfigEntry<float> EXPFormula_1;
-        private ConfigEntry<double> EXPGroupModifier;
-        private ConfigEntry<float> EXPGroupMaxDistance;
+        private static ConfigEntry<bool> EnableExperienceSystem;
+        private static ConfigEntry<int> MaxLevel;
+        private static ConfigEntry<float> EXPMultiplier;
+        private static ConfigEntry<float> VBloodEXPMultiplier;
+        private static ConfigEntry<double> EXPLostOnDeath;
+        private static ConfigEntry<float> EXPFormula_1;
+        private static ConfigEntry<double> EXPGroupModifier;
+        private static ConfigEntry<float> EXPGroupMaxDistance;
 
-        private ConfigEntry<bool> EnableWeaponMaster;
-        private ConfigEntry<bool> EnableWeaponMasterDecay;
-        private ConfigEntry<float> WeaponMasterMultiplier;
-        private ConfigEntry<int> WeaponDecayInterval;
-        private ConfigEntry<int> WeaponMaxMastery;
-        private ConfigEntry<float> WeaponMastery_VBloodMultiplier;
-        private ConfigEntry<int> Offline_Weapon_MasteryDecayValue;
-        private ConfigEntry<int> MasteryCombatTick;
-        private ConfigEntry<int> MasteryMaxCombatTicks;
+        private static ConfigEntry<bool> EnableWeaponMaster;
+        private static ConfigEntry<bool> EnableWeaponMasterDecay;
+        private static ConfigEntry<float> WeaponMasterMultiplier;
+        private static ConfigEntry<int> WeaponDecayInterval;
+        private static ConfigEntry<int> WeaponMaxMastery;
+        private static ConfigEntry<float> WeaponMastery_VBloodMultiplier;
+        private static ConfigEntry<int> Offline_Weapon_MasteryDecayValue;
+        private static ConfigEntry<int> MasteryCombatTick;
+        private static ConfigEntry<int> MasteryMaxCombatTicks;
 
         public static ManualLogSource Logger;
+
+        private static World _serverWorld;
+        public static World Server
+        {
+            get
+            {
+                if (_serverWorld != null) return _serverWorld;
+
+                _serverWorld = GetWorld("Server")
+                    ?? throw new System.Exception("There is no Server world (yet). Did you install a server mod on the client?");
+                return _serverWorld;
+            }
+        }
+
+        public static bool IsServer => Application.productName == "VRisingServer";
+
+        private static World GetWorld(string name)
+        {
+            foreach (var world in World.s_AllWorlds)
+            {
+                if (world.Name == name)
+                {
+                    return world;
+                }
+            }
+
+            return null;
+        }
 
         public void InitConfig()
         {
@@ -166,8 +200,6 @@ namespace RPGMods
         {
             InitConfig();
             Logger = Log;
-            cmd = new CommandHandler(Prefix.Value, DisabledCommands.Value);
-            Chat.OnChatMessage += HandleChatMessage;
             harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
             Log.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -177,18 +209,19 @@ namespace RPGMods
         {
             AutoSaveSystem.SaveDatabase();
             Config.Clear();
-            Chat.OnChatMessage -= HandleChatMessage;
             harmony.UnpatchSelf();
             return true;
         }
 
-        public void OnGameInitialized()
+        public static void OnGameInitialized()
         {
             //-- Commands Related
             AutoSaveSystem.LoadDatabase();
 
             //-- Apply configs
-            //ChatMessageSystem_Patch.CommandPrefix = Prefix.Value;
+            ChatMessageSystem_Patch.CommandPrefix = Prefix.Value;
+            CommandHandler.Prefix = Prefix.Value;
+            CommandHandler.DisabledCommands = DisabledCommands.Value;
             CommandHandler.delay_Cooldown = DelayedCommands.Value;
             Waypoint.WaypointLimit = WaypointLimit.Value;
 
@@ -249,9 +282,9 @@ namespace RPGMods
             WeaponMasterSystem.MaxCombatTick = MasteryMaxCombatTicks.Value;
         }
 
-        private void HandleChatMessage(VChatEvent ev)
+        public static void HandleChatMessage(VChatEvent ev)
         {
-            cmd.HandleCommands(ev, Log, Config);
+            CommandHandler.HandleCommands(ev);
         }
     }
 }

@@ -2,14 +2,13 @@
 using RPGMods.Systems;
 using RPGMods.Utils;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
     [Command("heat", Usage = "heat", Description = "Shows your current wanted level.")]
     public static class Heat
     {
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+        private static EntityManager entityManager = Plugin.Server.EntityManager;
         public static void Initialize(Context ctx)
         {
             var user = ctx.Event.User;
@@ -45,8 +44,8 @@ namespace RPGMods.Commands
                 }
                 if (int.TryParse(ctx.Args[0], out var n)) Cache.heatlevel[SteamID] = n;
                 if (int.TryParse(ctx.Args[1], out var nm)) Cache.bandit_heatlevel[SteamID] = nm;
-                user.SendSystemMessage($"Player \"{CharName}\" heat value changed.");
-                user.SendSystemMessage($"Human: <color=#ffff00ff>{Cache.heatlevel[SteamID]}</color> | Bandit: <color=#ffff00ff>{Cache.bandit_heatlevel[SteamID]}</color>");
+                Output.SendSystemMessage(ctx, $"Player \"{CharName}\" heat value changed.");
+                Output.SendSystemMessage(ctx, $"Human: <color=#ffff00ff>{Cache.heatlevel[SteamID]}</color> | Bandit: <color=#ffff00ff>{Cache.bandit_heatlevel[SteamID]}</color>");
                 HunterHunted.HeatManager(userEntity, charEntity, false);
                 return;
             }
@@ -71,12 +70,12 @@ namespace RPGMods.Commands
             if (ctx.Args.Length == 1 && user.IsAdmin)
             {
                 if (!ctx.Args[0].Equals("debug") && ctx.Args.Length != 2) return;
-                user.SendSystemMessage($"Heat Cooldown: {HunterHunted.heat_cooldown}");
-                user.SendSystemMessage($"Bandit Heat Cooldown: {HunterHunted.bandit_heat_cooldown}");
-                user.SendSystemMessage($"Cooldown Interval: {HunterHunted.cooldown_timer}");
-                user.SendSystemMessage($"Ambush Interval: {HunterHunted.ambush_interval}");
-                user.SendSystemMessage($"Ambush Chance: {HunterHunted.ambush_chance}");
-                user.SendSystemMessage($"Human: <color=#ffff00ff>{human_heatlevel}</color> | Bandit: <color=#ffff00ff>{bandit_heatlevel}</color>");
+                Output.SendSystemMessage(ctx, $"Heat Cooldown: {HunterHunted.heat_cooldown}");
+                Output.SendSystemMessage(ctx, $"Bandit Heat Cooldown: {HunterHunted.bandit_heat_cooldown}");
+                Output.SendSystemMessage(ctx, $"Cooldown Interval: {HunterHunted.cooldown_timer}");
+                Output.SendSystemMessage(ctx, $"Ambush Interval: {HunterHunted.ambush_interval}");
+                Output.SendSystemMessage(ctx, $"Ambush Chance: {HunterHunted.ambush_chance}");
+                Output.SendSystemMessage(ctx, $"Human: <color=#ffff00ff>{human_heatlevel}</color> | Bandit: <color=#ffff00ff>{bandit_heatlevel}</color>");
             }
         }
     }

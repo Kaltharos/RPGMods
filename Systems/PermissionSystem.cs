@@ -8,8 +8,6 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using Unity.Entities;
-using Wetstone.API;
-using Wetstone.Hooks;
 
 namespace RPGMods.Systems
 {
@@ -32,13 +30,8 @@ namespace RPGMods.Systems
         public static double VIP_InCombat_GarlicResistance = -1.0;
         public static double VIP_InCombat_SilverResistance = -1.0;
 
-        private static EntityManager em = VWorld.Server.EntityManager;
+        private static EntityManager em = Plugin.Server.EntityManager;
 
-        public static void VIPChat(VChatEvent ev)
-        {
-            if (ev.Message.StartsWith(commandPrefix)) return;
-            if (!IsUserVIP(ev.User.PlatformId)) return;
-        }
         public static bool IsUserVIP(ulong steamID)
         {
             bool isVIP = GetUserPermission(steamID) >= VIP_Permission;

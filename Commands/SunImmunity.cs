@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Wetstone.API;
-using ProjectM;
 using RPGMods.Utils;
-using ProjectM.Network;
-using Unity.Entities;
-using System;
 
 namespace RPGMods.Commands
 {
@@ -21,7 +16,7 @@ namespace RPGMods.Commands
             else isSunImmune = true;
             UpdateImmunity(ctx, isSunImmune);
             string s = isSunImmune ? "Activated" : "Deactivated";
-            ctx.Event.User.SendSystemMessage($"Sun Immunity <color=#ffff00ff>{s}</color>");
+            Output.SendSystemMessage(ctx, $"Sun Immunity <color=#ffff00ff>{s}</color>");
             Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 

@@ -2,7 +2,6 @@
 using RPGMods.Utils;
 using System.Globalization;
 using System.Linq;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -26,7 +25,7 @@ namespace RPGMods.Commands
             }
 
             Helper.AddItemToInventory(ctx, guid, amount);
-            ctx.Event.User.SendSystemMessage($"You got <color=#ffff00ff>{amount} {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
+            Output.SendSystemMessage(ctx, $"You got <color=#ffff00ff>{amount} {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
         }
     }
 }

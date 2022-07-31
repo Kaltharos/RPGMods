@@ -1,7 +1,6 @@
 ﻿using ProjectM;
 using ProjectM.Network;
 using RPGMods.Utils;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -30,8 +29,8 @@ namespace RPGMods.Commands
                 if (Helper.FindPlayer(targetName, true, out var targetEntity, out var targetUserEntity))
                 {
                     PlayerName = targetName;
-                    UserIndex = VWorld.Server.EntityManager.GetComponentData<User>(targetUserEntity).Index;
-                    component = VWorld.Server.EntityManager.GetComponentData<ProjectM.Health>(targetEntity);
+                    UserIndex = Plugin.Server.EntityManager.GetComponentData<User>(targetUserEntity).Index;
+                    component = Plugin.Server.EntityManager.GetComponentData<ProjectM.Health>(targetEntity);
                 }
                 else
                 {
@@ -46,9 +45,9 @@ namespace RPGMods.Commands
             {
                 Amount = (int)restore_hp
             };
-            VWorld.Server.GetExistingSystem<DebugEventsSystem>().ChangeHealthEvent(UserIndex, ref HealthEvent);
+            Plugin.Server.GetExistingSystem<DebugEventsSystem>().ChangeHealthEvent(UserIndex, ref HealthEvent);
 
-            ctx.Event.User.SendSystemMessage($"Player \"{PlayerName}\" Health set to <color=#ffff00ff>{Value}%</color>");
+            Output.SendSystemMessage(ctx, $"Player \"{PlayerName}\" Health set to <color=#ffff00ff>{Value}%</color>");
         }
     }
 }

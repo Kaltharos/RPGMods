@@ -1,19 +1,8 @@
 # RPGMods
-### [Original ChatCommands Repository](https://github.com/NopeyBoi/ChatCommands)
 ### Server Only Mod
 Server only mod for RPG system which also include ChatCommands with bug fixes.\
 Read the changelog for extra details.
 #### [Video Demo of Experience & Mastery](https://streamable.com/k2p3bm)
-
-# Update Warning
-```
--- From v0.2.5 to v0.3.0 and Above.
-
-Please make sure to thorougly test everything on a test server first, before updating your live server.
-v0.3.0 brings about a large change in the permission and VIP system,
-I've tried to test everything as thorough as possibly, but I am just one person.
-Backup your old `config/RPGMods` folder before trying to update from v0.2.5 and below.
-```
 
 ## Experience System
 Disable the VRising Gear Level system and replace it with a traditional RPG experience system,\
@@ -365,7 +354,7 @@ Spawns a NPC. Optional: To a previously created waypoint.\
 <details>
 <summary>customspawn</summary>
 
-`customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable(\"true/false\")>]`\
+`customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable("true/false")>]`\
 Spawns a modified NPC at your current position.\
 &ensp;&ensp;**Example:** `customspawn CHAR_Bandit_Thug creature 100 true`
 
@@ -559,16 +548,21 @@ Kick the specified player from the server.
 <details>
 <summary>Changelog</summary>
 
-`0.3.3`
+`1.0.2`
 - Added customspawn command.
+- Added property to compile with wetstone or not.
 
-`0.3.2`
+
+`1.0.1`
 - Adjustment in EXP System so player don't get more exp if they've reached the max level cap.
 - Adjustment in EXP gain for killing lower level mobs.
 - Adjusted bonus EXP gain for killing higher level mob to be capped at 10 level higher max.
 - User with sufficient permission for waypoint_args will no longer be restricted by the waypoint limit.
 - Reduced the required heat for ambush to occur.
 - Fixed PvP Debuff punishment not applying correctly.
+
+`1.0.0`
+- Removed wetstone dependency
 
 `0.3.1`
 - Added configurable permission for special params that previously only usable by admins.

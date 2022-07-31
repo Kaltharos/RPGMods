@@ -4,13 +4,20 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>RPGMods</AssemblyName>
     <Description>RPG Mods combined with ChatCommands</Description>
-    <Version>0.3.2</Version>
+    <Version>1.0.2</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <UnhollowedDllPath>G:\Workshop\VRising\Server\BepInEx\unhollowed</UnhollowedDllPath>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
-    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE; WETSTONE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>WETSTONE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

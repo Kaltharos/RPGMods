@@ -1,19 +1,12 @@
 ﻿using ProjectM;
-using ProjectM.Gameplay.Scripting;
 using ProjectM.Network;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using UnhollowerRuntimeLib;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Wetstone.API;
-using System.Reflection;
 using static RPGMods.Utils.Database;
 using RPGMods.Hooks;
 
@@ -26,7 +19,7 @@ namespace RPGMods.Utils
 
         public static void ApplyBuff(Entity User, Entity Char, PrefabGUID GUID)
         {
-            var des = VWorld.Server.GetExistingSystem<DebugEventsSystem>();
+            var des = Plugin.Server.GetExistingSystem<DebugEventsSystem>();
             var fromCharacter = new FromCharacter()
             {
                 User = User,
@@ -41,20 +34,20 @@ namespace RPGMods.Utils
 
         public static void RemoveBuff(Entity Char, PrefabGUID GUID)
         {
-            if (BuffUtility.HasBuff(VWorld.Server.EntityManager, Char, GUID))
+            if (BuffUtility.HasBuff(Plugin.Server.EntityManager, Char, GUID))
             {
-                BuffUtility.TryGetBuff(VWorld.Server.EntityManager, Char, GUID, out var BuffEntity_);
-                VWorld.Server.EntityManager.AddComponent<DestroyTag>(BuffEntity_);
+                BuffUtility.TryGetBuff(Plugin.Server.EntityManager, Char, GUID, out var BuffEntity_);
+                Plugin.Server.EntityManager.AddComponent<DestroyTag>(BuffEntity_);
                 return;
             }
         }
 
         public static string GetNameFromSteamID(ulong SteamID)
         {
-            var UserEntities = VWorld.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
+            var UserEntities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
             foreach (var Entity in UserEntities)
             {
-                var EntityData = VWorld.Server.EntityManager.GetComponentData<User>(Entity);
+                var EntityData = Plugin.Server.EntityManager.GetComponentData<User>(Entity);
                 if (EntityData.PlatformId == SteamID) return EntityData.CharacterName.ToString();
             }
             return null;
@@ -62,7 +55,7 @@ namespace RPGMods.Utils
 
         public static PrefabGUID GetGUIDFromName(string name)
         {
-            var gameDataSystem = VWorld.Server.GetExistingSystem<GameDataSystem>();
+            var gameDataSystem = Plugin.Server.GetExistingSystem<GameDataSystem>();
             var managed = gameDataSystem.ManagedDataRegistry;
 
             foreach (var entry in gameDataSystem.ItemHashLookupMap)
@@ -84,7 +77,7 @@ namespace RPGMods.Utils
 
         public static void KickPlayer(Entity userEntity)
         {
-            EntityManager em = VWorld.Server.EntityManager;
+            EntityManager em = Plugin.Server.EntityManager;
             var userData = em.GetComponentData<User>(userEntity);
             int index = userData.Index;
             NetworkId id = em.GetComponentData<NetworkId>(userEntity);
@@ -118,7 +111,7 @@ namespace RPGMods.Utils
         {
             unsafe
             {
-                var gameData = VWorld.Server.GetExistingSystem<GameDataSystem>();
+                var gameData = Plugin.Server.GetExistingSystem<GameDataSystem>();
                 var bytes = stackalloc byte[Marshal.SizeOf<FakeNull>()];
                 var bytePtr = new IntPtr(bytes);
                 Marshal.StructureToPtr<FakeNull>(new()
@@ -157,7 +150,7 @@ namespace RPGMods.Utils
 
         public static bool FindPlayer(string name, bool mustOnline, out Entity playerEntity, out Entity userEntity)
         {
-            EntityManager entityManager = VWorld.Server.EntityManager;
+            EntityManager entityManager = Plugin.Server.EntityManager;
             foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp))
             {
                 var target_component = entityManager.GetComponentData<User>(UsersEntity);
@@ -182,17 +175,17 @@ namespace RPGMods.Utils
 
         public static bool IsPlayerInCombat(Entity player)
         {
-            return BuffUtility.HasBuff(VWorld.Server.EntityManager, player, buff.InCombat) || BuffUtility.HasBuff(VWorld.Server.EntityManager, player, buff.InCombat_PvP);
+            return BuffUtility.HasBuff(Plugin.Server.EntityManager, player, buff.InCombat) || BuffUtility.HasBuff(Plugin.Server.EntityManager, player, buff.InCombat_PvP);
         }
 
         public static bool IsPlayerHasBuff(Entity player, PrefabGUID BuffGUID)
         {
-            return BuffUtility.HasBuff(VWorld.Server.EntityManager, player, BuffGUID);
+            return BuffUtility.HasBuff(Plugin.Server.EntityManager, player, BuffGUID);
         }
 
         public static void SetPvPShield(Entity character, bool value)
         {
-            var em = VWorld.Server.EntityManager;
+            var em = Plugin.Server.EntityManager;
             var cUnitStats = em.GetComponentData<UnitStats>(character);
             var cBuffer = em.GetBuffer<BoolModificationBuffer>(character);
             cUnitStats.PvPProtected.Set(value, cBuffer);
@@ -225,7 +218,7 @@ namespace RPGMods.Utils
             var Data = new SpawnNPCListen(duration, default, default, default, false);
             Cache.spawnNPC_Listen.Add(duration_final, Data);
 
-            VWorld.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, position, 1, minRange, maxRange, duration_final);
+            Plugin.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, position, 1, minRange, maxRange, duration_final);
             return true;
         }
 
@@ -234,9 +227,9 @@ namespace RPGMods.Utils
             var isFound = database_units.TryGetValue(name, out var unit);
             if (!isFound) return false;
 
-            var translation = VWorld.Server.EntityManager.GetComponentData<Translation>(user);
+            var translation = Plugin.Server.EntityManager.GetComponentData<Translation>(user);
             var f3pos = new float3(position.x, translation.Value.y, position.y);
-            VWorld.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, count, minRange, maxRange, duration);
+            Plugin.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, count, minRange, maxRange, duration);
             return true;
         }
 
@@ -244,11 +237,11 @@ namespace RPGMods.Utils
         {
             var unit = new PrefabGUID(GUID);
 
-            var translation = VWorld.Server.EntityManager.GetComponentData<Translation>(user);
+            var translation = Plugin.Server.EntityManager.GetComponentData<Translation>(user);
             var f3pos = new float3(position.x, translation.Value.y, position.y);
             try
             {
-                VWorld.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, count, minRange, maxRange, duration);
+                Plugin.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, count, minRange, maxRange, duration);
             }
             catch
             {
@@ -259,7 +252,7 @@ namespace RPGMods.Utils
 
         public static PrefabGUID GetPrefabGUID(Entity entity)
         {
-            var entityManager = VWorld.Server.EntityManager;
+            var entityManager = Plugin.Server.EntityManager;
             PrefabGUID guid;
             try
             {
@@ -274,7 +267,7 @@ namespace RPGMods.Utils
 
         public static string GetPrefabName(PrefabGUID hashCode)
         {
-            var s = VWorld.Server.GetExistingSystem<PrefabCollectionSystem>();
+            var s = Plugin.Server.GetExistingSystem<PrefabCollectionSystem>();
             string name = "Nonexistent";
             if (hashCode.GuidHash == 0)
             {

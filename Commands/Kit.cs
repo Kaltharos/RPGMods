@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -19,7 +18,7 @@ namespace RPGMods.Commands
         {
             if (ctx.Args.Length < 1)
             {
-                ctx.Event.User.SendSystemMessage($"Kit name missing.");
+                Output.SendSystemMessage(ctx, $"Kit name missing.");
                 return;
             }
 
@@ -32,11 +31,11 @@ namespace RPGMods.Commands
                 {
                     Helper.AddItemToInventory(ctx, new PrefabGUID(guid.Key), guid.Value);
                 }
-                ctx.Event.User.SendSystemMessage($"You got the kit: <color=#ffff00ff>{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
+                Output.SendSystemMessage(ctx, $"You got the kit: <color=#ffff00ff>{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
             }
             catch
             {
-                ctx.Event.User.SendSystemMessage($"Kit doesn't exist.");
+                Output.SendSystemMessage(ctx, $"Kit doesn't exist.");
                 return;
             }
         }

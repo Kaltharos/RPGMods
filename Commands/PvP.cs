@@ -1,9 +1,7 @@
-﻿using ProjectM.Network;
-using RPGMods.Systems;
+﻿using RPGMods.Systems;
 using RPGMods.Utils;
 using System.Linq;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -24,22 +22,22 @@ namespace RPGMods.Commands
                 Database.pvpdeath.TryGetValue(SteamID, out var pvp_deaths);
                 Database.pvpkd.TryGetValue(SteamID, out var pvp_kd);
 
-                user.SendSystemMessage($"-- <color=#ffffffff>{CharName}</color> --");
-                user.SendSystemMessage($"K/D: <color=#ffffffff>{pvp_kd} [{pvp_kills}/{pvp_deaths}]</color>");
+                Output.SendSystemMessage(ctx, $"-- <color=#ffffffff>{CharName}</color> --");
+                Output.SendSystemMessage(ctx, $"K/D: <color=#ffffffff>{pvp_kd} [{pvp_kills}/{pvp_deaths}]</color>");
 
                 if (PvPSystem.isLadderEnabled)
                 {
                     var SortedKD = Database.pvpkd.ToList();
                     SortedKD.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-                    user.SendSystemMessage($"===================================");
+                    Output.SendSystemMessage(ctx, $"===================================");
                     int i = 0;
                     foreach (var result in SortedKD.Take(5))
                     {
                         i++;
-                        user.SendSystemMessage($"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
+                        Output.SendSystemMessage(ctx, $"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
                     }
-                    if (i == 0) user.SendSystemMessage($"<color=#ffffffff>No Result</color>");
-                    user.SendSystemMessage($"===================================");
+                    if (i == 0) Output.SendSystemMessage(ctx, $"<color=#ffffffff>No Result</color>");
+                    Output.SendSystemMessage(ctx, $"===================================");
                 }
             }
             
@@ -68,7 +66,7 @@ namespace RPGMods.Commands
                     }
                     Helper.SetPvPShield(charEntity, isPvPShieldON);
                     string s = isPvPShieldON ? "OFF" : "ON";
-                    user.SendSystemMessage($"PvP is now {s}");
+                    Output.SendSystemMessage(ctx, $"PvP is now {s}");
                     return;
                 }
                 else if (ctx.Args.Length == 2 && (ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "pvp_args")))
@@ -80,7 +78,7 @@ namespace RPGMods.Commands
                         {
                             Helper.SetPvPShield(targetChar, isPvPShieldON);
                             string s = isPvPShieldON ? "OFF" : "ON";
-                            user.SendSystemMessage($"Player \"{name}\" PvP is now {s}");
+                            Output.SendSystemMessage(ctx, $"Player \"{name}\" PvP is now {s}");
                         }
                         else
                         {

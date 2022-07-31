@@ -2,14 +2,13 @@
 using RPGMods.Systems;
 using RPGMods.Utils;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
     [Command("experience, exp, xp", Usage = "experience [<log> <on>|<off>]", Description = "Shows your currect experience and progression to next level, or toggle the exp gain notification.")]
     public static class Experience
     {
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+        private static EntityManager entityManager = Plugin.Server.EntityManager;
         public static void Initialize(Context ctx)
         {
             var user = ctx.Event.User;
@@ -47,20 +46,20 @@ namespace RPGMods.Commands
                     }
                     Database.player_experience[SteamID] = value;
                     ExperienceSystem.SetLevel(PlayerCharacter, UserEntity, SteamID);
-                    user.SendSystemMessage($"Player \"{CharName}\" Experience is now set to be<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>");
+                    Output.SendSystemMessage(ctx, $"Player \"{CharName}\" Experience is now set to be<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>");
                 }
                 else if (ctx.Args[0].ToLower().Equals("log"))
                 {
                     if (ctx.Args[1].ToLower().Equals("on"))
                     {
                         Database.player_log_exp[SteamID] = true;
-                        user.SendSystemMessage($"Experience gain is now logged.");
+                        Output.SendSystemMessage(ctx, $"Experience gain is now logged.");
                         return;
                     }
                     else if (ctx.Args[1].ToLower().Equals("off"))
                     {
                         Database.player_log_exp[SteamID] = false;
-                        user.SendSystemMessage($"Experience gain is no longer being logged.");
+                        Output.SendSystemMessage(ctx, $"Experience gain is no longer being logged.");
                         return;
                     }
                 }
@@ -73,8 +72,8 @@ namespace RPGMods.Commands
             else
             {
                 int userLevel = ExperienceSystem.getLevel(SteamID);
-                user.SendSystemMessage($"-- <color=#ffffffff>{CharName}</color> --");
-                user.SendSystemMessage(
+                Output.SendSystemMessage(ctx, $"-- <color=#ffffffff>{CharName}</color> --");
+                Output.SendSystemMessage(ctx,
                     $"Level:<color=#ffffffff> {userLevel}</color> (<color=#ffffffff>{ExperienceSystem.getLevelProgress(SteamID)}%</color>) " +
                     $" [ XP:<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>/<color=#ffffffff>{ExperienceSystem.convertLevelToXp(userLevel + 1)}</color> ]");
             }

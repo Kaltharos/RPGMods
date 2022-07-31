@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -38,7 +37,7 @@ namespace RPGMods.Commands
                     }
                     else
                     {
-                        Utils.Output.CustomErrorMessage(ctx, $"Player \"{TargetName}\" not found!");
+                        Output.CustomErrorMessage(ctx, $"Player \"{TargetName}\" not found!");
                         return;
                     }
                 }
@@ -50,11 +49,11 @@ namespace RPGMods.Commands
             string s = isAutoRespawn ? "Activated" : "Deactivated";
             if (isServerWide)
             {
-                ctx.Event.User.SendSystemMessage($"Server wide Auto Respawn <color=#ffff00ff>{s}</color>");
+                Output.SendSystemMessage(ctx, $"Server wide Auto Respawn <color=#ffff00ff>{s}</color>");
             }
             else
             {
-                ctx.Event.User.SendSystemMessage($"Player \"{PlayerName}\" Auto Respawn <color=#ffff00ff>{s}</color>");
+                Output.SendSystemMessage(ctx, $"Player \"{PlayerName}\" Auto Respawn <color=#ffff00ff>{s}</color>");
             }
         }
 

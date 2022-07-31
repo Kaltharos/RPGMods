@@ -1,11 +1,8 @@
 ﻿using RPGMods.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -23,7 +20,11 @@ namespace RPGMods.Commands
                     var type = types.First(x => x.GetAttributeValue((CommandAttribute cmd) => cmd.Aliases.First() == ctx.Args[0].ToLower()));
 
                     List<string> aliases = type.GetAttributeValue((CommandAttribute cmd) => cmd.Aliases);
-                    if (ctx.DisabledCommands.Any(x => x.ToLower() == aliases.First().ToLower())) return;
+                    if (CommandHandler.DisabledCommands.Split(',').Any(x => x.ToLower() == aliases.First().ToLower()))
+                    {
+                        Output.SendSystemMessage(ctx, $"Specified command not found.");
+                        return;
+                    }
                     string usage = type.GetAttributeValue((CommandAttribute cmd) => cmd.Usage);
                     string description = type.GetAttributeValue((CommandAttribute cmd) => cmd.Description);
                     if (!Database.command_permission.TryGetValue(aliases[0], out var reqPermission)) reqPermission = 100;
@@ -31,28 +32,28 @@ namespace RPGMods.Commands
 
                     if (userPermission < reqPermission && !ctx.Event.User.IsAdmin)
                     {
-                        ctx.Event.User.SendSystemMessage($"Specified command not found.");
+                        Output.SendSystemMessage(ctx, $"Specified command not found.");
                         return;
                     }
-                    ctx.Event.User.SendSystemMessage($"Help for <color=#00ff00ff>{ctx.Prefix}{aliases.First()}</color>");
-                    ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Aliases: {string.Join(", ", aliases)}</color>");
-                    ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Description: {description}</color>");
-                    ctx.Event.User.SendSystemMessage($"<color=#ffffffff>Usage: {ctx.Prefix}{usage}</color>");
+                    Output.SendSystemMessage(ctx, $"Help for <color=#00ff00ff>{ctx.Prefix}{aliases.First()}</color>");
+                    Output.SendSystemMessage(ctx, $"<color=#ffffffff>Aliases: {string.Join(", ", aliases)}</color>");
+                    Output.SendSystemMessage(ctx, $"<color=#ffffffff>Description: {description}</color>");
+                    Output.SendSystemMessage(ctx, $"<color=#ffffffff>Usage: {ctx.Prefix}{usage}</color>");
                     return;
                 }
                 else
                 {
-                    ctx.Event.User.SendSystemMessage($"Specified command not found.");
+                    Output.SendSystemMessage(ctx, $"Specified command not found.");
                     return;
                 }
             }
             catch
             {
-                ctx.Event.User.SendSystemMessage("List of all commands:");
+                Output.SendSystemMessage(ctx, "List of all commands:");
                 foreach (Type type in types)
                 {
                     List<string> aliases = type.GetAttributeValue((CommandAttribute cmd) => cmd.Aliases);
-                    if (ctx.DisabledCommands.Any(x => x.ToLower() == aliases.First().ToLower())) continue;
+                    if (CommandHandler.DisabledCommands.Split(',').Any(x => x.ToLower() == aliases.First().ToLower())) continue;
                     string description = type.GetAttributeValue((CommandAttribute cmd) => cmd.Description);
                     if (!Database.command_permission.TryGetValue(aliases[0], out var reqPermission)) reqPermission = 100;
                     if (!Database.user_permission.TryGetValue(ctx.Event.User.PlatformId, out var userPermission)) userPermission = 0;
@@ -71,22 +72,8 @@ namespace RPGMods.Commands
                         //s = $"<color=#00ff00ff>{ctx.Prefix}{aliases.First()}/{string.Join(", ", aliases)}</color> - <color=#ffffffff>{description}</color>";
                         send = true;
                     }
-                    if (send) ctx.Event.User.SendSystemMessage(s);
+                    if (send) Output.SendSystemMessage(ctx, s);
                 }
-            }
-        }
-
-        public static void LoadPermissions()
-        {
-            if (!File.Exists("BepInEx/config/RPGMods/permissions.json")) File.Create("BepInEx/config/RPGMods/permissions.json");
-            string json = File.ReadAllText("BepInEx/config/RPGMods/permissions.json");
-            try
-            {
-                CommandHandler.Permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(json);
-            }
-            catch
-            {
-                CommandHandler.Permissions = new Dictionary<string, bool>();
             }
         }
     }

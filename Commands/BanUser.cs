@@ -1,8 +1,6 @@
-﻿using ProjectM;
-using ProjectM.Network;
+﻿using ProjectM.Network;
 using RPGMods.Utils;
 using RPGMods.Systems;
-using Wetstone.API;
 using System.Linq;
 using System;
 
@@ -19,14 +17,14 @@ namespace RPGMods.Commands
             {
                 if (Helper.FindPlayer(args[0], false, out _, out var targetUserEntity_))
                 {
-                    var targetData_ = VWorld.Server.EntityManager.GetComponentData<User>(targetUserEntity_);
+                    var targetData_ = Plugin.Server.EntityManager.GetComponentData<User>(targetUserEntity_);
                     if (BanSystem.IsUserBanned(targetData_.PlatformId, out var banData_))
                     {
                         TimeSpan duration = banData_.BanUntil - DateTime.Now;
-                        ctx.Event.User.SendSystemMessage($"Player:<color=#ffffffff> {args[0]}</color>");
-                        ctx.Event.User.SendSystemMessage($"Status:<color=#ffffffff> Banned</color> | By:<color=#ffffffff> {banData_.BannedBy}</color>");
-                        ctx.Event.User.SendSystemMessage($"Duration:<color=#ffffffff> {Math.Round(duration.TotalDays)}</color> day(s) [<color=#ffffffff>{banData_.BanUntil}</color>]");
-                        ctx.Event.User.SendSystemMessage($"Reason:<color=#ffffffff> {banData_.Reason}</color>");
+                        Output.SendSystemMessage(ctx, $"Player:<color=#ffffffff> {args[0]}</color>");
+                        Output.SendSystemMessage(ctx, $"Status:<color=#ffffffff> Banned</color> | By:<color=#ffffffff> {banData_.BannedBy}</color>");
+                        Output.SendSystemMessage(ctx, $"Duration:<color=#ffffffff> {Math.Round(duration.TotalDays)}</color> day(s) [<color=#ffffffff>{banData_.BanUntil}</color>]");
+                        Output.SendSystemMessage(ctx, $"Reason:<color=#ffffffff> {banData_.Reason}</color>");
                         return;
                     }
                     else
@@ -68,9 +66,9 @@ namespace RPGMods.Commands
                 {
                     var user = ctx.Event.User;
                     Helper.KickPlayer(targetUserEntity);
-                    user.SendSystemMessage($"Player \"{name}\" is now banned.");
-                    user.SendSystemMessage($"Banned Until:<color=#ffffffff> {banData.BanUntil}</color>");
-                    user.SendSystemMessage($"Reason:<color=#ffffffff> {reason}</color>");
+                    Output.SendSystemMessage(ctx, $"Player \"{name}\" is now banned.");
+                    Output.SendSystemMessage(ctx, $"Banned Until:<color=#ffffffff> {banData.BanUntil}</color>");
+                    Output.SendSystemMessage(ctx, $"Reason:<color=#ffffffff> {reason}</color>");
                     return;
                 }
                 else
@@ -103,7 +101,7 @@ namespace RPGMods.Commands
             {
                 if (BanSystem.UnbanUser(targetUserEntity))
                 {
-                    ctx.Event.User.SendSystemMessage($"Player \"{args[0]}\" is no longer banned.");
+                    Output.SendSystemMessage(ctx, $"Player \"{args[0]}\" is no longer banned.");
                     return;
                 }
                 else

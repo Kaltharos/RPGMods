@@ -1,10 +1,7 @@
 ﻿using RPGMods.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using Unity.Transforms;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -51,7 +48,7 @@ namespace RPGMods.Commands
                             return;
                         }
                     }
-                    ctx.Event.User.SendSystemMessage($"Spawning {count} {name} at <{pos.x}, {pos.z}>");
+                    Output.SendSystemMessage(ctx, $"Spawning {count} {name} at <{pos.x}, {pos.z}>");
                 }
                 else if (ctx.Args.Length >= 2 && !isParsable)
                 {
@@ -67,7 +64,7 @@ namespace RPGMods.Commands
                             Output.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
                             return;
                         }
-                        ctx.Event.User.SendSystemMessage($"Spawning {count} {name} at <{wp.x}, {wp.y}>");
+                        Output.SendSystemMessage(ctx, $"Spawning {count} {name} at <{wp.x}, {wp.y}>");
                         return;
                     }
 
@@ -79,7 +76,7 @@ namespace RPGMods.Commands
                             Output.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
                             return;
                         }
-                        ctx.Event.User.SendSystemMessage($"Spawning {count} {name} at <{wp.x}, {wp.y}>");
+                        Output.SendSystemMessage(ctx, $"Spawning {count} {name} at <{wp.x}, {wp.y}>");
                         return;
                     }
                     Output.CustomErrorMessage(ctx, "This waypoint doesn't exist.");

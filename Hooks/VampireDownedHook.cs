@@ -23,15 +23,6 @@ namespace RPGMods.Hooks
                 Entity Source = em.GetComponentData<VampireDownedBuff>(entity).Source;
                 VampireDownedServerEventSystem.TryFindRootOwner(Source, 1, em, out var Killer);
 
-                //var GUID = Helper.GetPrefabGUID(Killer);
-                //var Prefab_Name = Helper.GetPrefabName(GUID);
-                //Plugin.Logger.LogWarning($"1 Depth - eID: {GUID.GetHashCode()} | eC: {Prefab_Name}");
-
-                //VampireDownedServerEventSystem.TryFindRootOwner(Source, 2, em, out Killer);
-                //GUID = Helper.GetPrefabGUID(Killer);
-                //Prefab_Name = Helper.GetPrefabName(GUID);
-                //Plugin.Logger.LogWarning($"2 Depth - eID: {GUID.GetHashCode()} | eC: {Prefab_Name}");
-
                 //-- Update PvP Stats & Check
                 if (em.HasComponent<PlayerCharacter>(Killer) && em.HasComponent<PlayerCharacter>(Victim) && !Killer.Equals(Victim))
                 {

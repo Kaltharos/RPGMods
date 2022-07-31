@@ -1,9 +1,6 @@
 ﻿using ProjectM;
-using ProjectM.Network;
 using RPGMods.Utils;
-using Unity.Collections;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -14,7 +11,7 @@ namespace RPGMods.Commands
         {
             Entity PlayerCharacter = ctx.Event.SenderCharacterEntity;
             string CharName = ctx.Event.User.CharacterName.ToString();
-            EntityManager entityManager = VWorld.Server.EntityManager;
+            EntityManager entityManager = Plugin.Server.EntityManager;
 
             if (ctx.Args.Length >= 1)
             {
@@ -26,7 +23,7 @@ namespace RPGMods.Commands
                 }
                 else
                 {
-                    Utils.Output.CustomErrorMessage(ctx, $"Could not find the specified player \"{name}\".");
+                    Output.CustomErrorMessage(ctx, $"Could not find the specified player \"{name}\".");
                     return;
                 }
             }
@@ -50,7 +47,7 @@ namespace RPGMods.Commands
                     entityManager.SetComponentData(abilityState, abilityCooldownState);
                 }
             }
-            ctx.Event.User.SendSystemMessage($"Player \"{CharName}\" cooldown resetted.");
+            Output.SendSystemMessage(ctx, $"Player \"{CharName}\" cooldown resetted.");
         }
     }
 }

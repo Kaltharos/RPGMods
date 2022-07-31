@@ -1,7 +1,4 @@
-﻿using ProjectM;
-using ProjectM.Network;
-using RPGMods.Utils;
-using Wetstone.API;
+﻿using RPGMods.Utils;
 
 namespace RPGMods.Commands
 {
@@ -21,7 +18,7 @@ namespace RPGMods.Commands
             if (Helper.FindPlayer(name, true, out _, out var targetUserEntity))
             {
                 Helper.KickPlayer(targetUserEntity);
-                ctx.Event.User.SendSystemMessage($"Player \"{name}\" has been kicked from server.");
+                Output.SendSystemMessage(ctx, $"Player \"{name}\" has been kicked from server.");
             }
             else
             {

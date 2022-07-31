@@ -1,10 +1,6 @@
 ﻿using ProjectM;
 using RPGMods.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Systems
 {
@@ -28,7 +24,7 @@ namespace RPGMods.Systems
 
         public static bool isSiegeBuff = false;
 
-        private static EntityManager em = VWorld.Server.EntityManager;
+        private static EntityManager em = Plugin.Server.EntityManager;
 
         public static void BuffReceiver(Entity BuffEntity, PrefabGUID GUID)
         {

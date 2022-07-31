@@ -9,14 +9,13 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
-using Wetstone.API;
 using RPGMods.Utils;
 
 namespace RPGMods.Systems
 {
     public class ExperienceSystem
     {
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+        private static EntityManager entityManager = Plugin.Server.EntityManager;
 
         public static bool isEXPActive = true;
         public static float EXPMultiplier = 1;
@@ -117,7 +116,7 @@ namespace RPGMods.Systems
 
         public static bool GetAllies(Entity PlayerCharacter, out Dictionary<Entity, float> Group)
         {
-            var sgm = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
+            var sgm = Plugin.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
             Team team = entityManager.GetComponentData<Team>(PlayerCharacter);
             Group = new Dictionary<Entity, float>();
             if (sgm._TeamChecker.GetAlliedUsersCount(team) <= 1) return false;

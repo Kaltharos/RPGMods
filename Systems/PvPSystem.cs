@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Systems
 {
@@ -22,7 +21,7 @@ namespace RPGMods.Systems
         public static int OffenseLimit = 3;
         public static float Offense_Cooldown = 300f;
 
-        public static EntityManager em = VWorld.Server.EntityManager;
+        public static EntityManager em = Plugin.Server.EntityManager;
 
         private static ModifyUnitStatBuff_DOTS PResist = new ModifyUnitStatBuff_DOTS()
         {
@@ -94,7 +93,7 @@ namespace RPGMods.Systems
             var victim_name = victim_user.CharacterName.ToString();
             var victim_id = victim_user.PlatformId;
 
-            victim_user.SendSystemMessage($"<color=#c90e21ff>You've been killed by \"{killer_name}\"</color>");
+            ServerChatUtils.SendSystemMessageToClient(em, killer_user, $"<color=#c90e21ff>You've been defeated by \"{killer_name}\"</color>");
 
             Database.pvpkills.TryGetValue(killer_id, out var KillerKills);
             Database.pvpdeath.TryGetValue(victim_id, out var VictimDeath);
@@ -106,7 +105,7 @@ namespace RPGMods.Systems
             UpdateKD(killer_id, victim_id);
 
             //-- Announce Kills
-            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire \"{killer_name}\" has killed \"{victim_name}\"!");
+            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire \"{killer_name}\" has defeated \"{victim_name}\"!");
         }
 
         public static void UpdateKD(ulong killer_id, ulong victim_id)

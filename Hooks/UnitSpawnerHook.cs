@@ -1,8 +1,6 @@
 ﻿using ProjectM;
 using HarmonyLib;
 using RPGMods.Utils;
-using Unity.Entities;
-using System;
 
 namespace RPGMods.Hooks
 {

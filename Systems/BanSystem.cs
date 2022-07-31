@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using RPGMods.Utils;
-using ProjectM;
 using Unity.Entities;
-using Wetstone.API;
 using ProjectM.Network;
 using System.IO;
 using System.Text.Json;
@@ -13,7 +10,7 @@ namespace RPGMods.Systems
 {
     public static class BanSystem
     {
-        public static EntityManager em = VWorld.Server.EntityManager;
+        public static EntityManager em = Plugin.Server.EntityManager;
         public static bool IsUserBanned(ulong steamID, out BanData banData)
         {
             var isExist = Database.user_banlist.TryGetValue(steamID, out banData);

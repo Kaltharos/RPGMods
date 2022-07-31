@@ -3,14 +3,7 @@
 //using Unity.Collections;
 //using ProjectM.Network;
 //using ProjectM;
-//using ProjectM.Sequencer;
 //using RPGMods.Utils;
-//using RPGMods.Commands;
-//using RPGMods.Systems;
-//using ProjectM.Gameplay.Systems;
-//using System;
-//using Wetstone.API;
-//using System.Runtime.InteropServices;
 
 //namespace RPGMods.Hooks
 //{

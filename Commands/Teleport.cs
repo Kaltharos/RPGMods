@@ -1,11 +1,8 @@
 ﻿using ProjectM;
-using ProjectM.Network;
 using ProjectM.Scripting;
 using RPGMods.Utils;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -17,16 +14,16 @@ namespace RPGMods.Commands
             var eventUser = ctx.Event.User;
             var UserCharacter = ctx.Event.SenderCharacterEntity;
             var UserEntity = ctx.Event.SenderUserEntity;
-            EntityManager entityManager = VWorld.Server.EntityManager;
+            EntityManager entityManager = Plugin.Server.EntityManager;
 
             if (Helper.IsPlayerInCombat(UserCharacter))
             {
-                Utils.Output.CustomErrorMessage(ctx, "Unable to use command! You're in combat!");
+                Output.CustomErrorMessage(ctx, "Unable to use command! You're in combat!");
                 return;
             }
             if (ctx.Args.Length < 1)
             {
-                Utils.Output.InvalidArguments(ctx);
+                Output.InvalidArguments(ctx);
                 return;
             }
 
@@ -43,20 +40,20 @@ namespace RPGMods.Commands
             }
             else
             {
-                Utils.Output.CustomErrorMessage(ctx, "Target player not found.");
+                Output.CustomErrorMessage(ctx, "Target player not found.");
                 return;
             }
 
-            var serverGameManager = VWorld.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
+            var serverGameManager = Plugin.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
             if (!serverGameManager._TeamChecker.IsAllies(user_TeamComponent, target_TeamComponent))
             {
-                Utils.Output.CustomErrorMessage(ctx, "Unable to teleport to player from another Clan!");
+                Output.CustomErrorMessage(ctx, "Unable to teleport to player from another Clan!");
                 return;
             }
 
             if (Helper.IsPlayerInCombat(TargetChar))
             {
-                Utils.Output.CustomErrorMessage(ctx, $"Unable to teleport! Player \"{TargetName}\" is in combat!");
+                Output.CustomErrorMessage(ctx, $"Unable to teleport! Player \"{TargetName}\" is in combat!");
                 return;
             }
 

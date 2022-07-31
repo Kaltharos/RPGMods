@@ -2,15 +2,13 @@
 using ProjectM.Network;
 using RPGMods.Utils;
 using System;
-using System.Collections.Generic;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Systems
 {
     public class HunterHunted
     {
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+        private static EntityManager entityManager = Plugin.Server.EntityManager;
 
         public static bool isActive = true;
         public static int heat_cooldown = 35;
@@ -131,22 +129,22 @@ namespace RPGMods.Systems
                             if (player_banditheat >= 650)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, rand.Next(20, 25));
-                                Output.SendLore(userEntity, "<color=#c90e21ff>The bandits are ambushing you and they're not taking chances!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>The bandits is ambushing you and is not taking chances!</color>");
                             }
                             else if (player_banditheat >= 450)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, rand.Next(10, 15));
-                                Output.SendLore(userEntity, "<color=#c90e21ff>A large bandit squad is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c90e21ff>A large bandit squads is ambushing you!</color>");
                             }
                             else if (player_banditheat >= 250)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, 5);
-                                Output.SendLore(userEntity, "<color=#c4515cff>A small bandit squad is ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c4515cff>A small bandit squads is ambushing you!</color>");
                             }
                             else if (player_banditheat >= 150)
                             {
                                 SquadList.SpawnSquad(playerEntity, 0, 3);
-                                Output.SendLore(userEntity, "<color=#c9999eff>The bandits are ambushing you!</color>");
+                                Output.SendLore(userEntity, "<color=#c9999eff>The bandits is ambushing you!</color>");
                             }
                             Cache.bandit_last_ambushed[SteamID] = DateTime.Now;
                         }

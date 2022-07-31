@@ -1,6 +1,5 @@
 ﻿using ProjectM.Network;
 using RPGMods.Utils;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -19,7 +18,7 @@ namespace RPGMods.Commands
                         if (ctx.Args[1].ToLower().Equals("remove"))
                         {
                             Helper.RemoveBuff(CharEntity, Database.buff.Severe_GarlicDebuff);
-                            ctx.Event.User.SendSystemMessage($"Punishment debuff removed from player \"{PlayerName}\"");
+                            Output.SendSystemMessage(ctx, $"Punishment debuff removed from player \"{PlayerName}\"");
                             return;
                         }
                         else
@@ -31,7 +30,7 @@ namespace RPGMods.Commands
                     else
                     {
                         Helper.ApplyBuff(UserEntity, CharEntity, Database.buff.Severe_GarlicDebuff);
-                        ctx.Event.User.SendSystemMessage($"Applied punishment debuff to player \"{PlayerName}\"");
+                        Output.SendSystemMessage(ctx, $"Applied punishment debuff to player \"{PlayerName}\"");
                         return;
                     }
                 }

@@ -2,7 +2,6 @@
 using RPGMods.Systems;
 using RPGMods.Utils;
 using System.Linq;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -20,25 +19,25 @@ namespace RPGMods.Commands
                     var SortedPermission = Database.user_permission.ToList();
                     SortedPermission.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
                     var ListPermission = SortedPermission;
-                    ctx.Event.User.SendSystemMessage($"===================================");
+                    Output.SendSystemMessage(ctx, $"===================================");
                     int i = 0;
                     foreach (var result in ListPermission)
                     {
                         i++;
-                        ctx.Event.User.SendSystemMessage($"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
+                        Output.SendSystemMessage(ctx, $"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
                     }
-                    if (i == 0) ctx.Event.User.SendSystemMessage($"<color=#ffffffff>No Result</color>");
-                    ctx.Event.User.SendSystemMessage($"===================================");
+                    if (i == 0) Output.SendSystemMessage(ctx, $"<color=#ffffffff>No Result</color>");
+                    Output.SendSystemMessage(ctx, $"===================================");
                 }
                 else if (args[0].ToLower().Equals("save"))
                 {
                     PermissionSystem.SaveUserPermission();
-                    ctx.Event.User.SendSystemMessage("Saved user permission to JSON file.");
+                    Output.SendSystemMessage(ctx, "Saved user permission to JSON file.");
                 }
                 else if (args[0].ToLower().Equals("reload"))
                 {
                     PermissionSystem.LoadPermissions();
-                    ctx.Event.User.SendSystemMessage("Reloaded permission from JSON file.");
+                    Output.SendSystemMessage(ctx, "Reloaded permission from JSON file.");
                 }
                 else
                 {
@@ -80,7 +79,7 @@ namespace RPGMods.Commands
                         return;
                     }
                     playerName = args[2];
-                    SteamID = VWorld.Server.EntityManager.GetComponentData<User>(target_userEntity).PlatformId;
+                    SteamID = Plugin.Server.EntityManager.GetComponentData<User>(target_userEntity).PlatformId;
                 }
                 else
                 {
@@ -95,7 +94,7 @@ namespace RPGMods.Commands
                 if (level == 0) Database.user_permission.Remove(SteamID);
                 else Database.user_permission[SteamID] = level;
 
-                ctx.Event.User.SendSystemMessage($"Player \"{playerName}\" permission is now set to<color=#ffffffff> {level}</color>.");
+                Output.SendSystemMessage(ctx, $"Player \"{playerName}\" permission is now set to<color=#ffffffff> {level}</color>.");
                 return;
             }
             else

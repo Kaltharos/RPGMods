@@ -4,8 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.Json;
 using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
 
 namespace RPGMods.Utils
 {
@@ -98,6 +96,7 @@ namespace RPGMods.Utils
             Process = process;
         }
     }
+
     public struct SpawnNPCListen
     {
         public float Duration { get; set; }
@@ -160,6 +159,7 @@ namespace RPGMods.Utils
             return base.TryRemove(key, out _);
         }
     }
+
 
     public class Cache
     {
@@ -520,7 +520,7 @@ namespace RPGMods.Utils
 
             public static PrefabGUID InCombat = new PrefabGUID(581443919);
             public static PrefabGUID InCombat_PvP = new PrefabGUID(697095869);
-            public static PrefabGUID OutofCombat = new PrefabGUID(897325455);                   //-- Question, where can I intercept the Buff_OutOfCombat??
+            public static PrefabGUID OutofCombat = new PrefabGUID(897325455);
             public static PrefabGUID BloodMoon = new PrefabGUID(-560523291);
 
             public static PrefabGUID Severe_GarlicDebuff = new PrefabGUID(1582196539);          //-- Using this for PvP Punishment debuff

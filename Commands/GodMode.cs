@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Wetstone.API;
 using RPGMods.Utils;
 
 namespace RPGMods.Commands
@@ -17,7 +16,7 @@ namespace RPGMods.Commands
             else isGodMode = true;
             UpdateGodMode(ctx, isGodMode);
             string s = isGodMode ? "Activated" : "Deactivated";
-            ctx.Event.User.SendSystemMessage($"God mode <color=#ffff00ff>{s}</color>");
+            Output.SendSystemMessage(ctx, $"God mode <color=#ffff00ff>{s}</color>");
             Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 

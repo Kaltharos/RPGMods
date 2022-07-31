@@ -1,7 +1,6 @@
 ﻿using ProjectM;
 using RPGMods.Utils;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -31,7 +30,7 @@ namespace RPGMods.Commands
                     blood.BloodType = new PrefabGUID((int)type);
                     ctx.EntityManager.SetComponentData(entity, blood);
 
-                    ctx.Event.User.SendSystemMessage($"Got Blood Potion Type <color=#ffff00ff>{type}</color> with <color=#ffff00ff>{quality}</color>% quality");
+                    Output.SendSystemMessage(ctx.Event, $"Got Blood Potion Type <color=#ffff00ff>{type}</color> with <color=#ffff00ff>{quality}</color>% quality");
                 }
                 catch
                 {

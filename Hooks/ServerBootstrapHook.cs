@@ -8,8 +8,17 @@ using System;
 
 namespace RPGMods.Hooks
 {
+    [HarmonyPatch(typeof(GameBootstrap), nameof(GameBootstrap.Start))]
+    public static class GameBootstrap_Patch
+    {
+        public static void Postfix(GameBootstrap __instance)
+        {
+            Plugin.OnGameInitialized();
+        }
+    }
+
     [HarmonyPatch(typeof(ServerBootstrapSystem), nameof(ServerBootstrapSystem.OnUserConnected))]
-    public class OnUserConnected_Patch
+    public static class OnUserConnected_Patch
     {
         public static void Postfix(ServerBootstrapSystem __instance, NetConnectionId netConnectionId)
         {

@@ -1,9 +1,7 @@
-﻿using ProjectM;
-using RPGMods.Utils;
+﻿using RPGMods.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -19,7 +17,7 @@ namespace RPGMods.Commands
             else isSpeeding = true;
             UpdateSpeed(ctx, isSpeeding);
             string s = isSpeeding ? "Activated" : "Deactivated";
-            ctx.Event.User.SendSystemMessage($"Speed buff <color=#ffff00ff>{s}</color>");
+            Output.SendSystemMessage(ctx, $"Speed buff <color=#ffff00ff>{s}</color>");
             Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 

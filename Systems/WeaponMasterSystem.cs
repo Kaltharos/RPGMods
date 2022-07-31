@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Unity.Entities;
-using Wetstone.API;
 using RPGMods.Utils;
 
 namespace RPGMods.Systems
 {
     public class WeaponMasterSystem
     {
-        public static EntityManager em = VWorld.Server.EntityManager;
+        public static EntityManager em = Plugin.Server.EntityManager;
+
         public static bool isMasteryEnabled = true;
         public static bool isDecaySystemEnabled = true;
         public static int MasteryCombatTick = 5;

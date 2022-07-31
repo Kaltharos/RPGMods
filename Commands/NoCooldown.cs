@@ -1,10 +1,8 @@
-﻿using ProjectM;
-using RPGMods.Utils;
+﻿using RPGMods.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Unity.Entities;
-using Wetstone.API;
 
 namespace RPGMods.Commands
 {
@@ -20,7 +18,7 @@ namespace RPGMods.Commands
             else isNoCD = true;
             UpdateCooldownList(ctx, isNoCD);
             string p = isNoCD ? "Activated" : "Deactivated";
-            ctx.Event.User.SendSystemMessage($"No Cooldown is now <color=#ffff00ff>{p}</color>");
+            Output.SendSystemMessage(ctx, $"No Cooldown is now <color=#ffff00ff>{p}</color>");
             Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
         }
 

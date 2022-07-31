@@ -1,6 +1,5 @@
 ﻿using ProjectM;
 using RPGMods.Utils;
-using Wetstone.API;
 using System.Text.RegularExpressions;
 
 namespace RPGMods.Commands
@@ -26,11 +25,11 @@ namespace RPGMods.Commands
                     return;
                 }
             }
-            
-            ctx.Event.User.SendSystemMessage($"Saving data....");
+
+            Output.SendSystemMessage(ctx, $"Saving data....");
             //AutoSaveSystem.SaveDatabase();
-            VWorld.Server.GetExistingSystem<TriggerPersistenceSaveSystem>().TriggerSave(SaveReason.ManualSave, name);
-            ctx.Event.User.SendSystemMessage($"Data save complete.");
+            Plugin.Server.GetExistingSystem<TriggerPersistenceSaveSystem>().TriggerSave(SaveReason.ManualSave, name);
+            Output.SendSystemMessage(ctx, $"Data save complete.");
         }
     }
 }

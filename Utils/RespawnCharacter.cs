@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Wetstone.API;
 
 namespace RPGMods.Utils
 {
@@ -15,10 +14,10 @@ namespace RPGMods.Utils
     }
     public class RespawnCharacter
     {
-        private static EntityManager entityManager = VWorld.Server.EntityManager;
+        private static EntityManager entityManager = Plugin.Server.EntityManager;
         public static void Respawn(Entity VictimEntity, PlayerCharacter player, Entity userEntity)
         {
-            var bufferSystem = VWorld.Server.GetOrCreateSystem<EntityCommandBufferSystem>();
+            var bufferSystem = Plugin.Server.GetOrCreateSystem<EntityCommandBufferSystem>();
             var commandBufferSafe = new EntityCommandBufferSafe(Allocator.Temp)
             {
                 Unsafe = bufferSystem.CreateCommandBuffer()
@@ -38,7 +37,7 @@ namespace RPGMods.Utils
                 var boxedBytePtr = IntPtr.Subtract(bytePtr, 0x10);
 
                 var spawnLocation = new Il2CppSystem.Nullable<float3>(boxedBytePtr);
-                var server = VWorld.Server.GetOrCreateSystem<ServerBootstrapSystem>();
+                var server = Plugin.Server.GetOrCreateSystem<ServerBootstrapSystem>();
 
                 server.RespawnCharacter(commandBufferSafe, userEntity, customSpawnLocation: spawnLocation, previousCharacter: VictimEntity, fadeOutEntity: userEntity);
             }

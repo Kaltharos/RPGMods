@@ -363,11 +363,11 @@ Spawns a NPC. Optional: To a previously created waypoint.\
 </details>
 
 <details>
-<summary>spawnnpc</summary>
+<summary>customspawn</summary>
 
-`spawnnpc <prefabname> [<amount>] [<waypoint>]`\
-Spawns a NPC. Optional: To a previously created waypoint.\
-&ensp;&ensp;**Example:** `spawnnpc CHAR_Cursed_MountainBeast_VBlood 1 arena`
+`customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable(\"true/false\")>]`\
+Spawns a modified NPC at your current position.\
+&ensp;&ensp;**Example:** `customspawn CHAR_Bandit_Thug creature 100 true`
 
 </details>
 

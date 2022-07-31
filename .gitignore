@@ -7,10 +7,14 @@
 /Commands/debug.cs
 /Commands/buff.cs
 /Commands/BuffList.cs
+/Commands/Restart.cs
 /Systems/Experimental.cs
+
 /Hooks/ExperimentalHook.cs
 /Hooks/DroppedItemHook.cs
 /Hooks/SelfCast.cs
+
+.gitignore
 
 # User-specific files
 *.rsuser

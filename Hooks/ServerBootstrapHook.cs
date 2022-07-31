@@ -18,6 +18,15 @@ namespace RPGMods.Hooks
         }
     }
 
+    [HarmonyPatch(typeof(GameBootstrap), nameof(GameBootstrap.OnApplicationQuit))]
+    public static class GameBootstrapQuit_Patch
+    {
+        public static void Prefix()
+        {
+            AutoSaveSystem.SaveDatabase();
+        }
+    }
+
     [HarmonyPatch(typeof(ServerBootstrapSystem), nameof(ServerBootstrapSystem.OnUserConnected))]
     public static class OnUserConnected_Patch
     {
@@ -87,15 +96,6 @@ namespace RPGMods.Hooks
                 }
                 catch { };
             }
-        }
-    }
-
-    [HarmonyPatch(typeof(ServerBootstrapSystem), nameof(ServerBootstrapSystem.OnDestroy))]
-    public static class OnDestroy_Patch
-    {
-        private static void Prefix()
-        {
-            AutoSaveSystem.SaveDatabase();
         }
     }
 }

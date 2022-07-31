@@ -20,12 +20,13 @@ namespace RPGMods
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 
-    #if WETSTONE
-        [BepInDependency("xyz.molenzwiebel.wetstone")]
-        [Reloadable]
-    #endif
-
+#if WETSTONE
+    [BepInDependency("xyz.molenzwiebel.wetstone")]
+    [Reloadable]
+    public class Plugin : BasePlugin, IRunOnInitialized
+#else
     public class Plugin : BasePlugin
+#endif
     {
         private Harmony harmony;
 
@@ -89,6 +90,8 @@ namespace RPGMods
         private static ConfigEntry<int> Offline_Weapon_MasteryDecayValue;
         private static ConfigEntry<int> MasteryCombatTick;
         private static ConfigEntry<int> MasteryMaxCombatTicks;
+
+        public static bool isInitialized = false;
 
         public static ManualLogSource Logger;
 
@@ -210,11 +213,14 @@ namespace RPGMods
             AutoSaveSystem.SaveDatabase();
             Config.Clear();
             harmony.UnpatchSelf();
+            
             return true;
         }
 
-        public static void OnGameInitialized()
+        public void OnGameInitialized()
         {
+            if (isInitialized) return;
+
             //-- Commands Related
             AutoSaveSystem.LoadDatabase();
 
@@ -280,6 +286,8 @@ namespace RPGMods
             WeaponMasterSystem.MaxMastery = WeaponMaxMastery.Value;
             WeaponMasterSystem.MasteryCombatTick = MasteryCombatTick.Value;
             WeaponMasterSystem.MaxCombatTick = MasteryMaxCombatTicks.Value;
+
+            isInitialized = true;
         }
 
         public static void HandleChatMessage(VChatEvent ev)

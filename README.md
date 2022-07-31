@@ -551,7 +551,7 @@ Kick the specified player from the server.
 `1.0.2`
 - Added customspawn command.
 - Added property to compile with wetstone or not.
-
+- Added compabilities with wetstone reload function.
 
 `1.0.1`
 - Adjustment in EXP System so player don't get more exp if they've reached the max level cap.

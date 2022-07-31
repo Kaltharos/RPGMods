@@ -11,8 +11,9 @@ namespace RPGMods.Hooks
     [HarmonyPatch(typeof(GameBootstrap), nameof(GameBootstrap.Start))]
     public static class GameBootstrap_Patch
     {
-        public static void Postfix(GameBootstrap __instance)
+        public static void Postfix()
         {
+            Plugin Plugin = new Plugin();
             Plugin.OnGameInitialized();
         }
     }

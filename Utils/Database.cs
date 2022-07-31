@@ -1,5 +1,6 @@
 ﻿using ProjectM;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.Json;
 using Unity.Entities;
@@ -76,6 +77,90 @@ namespace RPGMods.Utils
         }
     }
 
+    public struct SpawnOptions
+    {
+        public bool ModifyBlood { get; set; }
+        public PrefabGUID BloodType { get; set; }
+        public float BloodQuality { get; set; }
+        public bool BloodConsumeable { get; set; }
+        public bool ModifyStats { get; set; }
+        public UnitStats UnitStats { get; set; }
+        public bool Process { get; set; }
+
+        public SpawnOptions(bool modifyBlood = false, PrefabGUID bloodType = default, float bloodQuality = 0, bool bloodConsumeable = true, bool modifyStats = false, UnitStats unitStats = default, bool process = false)
+        {
+            ModifyBlood = modifyBlood;
+            BloodType = bloodType;
+            BloodQuality = bloodQuality;
+            BloodConsumeable = bloodConsumeable;
+            ModifyStats = modifyStats;
+            UnitStats = unitStats;
+            Process = process;
+        }
+    }
+    public struct SpawnNPCListen
+    {
+        public float Duration { get; set; }
+        public int EntityIndex { get; set; }
+        public int EntityVersion { get; set; }
+        public SpawnOptions Options { get; set; }
+        public bool Process { get; set; }
+
+        public SpawnNPCListen(float duration = 0.0f, int entityIndex = 0, int entityVersion = 0, SpawnOptions options = default, bool process = true)
+        {
+            Duration = duration;
+            EntityIndex = entityIndex;
+            EntityVersion = entityVersion;
+            Options = options;
+            Process = process;
+        }
+
+        public Entity getEntity()
+        {
+            Entity entity = new Entity()
+            {
+                Index = this.EntityIndex,
+                Version = this.EntityVersion,
+            };
+            return entity;
+        }
+    }
+
+    public sealed class SizedDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
+    {
+
+        private int maxSize;
+        private Queue<TKey> keys;
+
+        public SizedDictionary(int size)
+        {
+            maxSize = size;
+            keys = new Queue<TKey>();
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            if (key == null) throw new ArgumentNullException();
+            base.TryAdd(key, value);
+            keys.Enqueue(key);
+            if (keys.Count > maxSize) base.TryRemove(keys.Dequeue(), out _);
+        }
+
+        public bool Remove(TKey key)
+        {
+            if (key == null) throw new ArgumentNullException();
+            if (!keys.Contains(key)) return false;
+            var newQueue = new Queue<TKey>();
+            while (keys.Count > 0)
+            {
+                var thisKey = keys.Dequeue();
+                if (!thisKey.Equals(key)) newQueue.Enqueue(thisKey);
+            }
+            keys = newQueue;
+            return base.TryRemove(key, out _);
+        }
+    }
+
     public class Cache
     {
         //-- Cache (Wiped on plugin reload, server restart, and shutdown.)
@@ -92,6 +177,7 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, int> punish_killer_offense = new Dictionary<ulong, int>();
         public static Dictionary<ulong, DateTime> punish_killer_last_offense = new Dictionary<ulong, DateTime>();
         public static Dictionary<ulong, float> player_level = new Dictionary<ulong, float>();
+        public static SizedDictionary<float, SpawnNPCListen> spawnNPC_Listen = new SizedDictionary<float, SpawnNPCListen>(500);
     }
 
     public class Database

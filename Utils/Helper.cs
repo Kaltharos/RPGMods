@@ -15,12 +15,14 @@ using Unity.Transforms;
 using Wetstone.API;
 using System.Reflection;
 using static RPGMods.Utils.Database;
+using RPGMods.Hooks;
 
 namespace RPGMods.Utils
 {
     public static class Helper
     {
         private static Entity empty_entity = new Entity();
+        private static System.Random rand = new System.Random();
 
         public static void ApplyBuff(Entity User, Entity Char, PrefabGUID GUID)
         {
@@ -195,6 +197,36 @@ namespace RPGMods.Utils
             var cBuffer = em.GetBuffer<BoolModificationBuffer>(character);
             cUnitStats.PvPProtected.Set(value, cBuffer);
             em.SetComponentData(character, cUnitStats);
+        }
+
+        public static bool SpawnNPCIdentify(out float identifier, string name, float3 position, float minRange = 1, float maxRange = 2, float duration = -1)
+        {
+            identifier = 0f;
+            var duration_final = duration;
+            var isFound = database_units.TryGetValue(name, out var unit);
+            if (!isFound) return false;
+
+            float UniqueID = (float)rand.NextDouble();
+            if (UniqueID == 0.0) UniqueID += 0.00001f;
+            else if (UniqueID == 1.0f) UniqueID -= 0.00001f;
+            duration_final = duration + UniqueID;
+
+            bool GetNPCKey = Cache.spawnNPC_Listen.TryGetValue(duration, out _);
+            while (GetNPCKey)
+            {
+                UniqueID = (float)rand.NextDouble();
+                if (UniqueID == 0.0) UniqueID += 0.00001f;
+                else if (UniqueID == 1.0f) UniqueID -= 0.00001f;
+                duration_final = duration + UniqueID;
+            }
+
+            UnitSpawnerReactSystem_Patch.listen = true;
+            identifier = duration_final;
+            var Data = new SpawnNPCListen(duration, default, default, default, false);
+            Cache.spawnNPC_Listen.Add(duration_final, Data);
+
+            VWorld.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, position, 1, minRange, maxRange, duration_final);
+            return true;
         }
 
         public static bool SpawnAtPosition(Entity user, string name, int count, float2 position, float minRange = 1, float maxRange = 2, float duration = -1)

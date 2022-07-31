@@ -363,6 +363,15 @@ Spawns a NPC. Optional: To a previously created waypoint.\
 </details>
 
 <details>
+<summary>spawnnpc</summary>
+
+`spawnnpc <prefabname> [<amount>] [<waypoint>]`\
+Spawns a NPC. Optional: To a previously created waypoint.\
+&ensp;&ensp;**Example:** `spawnnpc CHAR_Cursed_MountainBeast_VBlood 1 arena`
+
+</details>
+
+<details>
 <summary>health</summary>
 
 `health <percentage> [<playername>]`\
@@ -549,6 +558,9 @@ Kick the specified player from the server.
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`0.3.3`
+- Added customspawn command.
 
 `0.3.2`
 - Adjustment in EXP System so player don't get more exp if they've reached the max level cap.

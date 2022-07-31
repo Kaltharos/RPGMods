@@ -559,19 +559,22 @@ Trigger the exit signal & shutdown the server.
 `1.0.2`
 - Added customspawn command.
 - Added property to compile with wetstone or not.
-- Fixed compabilities with wetstone reload function.
 - Added shutdown command.
 
 `1.0.1`
+- Added optional wetstone dependency.
+- Added compabilities with wetstone reload function.
+
+`1.0.0`
+- Removed wetstone dependency
+
+`0.3.2`
 - Adjustment in EXP System so player don't get more exp if they've reached the max level cap.
 - Adjustment in EXP gain for killing lower level mobs.
 - Adjusted bonus EXP gain for killing higher level mob to be capped at 10 level higher max.
 - User with sufficient permission for waypoint_args will no longer be restricted by the waypoint limit.
 - Reduced the required heat for ambush to occur.
 - Fixed PvP Debuff punishment not applying correctly.
-
-`1.0.0`
-- Removed wetstone dependency
 
 `0.3.1`
 - Added configurable permission for special params that previously only usable by admins.

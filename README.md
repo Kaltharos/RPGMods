@@ -279,17 +279,17 @@ Gives you a previously specified set of items.\
 ```json
 [
   {
-    "Name": "Example1",
+    "Name": "Kit1",
     "PrefabGUIDs": {
-      "820932258": 50, <-- 50 Gem Dust
-      "2106123809": 20 <-- 20 Ghost Yarn
+      "820932258": 50,
+      "2106123809": 20
     }
   },
   {
-    "Name": "Example2",
+    "Name": "Kit2",
     "PrefabGUIDs": {
-      "x1": y1,
-      "x2": y2
+      "820932258": 50,
+      "2106123809": 20
     }
   }
 ]
@@ -560,6 +560,9 @@ Trigger the exit signal & shutdown the server.
 - Added customspawn command.
 - Added property to compile with wetstone or not.
 - Added shutdown command.
+- Bugfix for on defeat message.
+- Added kits json load message.
+- Minor adjustments.
 
 `1.0.1`
 - Added optional wetstone dependency.

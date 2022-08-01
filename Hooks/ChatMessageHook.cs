@@ -28,8 +28,6 @@ namespace RPGMods.Hooks
     [HarmonyPatch(typeof(ChatMessageSystem), nameof(ChatMessageSystem.OnUpdate))]
     public class ChatMessageSystem_Patch
     {
-        public static string CommandPrefix = ".";
-        public static Entity EmptyEntity = new Entity();
         public static void Prefix(ChatMessageSystem __instance)
         {
             if (__instance.__ChatMessageJob_entityQuery != null)
@@ -42,7 +40,7 @@ namespace RPGMods.Hooks
                     var chatEventData = __instance.EntityManager.GetComponentData<ChatMessageEvent>(entity);
 
                     var messageText = chatEventData.MessageText.ToString();
-                    if (messageText.StartsWith(CommandPrefix, System.StringComparison.Ordinal))
+                    if (messageText.StartsWith(CommandHandler.Prefix, System.StringComparison.Ordinal))
                     {
                         VChatEvent ev = new VChatEvent(fromData.User, fromData.Character, messageText, chatEventData.MessageType, userData);
                         CommandHandler.HandleCommands(ev);

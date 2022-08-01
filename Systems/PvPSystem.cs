@@ -93,7 +93,7 @@ namespace RPGMods.Systems
             var victim_name = victim_user.CharacterName.ToString();
             var victim_id = victim_user.PlatformId;
 
-            ServerChatUtils.SendSystemMessageToClient(em, killer_user, $"<color=#c90e21ff>You've been defeated by \"{killer_name}\"</color>");
+            ServerChatUtils.SendSystemMessageToClient(em, victim_user, $"<color=#c90e21ff>You've been defeated by \"{killer_name}\"</color>");
 
             Database.pvpkills.TryGetValue(killer_id, out var KillerKills);
             Database.pvpdeath.TryGetValue(victim_id, out var VictimDeath);

@@ -225,7 +225,6 @@ namespace RPGMods
             AutoSaveSystem.LoadDatabase();
 
             //-- Apply configs
-            ChatMessageSystem_Patch.CommandPrefix = Prefix.Value;
             CommandHandler.Prefix = Prefix.Value;
             CommandHandler.DisabledCommands = DisabledCommands.Value;
             CommandHandler.delay_Cooldown = DelayedCommands.Value;

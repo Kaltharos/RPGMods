@@ -51,10 +51,12 @@ namespace RPGMods.Commands
             try
             {
                 kits = JsonSerializer.Deserialize<List<ItemKit>>(json);
+                Plugin.Logger.LogWarning("Kits DB Populated.");
             }
-            catch
+            catch(Exception e)
             {
                 kits = new List<ItemKit>();
+                Plugin.Logger.LogWarning("Kits DB Created.");
             }
         }
 

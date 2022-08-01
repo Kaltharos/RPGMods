@@ -16,7 +16,6 @@ namespace RPGMods.Systems
         public static bool isVIPSystem = true;
         public static bool isVIPWhitelist = true;
         public static int VIP_Permission = 10;
-        public static string commandPrefix = ".";
 
         public static double VIP_OutCombat_ResYield = -1.0;
         public static double VIP_OutCombat_DurabilityLoss = -1.0;

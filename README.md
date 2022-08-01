@@ -561,7 +561,7 @@ Trigger the exit signal & shutdown the server.
 - Added property to compile with wetstone or not.
 - Added shutdown command.
 - Bugfix for on defeat message.
-- Added kits json load message.
+- Added kits json save/load log message.
 - Minor adjustments.
 
 `1.0.1`

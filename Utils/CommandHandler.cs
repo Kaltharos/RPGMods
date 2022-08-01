@@ -15,7 +15,7 @@ namespace RPGMods.Utils
 {
     public class CommandHandler
     {
-        public static string Prefix { get; set; }
+        public static string Prefix = ".";
         public static string DisabledCommands { get; set; }
 
         public static float delay_Cooldown = 5;

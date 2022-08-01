@@ -53,7 +53,7 @@ namespace RPGMods.Commands
                 kits = JsonSerializer.Deserialize<List<ItemKit>>(json);
                 Plugin.Logger.LogWarning("Kits DB Populated.");
             }
-            catch(Exception e)
+            catch
             {
                 kits = new List<ItemKit>();
                 Plugin.Logger.LogWarning("Kits DB Created.");

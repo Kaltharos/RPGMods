@@ -62,7 +62,7 @@ namespace RPGMods.Commands
                             return;
                         }
                         Output.SendSystemMessage(ctx, $"{ctx.Args[1].ToUpper()} Mastery for \"{CharName}\" adjusted by<color=#ffffffff>  {value * 0.001}%</color>");
-                        Helper.ApplyBuff(UserEntity, CharEntity, Database.buff.Buff_VBlood_Perk_Moose);
+                        Helper.ApplyBuff(UserEntity, CharEntity, Database.Buff.Buff_VBlood_Perk_Moose);
                         return;
                         
                     }

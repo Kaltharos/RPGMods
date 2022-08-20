@@ -2,27 +2,72 @@
 using ProjectM.Network;
 using RPGMods.Utils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Unity.Collections;
 using Unity.Entities;
 
 namespace RPGMods.Systems
 {
     public class PvPSystem
     {
-        public static bool announce_kills = true;
-
-        public static bool isLadderEnabled = true;
         public static bool isPvPToggleEnabled = true;
+
+        public static bool isAnnounceKills = true;
+        public static bool isLadderEnabled = true;
+        public static int LadderLength = 10;
+
+        //-- Punish System
         public static bool isPunishEnabled = true;
+        public static bool isSortByHonor = true;
         public static int PunishLevelDiff = -10;
         public static float PunishDuration = 1800f;
         public static int OffenseLimit = 3;
         public static float Offense_Cooldown = 300f;
 
+        //-- Honor System
+        //-- The Only Potential Buff we can use for hostile mark
+        //Buff_Cultist_BloodFrenzy_Buff - PrefabGuid(-106492795)
+        public static PrefabGUID HostileBuff = new PrefabGUID(-106492795);
+        public static bool isHonorSystemEnabled = true;
+        public static int HonorGainSpanLimit = 60;
+        public static int MaxHonorGainPerSpan = 250;
+        public static bool isHonorBenefitEnabled = true;
+
+        public static bool isEnableHostileGlow = true;
+        public static bool isUseProximityGlow = true;
+        #region HostileBuff Modification
+        public static readonly LifeTime lifeTime_Permanent = new LifeTime()
+        {
+            Duration = 0,
+            EndAction = LifeTimeEndAction.None
+        };
+        public static readonly ModifyMovementSpeedBuff MS_Zero = new ModifyMovementSpeedBuff()
+        {
+            MoveSpeed = 1,
+            MultiplyAdd = false,
+            Curve = default
+        };
+        #endregion
+
+        //-- Custom Siege System
+        //-- -- Global Siege
+        public static class Interlocked
+        {
+            public static bool isSiegeOn = true;
+        }
+        public static DateTime SiegeStart = DateTime.Now;
+        public static DateTime SiegeEnd = DateTime.Now;
+        //-- -- Player Siege
+        public static int SiegeDuration = 180;
+
         public static EntityManager em = Plugin.Server.EntityManager;
 
+        #region PvP Punishment DOTS
         private static ModifyUnitStatBuff_DOTS PResist = new ModifyUnitStatBuff_DOTS()
         {
             StatType = UnitStatType.PhysicalResistance,
@@ -78,6 +123,64 @@ namespace RPGMods.Systems
             ModificationType = ModificationType.Multiply,
             Id = ModificationId.NewId(0)
         };
+        #endregion
+
+        public static void MobKillMonitor(Entity KillerEntity, Entity VictimEntity)
+        {
+            if (em.HasComponent<Minion>(VictimEntity)) return;
+
+            var killer = em.GetComponentData<PlayerCharacter>(KillerEntity);
+            var killer_userEntity = killer.UserEntity._Entity;
+            var killer_user = em.GetComponentData<User>(killer_userEntity);
+            var killer_name = killer_user.CharacterName.ToString();
+            var killer_id = killer_user.PlatformId;
+
+            Database.PvPStats.TryGetValue(killer_id, out var KillerStats);
+
+            KillerStats.PlayerName = killer_name;
+
+            bool renamePlayer = false;
+
+            if (KillerStats.Reputation < 10000)
+            {
+                Cache.ReputationLog.TryGetValue(killer_id, out var RepLog);
+
+                TimeSpan ReputationSpan = DateTime.Now - RepLog.TimeStamp;
+                if (ReputationSpan.TotalMinutes > HonorGainSpanLimit)
+                {
+                    RepLog.TimeStamp = DateTime.Now;
+                    RepLog.TotalGained = 0;
+                }
+
+                if (RepLog.TotalGained < MaxHonorGainPerSpan)
+                {
+                    if (KillerStats.Reputation + 1 > 10000) KillerStats.Reputation = 10000;
+                    else KillerStats.Reputation += 1;
+
+                    RepLog.TotalGained += 1;
+
+                    var KillerHonorInfo = GetHonorTitle(KillerStats.Reputation);
+
+                    if (KillerStats.Title != KillerHonorInfo.Title)
+                    {
+                        if (KillerStats.Reputation <= -1000) PvPSystem.HostileON(killer_id, KillerEntity, killer_userEntity);
+                        KillerStats.Title = KillerHonorInfo.Title;
+                        var true_name = Helper.GetTrueName(killer_name);
+                        killer_name = "[" + KillerHonorInfo.Title + "]" + true_name;
+                        KillerStats.PlayerName = killer_name;
+                        renamePlayer = true;
+                    }
+                }
+
+                Cache.ReputationLog[killer_id] = RepLog;
+            }
+
+            Database.PvPStats[killer_id] = KillerStats;
+            if (renamePlayer)
+            {
+                Helper.RenamePlayer(killer_userEntity, KillerEntity, killer_name);
+            }
+        }
 
         public static void Monitor(Entity KillerEntity, Entity VictimEntity)
         {
@@ -93,34 +196,182 @@ namespace RPGMods.Systems
             var victim_name = victim_user.CharacterName.ToString();
             var victim_id = victim_user.PlatformId;
 
-            ServerChatUtils.SendSystemMessageToClient(em, victim_user, $"<color=#c90e21ff>You've been defeated by \"{killer_name}\"</color>");
+            Database.PvPStats.TryGetValue(killer_id, out var KillerStats);
+            Database.PvPStats.TryGetValue(victim_id, out var VictimStats);
 
-            Database.pvpkills.TryGetValue(killer_id, out var KillerKills);
-            Database.pvpdeath.TryGetValue(victim_id, out var VictimDeath);
+            KillerStats.PlayerName = killer_name;
+            KillerStats.Kills += 1;
 
-            Database.pvpkills[killer_id] = KillerKills + 1;
-            Database.pvpdeath[victim_id] = VictimDeath + 1;
+            VictimStats.PlayerName = victim_name;
+            VictimStats.Deaths += 1;
 
-            //-- Update K/D
-            UpdateKD(killer_id, victim_id);
+            if (KillerStats.Deaths != 0) KillerStats.KD = Math.Round((double)KillerStats.Kills / KillerStats.Deaths, 2);
+            else KillerStats.KD = KillerStats.Kills;
 
-            //-- Announce Kills
-            if (announce_kills) ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire \"{killer_name}\" has defeated \"{victim_name}\"!");
+            if (VictimStats.Kills != 0) VictimStats.KD = Math.Round((double)VictimStats.Kills / VictimStats.Deaths, 2);
+            else VictimStats.KD = 0;
+
+            bool renamePlayer = false;
+            if (isHonorSystemEnabled)
+            {
+                Cache.ReputationLog.TryGetValue(killer_id, out var RepLog);
+                var VictimHonorInfo = GetHonorTitle(VictimStats.Reputation);
+
+                TimeSpan ReputationSpan = DateTime.Now - RepLog.TimeStamp;
+                if (ReputationSpan.TotalMinutes > HonorGainSpanLimit)
+                {
+                    RepLog.TimeStamp = DateTime.Now;
+                    RepLog.TotalGained = 0;
+                }
+
+                if (RepLog.TotalGained < MaxHonorGainPerSpan)
+                {
+                    if (VictimHonorInfo.Rewards < 0)
+                    {
+                        Cache.HostilityState.TryGetValue(VictimEntity, out var state);
+                        if (state.IsHostile) VictimHonorInfo.Rewards = 0;
+                    }
+
+                    if (VictimHonorInfo.Rewards > 0) RepLog.TotalGained += VictimHonorInfo.Rewards;
+
+                    if (KillerStats.Reputation + VictimHonorInfo.Rewards > 10000) KillerStats.Reputation = 10000;
+                    else KillerStats.Reputation += VictimHonorInfo.Rewards;
+
+                    var KillerHonorInfo = GetHonorTitle(KillerStats.Reputation);
+
+                    if (KillerStats.Title != KillerHonorInfo.Title)
+                    {
+                        if (KillerStats.Reputation <= -1000) PvPSystem.HostileON(killer_id, KillerEntity, killer_userEntity);
+                        if (KillerStats.Reputation <= -20000) PvPSystem.SiegeON(killer_id, KillerEntity, killer_userEntity);
+
+                        KillerStats.Title = KillerHonorInfo.Title;
+                        var true_name = Helper.GetTrueName(killer_name);
+                        killer_name = "[" + KillerHonorInfo.Title + "]" + true_name;
+                        KillerStats.PlayerName = killer_name;
+                        renamePlayer = true;
+                    }
+                }
+
+                Cache.ReputationLog[killer_id] = RepLog;
+            }
+
+            Database.PvPStats[killer_id] = KillerStats;
+            Database.PvPStats[victim_id] = VictimStats;
+
+            if (renamePlayer)
+            {
+                Helper.RenamePlayer(killer_userEntity, KillerEntity, killer_name);
+            }
+
+            ServerChatUtils.SendSystemMessageToClient(em, victim_user, Utils.Color.Red($"You've been defeated by \"{killer_name}\""));
+            if (isAnnounceKills) ServerChatUtils.SendSystemMessageToAllClients(em, $"Vampire {Utils.Color.Red(killer_name)} has defeated {Utils.Color.Green(victim_name)}!");
         }
 
-        public static void UpdateKD(ulong killer_id, ulong victim_id)
+        public static bool HostileON(ulong SteamID, Entity playerEntity, Entity userEntity)
         {
-            var isExist = Database.pvpdeath.TryGetValue(killer_id, out _);
-            if (!isExist) Database.pvpdeath[killer_id] = 0;
+            StateData stateData = new StateData(SteamID, true);
+            Cache.HostilityState[playerEntity] = stateData;
+            if (isEnableHostileGlow && !isUseProximityGlow) Helper.ApplyBuff(userEntity, playerEntity, PvPSystem.HostileBuff);
+            return true;
+        }
 
-            isExist = Database.pvpkills.TryGetValue(victim_id, out _);
-            if (!isExist) Database.pvpkills[victim_id] = 0;
+        public static bool HostileOFF(ulong SteamID, Entity playerEntity)
+        {
+            StateData stateData = new StateData(SteamID, false);
+            Cache.HostilityState[playerEntity] = stateData;
+            Helper.RemoveBuff(playerEntity, PvPSystem.HostileBuff);
+            return true;
+        }
 
-            if (Database.pvpdeath[killer_id] != 0) Database.pvpkd[killer_id] = (double)Database.pvpkills[killer_id] / Database.pvpdeath[killer_id];
-            else Database.pvpkd[killer_id] = Database.pvpkills[killer_id];
+        public static bool SiegeON(ulong SteamID, Entity playerEntity, Entity userEntity)
+        {
+            Database.SiegeState[SteamID] = new SiegeData(true, DateTime.Now.AddMinutes(PvPSystem.SiegeDuration), DateTime.Now);
+            PvPSystem.HostileON(SteamID, playerEntity, userEntity);
 
-            if (Database.pvpkills[victim_id] != 0) Database.pvpkd[victim_id] = (double)Database.pvpkills[victim_id] / Database.pvpdeath[victim_id];
-            else Database.pvpkd[victim_id] = 0;
+            Database.PvPStats.TryGetValue(SteamID, out var pvpStats);
+            if (pvpStats.Reputation > -20000)
+            {
+                TimeSpan span = Database.SiegeState[SteamID].SiegeEndTime - DateTime.Now;
+                TaskRunner.Start(taskWorld =>
+                {
+                    PvPSystem.SiegeOFF(SteamID, playerEntity);
+                    return new object();
+                }, false, false, false, span);
+            }
+            return true;
+        }
+
+        public static bool SiegeOFF(ulong SteamID, Entity playerEntity)
+        {
+            Database.PvPStats.TryGetValue(SteamID, out var pvpStats);
+            if (pvpStats.Reputation <= -20000)
+            {
+                return false;
+            }
+
+            if (pvpStats.Reputation > -1000)
+            {
+                if (!Helper.IsPlayerInCombat(playerEntity))
+                {
+                    PvPSystem.HostileOFF(SteamID, playerEntity);
+                }
+            }
+            Database.SiegeState[SteamID] = new SiegeData(false, default, default);
+
+            //var playerData = Plugin.Server.EntityManager.GetComponentData<PlayerCharacter>(playerEntity);
+            //var userData = Plugin.Server.EntityManager.GetComponentData<User>(playerData.UserEntity._Entity);
+            //ServerChatUtils.SendSystemMessageToClient(Plugin.Server.EntityManager, userData, "Siege mode has ended.");
+            return true;
+        }
+
+        public static async Task SiegeList(Context ctx)
+        {
+            await Task.Yield();
+
+            List<string> messages = new List<string>();
+
+            IEnumerable<KeyValuePair<ulong, SiegeData>> SortedList;
+
+            SortedList = Database.SiegeState.Where(x => x.Value.IsSiegeOn == true).OrderByDescending(x => x.Value.SiegeEndTime - DateTime.Now);
+
+            int page = 0;
+            if (ctx.Args.Length >= 1 && int.TryParse(ctx.Args[0], out page))
+            {
+                page -= 1;
+            }
+
+            var recordsPerPage = 5;
+
+            var maxPage = (int)Math.Ceiling(Database.SiegeState.Count / (double)recordsPerPage);
+            page = Math.Min(maxPage - 1, page);
+
+            var List = SortedList.Skip(page * recordsPerPage).Take(recordsPerPage);
+            int order = (page * recordsPerPage);
+            messages.Add($"============ Siege List [{page+1}/{maxPage}] ============");
+            if (List.Count() == 0) messages.Add(Utils.Color.White("No Result"));
+            else
+            {
+                foreach (var result in List)
+                {
+                    order++;
+                    string PlayerName = Utils.Color.Teal(Cache.SteamPlayerCache[result.Key].CharacterName.ToString());
+                    TimeSpan span = result.Value.SiegeEndTime - DateTime.Now;
+                    var hSpan = Math.Round(span.TotalHours, 2);
+                    string tempDisplay = "[Siege Duration " + hSpan + " hour(s)]";
+                    string DisplayStats = Utils.Color.White(tempDisplay);
+                    messages.Add($"{order}. {PlayerName} : {DisplayStats}");
+                }
+            }
+            messages.Add($"============ Siege List [{page+1}/{maxPage}] ============");
+
+            TaskRunner.Start(taskWorld =>
+            {
+                foreach (var m in messages)
+                {
+                    Output.SendSystemMessage(ctx, m);
+                }
+                return new object();
+            }, false);
         }
 
         public static void PunishCheck(Entity Killer, Entity Victim)
@@ -135,22 +386,25 @@ namespace RPGMods.Systems
 
             if (VictimLevel - KillerLevel <= PunishLevelDiff)
             {
-                Cache.punish_killer_last_offense.TryGetValue(KillerSteamID, out var last_offense);
-                TimeSpan timeSpan = DateTime.Now - last_offense;
-                if (timeSpan.TotalSeconds > Offense_Cooldown) Cache.punish_killer_offense[KillerSteamID] = 1;
-                else Cache.punish_killer_offense[KillerSteamID] += 1;
-                Cache.punish_killer_last_offense[KillerSteamID] = DateTime.Now;
+                Cache.OffenseLog.TryGetValue(KillerSteamID, out var OffenseData);
 
-                if (Cache.punish_killer_offense[KillerSteamID] >= OffenseLimit)
+                TimeSpan timeSpan = DateTime.Now - OffenseData.LastOffense;
+                if (timeSpan.TotalSeconds > Offense_Cooldown) OffenseData.Offense = 1;
+                else OffenseData.Offense += 1;
+                OffenseData.LastOffense = DateTime.Now;
+
+                Cache.OffenseLog[KillerSteamID] = OffenseData;
+
+                if (OffenseData.Offense >= OffenseLimit)
                 {
-                    Helper.ApplyBuff(KillerUser, Killer, Database.buff.Severe_GarlicDebuff);
+                    Helper.ApplyBuff(KillerUser, Killer, Database.Buff.Severe_GarlicDebuff);
                 }
             }
         }
 
         public static void BuffReceiver(Entity BuffEntity, PrefabGUID GUID)
         {
-            if (GUID.Equals(Database.buff.Severe_GarlicDebuff))
+            if (GUID.Equals(Database.Buff.Severe_GarlicDebuff))
             {
                 var lifeTime_component = em.GetComponentData<LifeTime>(BuffEntity);
                 lifeTime_component.Duration = PvPSystem.PunishDuration;
@@ -166,64 +420,307 @@ namespace RPGMods.Systems
             }
         }
 
+        public static void HonorBuffReceiver(Entity BuffEntity, PrefabGUID GUID)
+        {
+            if (isHonorBenefitEnabled == false) return;
+
+            if (GUID.Equals(HostileBuff)) goto HostileBuff;
+            if (!GUID.Equals(Database.Buff.OutofCombat) && !GUID.Equals(Database.Buff.InCombat) && !GUID.Equals(Database.Buff.InCombat_PvP)) return;
+
+            var Owner = em.GetComponentData<EntityOwner>(BuffEntity).Owner;
+            if (!em.HasComponent<PlayerCharacter>(Owner)) return;
+
+            var userEntity = em.GetComponentData<PlayerCharacter>(Owner).UserEntity._Entity;
+            var SteamID = em.GetComponentData<User>(userEntity).PlatformId;
+
+            if (!Database.PvPStats.TryGetValue(SteamID, out var pvpData)) return;
+
+            var Buffer = em.AddBuffer<ModifyUnitStatBuff_DOTS>(BuffEntity);
+            if (pvpData.Reputation >= 1500)
+            {
+                Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                {
+                    StatType = UnitStatType.ResourceYield,
+                    Value = 1.15f,
+                    ModificationType = ModificationType.Multiply,
+                    Id = ModificationId.NewId(0)
+                });
+            }
+            if (pvpData.Reputation >= 500)
+            {
+                Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                {
+                    StatType = UnitStatType.ReducedResourceDurabilityLoss,
+                    Value = 0.75f,
+                    ModificationType = ModificationType.Multiply,
+                    Id = ModificationId.NewId(0)
+                });
+            }
+            return;
+
+            HostileBuff:
+            var HBOwner = em.GetComponentData<EntityOwner>(BuffEntity).Owner;
+            if (!em.HasComponent<PlayerCharacter>(HBOwner)) return;
+            if (Cache.HostilityState.TryGetValue(HBOwner, out var stateData))
+            {
+                if (stateData.IsHostile == false) return;
+
+                em.AddComponent<Buff_Persists_Through_Death>(BuffEntity);
+                em.SetComponentData(BuffEntity, lifeTime_Permanent);
+                em.SetComponentData(BuffEntity, MS_Zero);
+                
+            }
+            return;
+        }
+
+        public static void NewPlayerReceiver(Entity userEntity, Entity playerEntity, FixedString64 playerName)
+        {
+            Helper.RenamePlayer(userEntity, playerEntity, playerName);
+
+            var steamID = Plugin.Server.EntityManager.GetComponentData<User>(userEntity).PlatformId;
+            Cache.HostilityState[playerEntity] = new StateData(steamID, false);
+        }
+
+        public static HonorRankInfo GetHonorTitle(int honorPoint)
+        {
+            HonorRankInfo rankInfo = new HonorRankInfo();
+            switch (honorPoint)
+            {
+                case >= 10000:
+                    rankInfo.Title = "Glorious";
+                    rankInfo.HonorRank = 10;
+                    rankInfo.Rewards = -1000;
+                    break;
+                case >= 5000:
+                    rankInfo.Title = "Noble";
+                    rankInfo.HonorRank = 9;
+                    rankInfo.Rewards = -500;
+                    break;
+                case >= 1500:
+                    rankInfo.Title = "Virtuous";
+                    rankInfo.HonorRank = 8;
+                    rankInfo.Rewards = -150;
+                    break;
+                case >= 500:
+                    rankInfo.Title = "Reputable";
+                    rankInfo.HonorRank = 7;
+                    rankInfo.Rewards = -50;
+                    break;
+                case >= 0:
+                default:
+                    rankInfo.Title = "Neutral";
+                    rankInfo.HonorRank = 6;
+                    rankInfo.Rewards = -25;
+                    break;
+                case <= -20000:
+                    rankInfo.Title = "Dreaded";
+                    rankInfo.HonorRank = 5;
+                    rankInfo.Rewards = 10;
+                    rankInfo.Rewards = 150;
+                    break;
+                case <= -10000:
+                    rankInfo.Title = "Nefarious";
+                    rankInfo.HonorRank = 4;
+                    rankInfo.Rewards = 100;
+                    break;
+                case <= -3000:
+                    rankInfo.Title = "Villainous";
+                    rankInfo.HonorRank = 3;
+                    rankInfo.Rewards = 50;
+                    break;
+                case <= -1000:
+                    rankInfo.Title = "Infamous";
+                    rankInfo.HonorRank = 2;
+                    rankInfo.Rewards = 10;
+                    break;
+                case < 0:
+                    rankInfo.Title = "Suspicious";
+                    rankInfo.HonorRank = 1;
+                    rankInfo.Rewards = 0;
+                    break;
+            }
+            return rankInfo;
+        }
+
+        public static void UpdateAllNames()
+        {
+            if (Database.PvPStats.Count > 0)
+            {
+                var UserEntities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
+                foreach (var item in Database.PvPStats)
+                {
+                    if (item.Value.PlayerName == null)
+                    {
+                        PvPData data = item.Value;
+                        foreach (var Entity in UserEntities)
+                        {
+                            var EntityData = Plugin.Server.EntityManager.GetComponentData<User>(Entity);
+                            if (EntityData.PlatformId == item.Key) data.PlayerName = EntityData.CharacterName.ToString();
+                        }
+                        Database.PvPStats[item.Key] = data;
+                    }
+                }
+            }
+        }
+
+        public static async Task TopRanks(Context ctx)
+        {
+            await Task.Yield();
+
+            List<string> messages = new List<string>();
+
+            IEnumerable<KeyValuePair<ulong, PvPData>> SortedList;
+
+            if (isHonorSystemEnabled && isSortByHonor)
+            {
+                SortedList = Database.PvPStats.OrderByDescending(x => x.Value.Reputation).ThenByDescending(x => x.Value.KD).ThenBy(x => x.Value.Kills);
+            }
+            else
+            {
+                SortedList = Database.PvPStats.OrderByDescending(x => x.Value.KD).ThenByDescending(x => x.Value.Kills).ThenBy(x => x.Value.Deaths);
+            }
+
+            var List = SortedList.Take(LadderLength);
+            int myRank = 0;
+            foreach (var pair in SortedList)
+            {
+                myRank += 1;
+                if (pair.Key == ctx.Event.User.PlatformId)
+                {
+                    messages.Add(Utils.Color.Green($"You're rank number #{myRank}!"));
+                    break;
+                }
+            }
+
+            messages.Add($"============ Leaderboard ============");
+            if (List.Count() == 0) messages.Add(Utils.Color.White("No Result"));
+            else
+            {
+                int i = 0;
+                foreach (var result in List)
+                {
+                    i++;
+                    string PlayerName = Utils.Color.Teal(result.Value.PlayerName);
+                    string tempDisplay = "[K/D " + result.Value.KD.ToString() + "]";
+                    if (isHonorSystemEnabled)
+                    {
+                        tempDisplay += " [REP " + result.Value.Reputation.ToString() + "]";
+                    }
+                    string DisplayStats = Utils.Color.White(tempDisplay);
+                    messages.Add($"{i}. {PlayerName} : {DisplayStats}");
+                }
+            }
+            messages.Add($"============ Leaderboard ============");
+
+            TaskRunner.Start(taskWorld =>
+            {
+                foreach (var m in messages)
+                {
+                    Output.SendSystemMessage(ctx, m);
+                }
+                return new object();
+            }, false);
+        }
+
         public static void SavePvPStat()
         {
-            File.WriteAllText("BepInEx/config/RPGMods/Saves/pvpkills.json", JsonSerializer.Serialize(Database.pvpkills, Database.JSON_options));
-            File.WriteAllText("BepInEx/config/RPGMods/Saves/pvpdeath.json", JsonSerializer.Serialize(Database.pvpdeath, Database.JSON_options));
-            File.WriteAllText("BepInEx/config/RPGMods/Saves/pvpkd.json", JsonSerializer.Serialize(Database.pvpkd, Database.JSON_options));
+            //-- NEW
+            File.WriteAllText("BepInEx/config/RPGMods/Saves/PvPStats.json", JsonSerializer.Serialize(Database.PvPStats, Database.JSON_options));
+            File.WriteAllText("BepInEx/config/RPGMods/Saves/SiegeStates.json", JsonSerializer.Serialize(Database.SiegeState, Database.JSON_options));
         }
 
         public static void LoadPvPStat()
         {
-            if (!File.Exists("BepInEx/config/RPGMods/Saves/pvpkills.json"))
+            //-- NEW
+            if (!File.Exists("BepInEx/config/RPGMods/Saves/PvPStats.json"))
             {
-                var stream = File.Create("BepInEx/config/RPGMods/Saves/pvpkills.json");
+                var stream = File.Create("BepInEx/config/RPGMods/Saves/PvPStats.json");
                 stream.Dispose();
             }
-            string json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpkills.json");
+            string content = File.ReadAllText("BepInEx/config/RPGMods/Saves/PvPStats.json");
             try
             {
-                Database.pvpkills = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
-                Plugin.Logger.LogWarning("PvPKills DB Populated.");
+                Database.PvPStats = JsonSerializer.Deserialize<ConcurrentDictionary<ulong, PvPData>>(content);
+                Plugin.Logger.LogWarning("PvPStats DB Populated.");
             }
             catch
             {
-                Database.pvpkills = new Dictionary<ulong, int>();
-                Plugin.Logger.LogWarning("PvPKills DB Created.");
+                Database.PvPStats = new ConcurrentDictionary<ulong, PvPData>();
+                Plugin.Logger.LogWarning("PvPStats DB Created.");
             }
 
-            if (!File.Exists("BepInEx/config/RPGMods/Saves/pvpdeath.json"))
+            //-- Siege Mechanic
+            if (!File.Exists("BepInEx/config/RPGMods/Saves/SiegeStates.json"))
             {
-                var stream = File.Create("BepInEx/config/RPGMods/Saves/pvpdeath.json");
+                var stream = File.Create("BepInEx/config/RPGMods/Saves/SiegeStates.json");
                 stream.Dispose();
             }
-            json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpdeath.json");
+            content = File.ReadAllText("BepInEx/config/RPGMods/Saves/SiegeStates.json");
             try
             {
-                Database.pvpdeath = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
-                Plugin.Logger.LogWarning("PvPDeath DB Populated.");
+                Database.SiegeState = JsonSerializer.Deserialize<Dictionary<ulong, SiegeData>>(content);
+                Plugin.Logger.LogWarning("SiegeStates DB Populated.");
             }
             catch
             {
-                Database.pvpdeath = new Dictionary<ulong, int>();
-                Plugin.Logger.LogWarning("PvPDeath DB Created.");
+                Database.SiegeState = new Dictionary<ulong, SiegeData>();
+                Plugin.Logger.LogWarning("SiegeStates DB Created.");
             }
 
-            if (!File.Exists("BepInEx/config/RPGMods/Saves/pvpkd.json"))
+            //-- Transfer OLD Stats to new database.
+            if (File.Exists("BepInEx/config/RPGMods/Saves/pvpkills.json"))
             {
-                var stream = File.Create("BepInEx/config/RPGMods/Saves/pvpkd.json");
-                stream.Dispose();
+                string json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpkills.json");
+                try
+                {
+                    Database.pvpkills = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
+                    foreach (var item in Database.pvpkills)
+                    {
+                        Database.PvPStats.TryGetValue(item.Key, out var data);
+                        data.Kills = item.Value;
+                        Database.PvPStats[item.Key] = data;
+                    }
+                    Plugin.Logger.LogWarning("PvPKills DB Transfered.");
+                    File.Delete("BepInEx/config/RPGMods/Saves/pvpkills.json");
+                }
+                catch { }
             }
-            json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpkd.json");
-            try
+
+            if (File.Exists("BepInEx/config/RPGMods/Saves/pvpdeath.json"))
             {
-                Database.pvpkd = JsonSerializer.Deserialize<Dictionary<ulong, double>>(json);
-                Plugin.Logger.LogWarning("PvPKD DB Populated.");
+                string json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpdeath.json");
+                try
+                {
+                    Database.pvpdeath = JsonSerializer.Deserialize<Dictionary<ulong, int>>(json);
+                    foreach (var item in Database.pvpdeath)
+                    {
+                        Database.PvPStats.TryGetValue(item.Key, out var data);
+                        data.Deaths = item.Value;
+                        Database.PvPStats[item.Key] = data;
+                    }
+                    Plugin.Logger.LogWarning("PvPDeath DB Transfered.");
+                    File.Delete("BepInEx/config/RPGMods/Saves/pvpdeath.json");
+                }
+                catch { }
             }
-            catch
+            
+
+            if (File.Exists("BepInEx/config/RPGMods/Saves/pvpkd.json"))
             {
-                Database.pvpkd = new Dictionary<ulong, double>();
-                Plugin.Logger.LogWarning("PvPKD DB Created.");
+                string json = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpkd.json");
+                try
+                {
+                    Database.pvpkd = JsonSerializer.Deserialize<Dictionary<ulong, double>>(json);
+                    foreach (var item in Database.pvpkd)
+                    {
+                        Database.PvPStats.TryGetValue(item.Key, out var data);
+                        data.KD = Math.Round(item.Value, 2);
+                        Database.PvPStats[item.Key] = data;
+                    }
+                    Plugin.Logger.LogWarning("PvPKD DB Transfered.");
+                    File.Delete("BepInEx/config/RPGMods/Saves/pvpkd.json");
+                }
+                catch { }
             }
         }
     }

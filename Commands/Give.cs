@@ -10,6 +10,12 @@ namespace RPGMods.Commands
     {
         public static void Initialize(Context ctx)
         {
+            if (ctx.Args.Length < 2)
+            {
+                Output.MissingArguments(ctx);
+                return;
+            }
+
             string name = string.Join(' ', ctx.Args);
             int amount = 1;
             if (int.TryParse(ctx.Args.Last(), out int a))

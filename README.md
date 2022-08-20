@@ -30,14 +30,72 @@ Otherwise, if you are dead for any reason at all, your heat/wanted level will re
 
 ## PvP System
 Configurable PvP kill serverwide announcement.\
-Kill/Death will also be recorded, and a ladder board for the Top 5 K/D in the server.
+Kill/Death will also be recorded, and a ladder board for the Top 10 K/D in the server.
+### Toggle PvP Commnd
+If enabled, players can toggle their pvp status on/off via the pvp command.\
+If their pvp status is off, they are excluded from all PvP damage.\
+Your server must be configured as a PvP server for the toggle to work,\
+otherwise player will never be able to do any pvp damage despite toggling pvp status to be on.
 
+PvP toggle will be overriden by `Hostility Mode` if honor system is active.
+### Punishment System
 Additionally there's a punishment system which can be used to punish player who kill lower level player,\
 which is configurable in the config.\
 Punishment will apply a debuff that reduce player combat effeciency.
 - `-25%` Physical & spell power
 - `-15` Physical, spell, holy, and fire resistance
 - Gear level down (Overriden by EXP system if active)
+### Honor System
+All vampires start with `Neutral` honor rank.\
+Killing a vampire with neutral or positive honor rank will deduct some honor points,\
+while killing a vampire with negative honor rank will reward the player with some honor points.\
+Other way to gain honor is by grinding mobs. Each mobs kill will give 1 honor points.\
+There's a hard limit of `250p/hours` gain to prevent grind.
+
+The honor title is added as a prefix to the player name.\
+All chat commands which is included within RPGMods should still be used without the\
+honor title prefix if a player name is required.\
+Other stuff like whispering other player does require the title prefix to be used.
+
+Honor title prefix is not automatically updated for chat messages,\
+everything else like building ownership and hovering player name is automatically updated.
+
+For all the mechanic to work correctly, please set your server settings to:
+- `Game Mode: PvP`
+- `Castle Damage Mode: Always`
+- `Player Damage Mode: Always`
+#### Hostility Mode
+`[ON] Aggressive`\
+Can damage any player.\
+No reputation loss will be given to the aggressor when killed.
+
+`[OFF] Passive`\
+Cannot damage other players with positive reputation.
+#### Castle Siege
+`[ON] Sieging`\
+Player castle(s) are now vulnerable, and can damage other sieging player castle(s).\
+Aggressive state is enforced during siege time.\
+Siege mode cannot be exited until 3 hours window has passed since activation.
+
+`[OFF] Defensive`\
+Exit castle siege mode.\
+Castle(s) are now invulnerable.\
+Player are able to enter passive state again.
+
+`Global Siege`\
+On global siege mode, all castle is vulnerable unless the player honor bonus says something else.\
+Player aggressive state is not enforced during global siege.
+#### All Honor Titles
+- Glorious `[Req: 10000] [Reward: -1000]` `Castle is permanently invulnerable.`
+- Noble `[Req: 5000] [Reward: -500]` `Castle receive -50% reduced damage.`
+- Virtuous `[Req: 1500] [Reward: -100]` `+15% resource gathering`
+- Reputable `[Req: 500] [Reward: -50]` `-25% durability loss`
+- Neutral `[Req: 0] [Reward: -25]`
+- Suspicious `[Req: -1] [Reward: 0]`
+- Infamous `[Req: -1000] [Reward: 10]` `Enforced aggresive state.`
+- Villainous `[Req: -3000] [Reward: 50]` `-20% damage taken from positive rep vampires.`
+- Nefarious `[Req: -10000] [Reward: 100]` `+20% damage dealt to positive rep vampires.`
+- Dreaded `[Req: -20000] [Reward: 150]` `Enforced castle siege participation`
 
 ## Command Permission & VIP Login Whitelist
 Commands be configured to require a minimum level of permission for the user to be able to use them.\
@@ -81,7 +139,7 @@ Enable the VIP user to ignore server capacity limit.
 The minimum permission level required for the user to be considered as VIP.
 
 <details>
-<summary>VIP.InCombat Buff</summary>
+<summary>-- VIP.InCombat Buff</summary>
 
 - `Durability Loss Multiplier` [default `0.5`]\
 Multiply durability loss when user is in combat. -1.0 to disable.\
@@ -98,7 +156,7 @@ Multiply resource yield (not item drop) when user is in combat. -1.0 to disable.
 </details>
 
 <details>
-<summary>VIP.OutCombat Buff</summary>
+<summary>-- VIP.OutCombat Buff</summary>
 
 - `Durability Loss Multiplier` [default `0.5`]\
 Multiply durability loss when user is out of combat. -1.0 to disable.\
@@ -120,9 +178,26 @@ Multiply resource yield (not item drop) when user is out of combat. -1.0 to disa
 <summary>PvP</summary>
 
 - `Announce PvP Kills` [default `true`]\
-Do I really need to explain this...?
+Make a server wide announcement for all PvP kills.
+- `Enable Honor System` [default `false`]\
+Enable the honor system.
+- `Max Honor Gain/Hour` [default `250`]\
+Maximum amount of honor points the player can gain per hour.
+- `Enable Honor Benefit & Penalties` [default `true`]\
+If disabled, the hostility state and custom siege system will be disabled.\
+All other bonus is also not applied.
+- `Custom Siege Duration` [default `180`]\
+In minutes. Player will automatically exit siege mode after this many minutes has passed.\
+Siege mode cannot be exited while duration has not passed.
+- `Enable Hostile Glow` [default `true`]\
+When set to true, hostile players will glow red.
+- `Enable Proximity Hostile Glow` [default `true`]\
+If enabled, hostile players will only glow when they are close to other online player.
+If disabled, hostile players will always glow red.
 - `Enable the PvP Ladder` [default `true`]\
 Hmm... well it enables the ladder board in .pvp command.
+- `Sort PvP Ladder by Honor` [default `true`]\
+This will automatically be false if honor system is not enabled.
 - `Enable PvP Toggle` [default `true`]\
 Enable/disable the pvp toggle feature in the pvp command.
 - `Enable PvP Punishment` [default `true`]\
@@ -219,34 +294,59 @@ Mastery will decay by this amount for every decay tick. (1 -> 0.001%)
 
 </details>
 
-## Permissions (Updated since v0.3.0)
+## Permissions
 Commands permission uses permission level which start from 0 to 100.\
 Permission level 0 means that it can be used by everyone.\
 User designated as SuperAdmin in your server admin list will always bypass the permission requirement.\
 Special commands params that require admin permission can also be adjusted here.
 
 All abbreviation of the command are automatically included, you need only to put the primary command string.\
-The permissions are saved in `BepInEx/config/RPGMods/command_permission.json` and look like this:
+The permissions are saved in `BepInEx/config/RPGMods/command_permission.json`
 
 <details>
-<summary>Default Permission - Don't forget to copy!</summary>
+<summary>Default Permission</summary>
 
 ```json
 {
   "help": 0,
-  "pvp": 0,
   "ping": 0,
+  "myinfo": 0,
+  "pvp": 0,
+  "pvp_args": 100,
+  "siege": 0,
+  "siege_args": 100,
   "heat": 0,
-  "waypoint": 0,
-  "teleport": 0,
-  "experience": 0,
-  "mastery": 0,
   "heat_args": 100,
+  "experience": 0,
   "experience_args": 100,
+  "mastery": 0,
   "mastery_args": 100,
-  "waypoint_args": 100,
+  "autorespawn": 100,
   "autorespawn_args": 100,
-  "pvp_args": 100
+  "waypoint": 100,
+  "waypoint_args": 100,
+  "ban": 100,
+  "bloodpotion": 100,
+  "blood": 100,
+  "customspawn": 100,
+  "give": 100,
+  "godmode": 100,
+  "health": 100,
+  "kick": 100,
+  "kit": 100,
+  "nocooldown": 100,
+  "permission": 100,
+  "playerinfo": 100,
+  "punish": 100,
+  "rename": 100,
+  "adminrename": 100,
+  "resetcooldown": 100,
+  "save": 100,
+  "shutdown": 100,
+  "spawnnpc": 100,
+  "speed": 100,
+  "sunimmunity": 100,
+  "teleport": 100
 }
 ```
 
@@ -354,9 +454,10 @@ Spawns a NPC. Optional: To a previously created waypoint.\
 <details>
 <summary>customspawn</summary>
 
-`customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable("true/false")>]`\
+`customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable("true/false")> <Duration>]`\
 Spawns a modified NPC at your current position.\
-&ensp;&ensp;**Example:** `customspawn CHAR_Bandit_Thug creature 100 true`
+&ensp;&ensp;**Example:** `customspawn CHAR_Bandit_Thug creature 100 true -1` -> Spawn Bandit Thug with unlimited lifespan.\
+&ensp;&ensp;**Example:** `customspawn CHAR_Bandit_Thug creature 100 true 5` -> Spawn Bandit Thug with a lifespan of 5 seconds.
 
 </details>
 
@@ -454,14 +555,32 @@ Show you your latency to the server.
 <details>
 <summary>pvp</summary>
 
-`pvp [<on>|<off>]`\
-Toggles PvP or display your PvP statistics & the current leaders in the ladder.\
+`pvp [<on>|<off>|<top>]`\
+Display your PvP statistics or toggle PvP state.\
 &ensp;&ensp;**Example:** `pvp`\
+&ensp;&ensp;**Example:** `pvp top`\
+&ensp;&ensp;**Example:** `pvp on`\
 &ensp;&ensp;**Example:** `pvp off`
 
-&ensp;&ensp;**Special Params -> `<on>|<off> <playername>`** `Toggles PvP for the specified player.`\
+&ensp;&ensp;**Special Params -> `<on>|<off> <playername>`** `Toggles PvP state for the specified player.`\
+&ensp;&ensp;**Special Params -> `<rep> <ammount> <playername>`** `Set the specified player reputation points.`\
 &ensp;&ensp;**Example:** `pvp on LegendaryVampire`\
-&ensp;&ensp;**Example:** `pvp off LegendaryVampire`
+&ensp;&ensp;**Example:** `pvp off LegendaryVampire`\
+&ensp;&ensp;**Example:** `pvp rep 1000 LegendaryVampire`
+
+
+</details>
+
+<details>
+<summary>siege</summary>
+
+`siege [<on>|<off>]`\
+Display all players currently in siege mode, or engage siege mode.\
+&ensp;&ensp;**Example:** `siege`\
+&ensp;&ensp;**Example:** `siege on`\
+&ensp;&ensp;**Example:** `siege off`
+
+&ensp;&ensp;**Special Params -> `<global>`** `Toggles server-wide siege mode on or off).`
 
 </details>
 
@@ -516,7 +635,7 @@ This command may still be used even when punishment system is disabled.\
 <summary>permission</summary>
 
 `permission <list>|<save>|<reload>|<set> <0-100> <playername>|<steamid>`\
-Manage commands and user permissions level.
+Manage commands and user permissions level.\
 &ensp;&ensp;**Example:** `permission list` -> List all users with special permission.\
 &ensp;&ensp;**Example:** `permission save` -> Save the most recent user permission list.\
 &ensp;&ensp;**Example:** `permission reload` -> Directly reload user permission and command permission from the JSON file.\
@@ -552,9 +671,56 @@ Trigger the exit signal & shutdown the server.
 
 </details>
 
+<details>
+<summary>rename</summary>
+
+`rename <player name> <new name>`\
+Rename the specified player.
+
+</details>
+
+<details>
+<summary>adminrename</summary>
+
+`adminrename <player name> <new name>`\
+Rename the specified player. Careful, the new name isn't verified.\
+This means it's possible for names to use color tags or symbols.\
+Adding a color tag to the player name may make it hard for you and other user to `/whisper` or find the player with commands.
+
+</details>
+
+<details>
+<summary>playerinfo</summary>
+
+`playerinfo <player name>`\
+Display the player information details.
+
+</details>
+
+<details>
+<summary>myinfo</summary>
+
+`myinfo`\
+Display your user info and location.
+
+</details>
+
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`1.1.0`
+- Added duration option for customspawn command.
+- Added honor system and a ton of other mechanics it entails.
+- Added siege command.
+- Added rename & adminrename commands.
+- Added playerinfo & myinfo commands to help server admins with some debugging.
+- Fixed hunter hunted not spawning anything on low heat level.
+- Give command will now refuse to run if no arguments is given.
+- SpawnNPC on waypoint now properly accept the spawn counts.
+- Implemented allies caching for better performance.
+- Bug fix with the exp gain for killing lower level mobs.
+- HunterHunted ambush group are now part of vampire hunters faction.
 
 `1.0.2`
 - Added customspawn command.
@@ -679,9 +845,13 @@ Trigger the exit signal & shutdown the server.
 </details>
 
 <details>
-<summary>Contributor</summary>
+<summary>Developer & Contributors</summary>
 
 ### [Discord](https://discord.gg/XY5bNtNm4w)
+### Main Developer
+- Kaltharos#0001
+
+### Contributors
 #### Without these people, this project will just be a dream. (In no particular order)
 - Dimentox#1154
 - Nopey#1337
@@ -711,12 +881,12 @@ Trigger the exit signal & shutdown the server.
 <details>
 <summary>Planned Features</summary>
 
+- More optimization! It never hurts to optimize!
+- Average reputation of clan members.
+- More dynamic events.
+- Bloodline. (On hold)
 - Kits Option: Limited Uses. (On hold)
-- More optimization! It never hurts to optimize! 
 - Explore team/alliance in VRising. (On hold)
-- Hook into whatever system possible to add a tag to player names. (On hold)
-- More dynamic events
-- Bloodline
-- Dynamic mob stats adjustment
+- Need a better name tagging sytem. (On hold)
 
 </details>

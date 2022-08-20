@@ -1,6 +1,7 @@
 ﻿using ProjectM.Network;
 using RPGMods.Systems;
 using RPGMods.Utils;
+using System;
 using Unity.Entities;
 
 namespace RPGMods.Commands
@@ -16,7 +17,7 @@ namespace RPGMods.Commands
             var userEntity = ctx.Event.SenderUserEntity;
             var charEntity = ctx.Event.SenderCharacterEntity;
 
-            if (!HunterHunted.isActive)
+            if (!HunterHuntedSystem.isActive)
             {
                 Output.CustomErrorMessage(ctx, "HunterHunted system is not enabled.");
                 return;
@@ -46,36 +47,39 @@ namespace RPGMods.Commands
                 if (int.TryParse(ctx.Args[1], out var nm)) Cache.bandit_heatlevel[SteamID] = nm;
                 Output.SendSystemMessage(ctx, $"Player \"{CharName}\" heat value changed.");
                 Output.SendSystemMessage(ctx, $"Human: <color=#ffff00ff>{Cache.heatlevel[SteamID]}</color> | Bandit: <color=#ffff00ff>{Cache.bandit_heatlevel[SteamID]}</color>");
-                HunterHunted.HeatManager(userEntity, charEntity, false);
+                HunterHuntedSystem.HeatManager(userEntity);
                 return;
             }
 
-            HunterHunted.HeatManager(userEntity, charEntity, false);
+            HunterHuntedSystem.HeatManager(userEntity);
 
             Cache.heatlevel.TryGetValue(SteamID, out var human_heatlevel);
-            if (human_heatlevel >= 3000) Output.SendLore(userEntity,$"<color=#0048ffff>[Humans]</color> <color=#c90e21ff>YOU ARE A MENACE...</color>");
-            else if (human_heatlevel >= 2000) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c90e21ff>The Vampire Hunters are hunting you...</color>");
-            else if (human_heatlevel >= 1000) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c90e21ff>Humans elite squads are hunting you...</color>");
-            else if (human_heatlevel >= 500) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c4515cff>Humans soldiers are hunting you...</color>");
-            else if (human_heatlevel >= 250) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c9999eff>The humans are hunting you...</color>");
+            if (human_heatlevel >= 1500) Output.SendLore(userEntity,$"<color=#0048ffff>[Humans]</color> <color=#c90e21ff>YOU ARE A MENACE...</color>");
+            else if (human_heatlevel >= 1000) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c90e21ff>The Vampire Hunters are hunting you...</color>");
+            else if (human_heatlevel >= 500) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c90e21ff>Humans elite squads are hunting you...</color>");
+            else if (human_heatlevel >= 250) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c4515cff>Humans soldiers are hunting you...</color>");
+            else if (human_heatlevel >= 150) Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#c9999eff>The humans are hunting you...</color>");
             else Output.SendLore(userEntity, $"<color=#0048ffff>[Humans]</color> <color=#ffffffff>You're currently anonymous...</color>");
 
             Cache.bandit_heatlevel.TryGetValue(SteamID, out var bandit_heatlevel);
-            if (bandit_heatlevel >= 2000) Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#c90e21ff>The bandits really wants you dead...</color>");
-            else if (bandit_heatlevel >= 1000) Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#c90e21ff>A large bandit squads are hunting you...</color>");
-            else if (bandit_heatlevel >= 500) Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#c4515cff>A small bandit squads are hunting you...</color>");
-            else if (bandit_heatlevel >= 250) Output.SendLore(userEntity,$"<color=#ff0000ff>[Bandits]</color> <color=#c9999eff>The bandits are hunting you...</color>");
+            if (bandit_heatlevel >= 650) Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#c90e21ff>The bandits really wants you dead...</color>");
+            else if (bandit_heatlevel >= 450) Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#c90e21ff>A large bandit squads are hunting you...</color>");
+            else if (bandit_heatlevel >= 250) Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#c4515cff>A small bandit squads are hunting you...</color>");
+            else if (bandit_heatlevel >= 150) Output.SendLore(userEntity,$"<color=#ff0000ff>[Bandits]</color> <color=#c9999eff>The bandits are hunting you...</color>");
             else Output.SendLore(userEntity, $"<color=#ff0000ff>[Bandits]</color> <color=#ffffffff>The bandits doesn't recognize you...</color>");
 
             if (ctx.Args.Length == 1 && user.IsAdmin)
             {
                 if (!ctx.Args[0].Equals("debug") && ctx.Args.Length != 2) return;
-                Output.SendSystemMessage(ctx, $"Heat Cooldown: {HunterHunted.heat_cooldown}");
-                Output.SendSystemMessage(ctx, $"Bandit Heat Cooldown: {HunterHunted.bandit_heat_cooldown}");
-                Output.SendSystemMessage(ctx, $"Cooldown Interval: {HunterHunted.cooldown_timer}");
-                Output.SendSystemMessage(ctx, $"Ambush Interval: {HunterHunted.ambush_interval}");
-                Output.SendSystemMessage(ctx, $"Ambush Chance: {HunterHunted.ambush_chance}");
-                Output.SendSystemMessage(ctx, $"Human: <color=#ffff00ff>{human_heatlevel}</color> | Bandit: <color=#ffff00ff>{bandit_heatlevel}</color>");
+
+                Cache.player_last_ambushed.TryGetValue(SteamID, out var last_ambushed);
+                TimeSpan since_ambush = DateTime.Now - last_ambushed;
+                int NextAmbush = (int)(HunterHuntedSystem.ambush_interval - since_ambush.TotalSeconds);
+                if (NextAmbush < 0) NextAmbush = 0;
+
+                Output.SendSystemMessage(ctx, $"Next Possible Ambush in {Color.White(NextAmbush.ToString())}s");
+                Output.SendSystemMessage(ctx, $"Ambush Chance: {Color.White(HunterHuntedSystem.ambush_chance.ToString())}%");
+                Output.SendSystemMessage(ctx, $"Human: {Color.White(human_heatlevel.ToString())} | Bandit: {Color.White(bandit_heatlevel.ToString())}");
             }
         }
     }

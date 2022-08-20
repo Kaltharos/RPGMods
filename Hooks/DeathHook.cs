@@ -23,9 +23,10 @@ public class DeathEventListenerSystem_Patch
                 //-- Creature Kill Tracking
                 if (__instance.EntityManager.HasComponent<PlayerCharacter>(ev.Killer) && __instance.EntityManager.HasComponent<Movement>(ev.Died))
                 {
-                    if (ExperienceSystem.isEXPActive) ExperienceSystem.UpdateEXP(ev.Killer, ev.Died);
-                    if (HunterHunted.isActive) HunterHunted.PlayerUpdateHeat(ev.Killer, ev.Died);
+                    if (ExperienceSystem.isEXPActive) ExperienceSystem.EXPMonitor(ev.Killer, ev.Died);
+                    if (HunterHuntedSystem.isActive) HunterHuntedSystem.PlayerUpdateHeat(ev.Killer, ev.Died);
                     if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.UpdateMastery(ev.Killer, ev.Died);
+                    if (PvPSystem.isHonorSystemEnabled) PvPSystem.MobKillMonitor(ev.Killer, ev.Died);
                 }
                 //-- ----------------------
 
@@ -38,7 +39,7 @@ public class DeathEventListenerSystem_Patch
                     ulong SteamID = user.PlatformId;
 
                     //-- Reset the heat level of the player
-                    if (HunterHunted.isActive)
+                    if (HunterHuntedSystem.isActive)
                     {
                         Cache.bandit_heatlevel[SteamID] = 0;
                         Cache.heatlevel[SteamID] = 0;
@@ -48,11 +49,11 @@ public class DeathEventListenerSystem_Patch
                     //-- Check for AutoRespawn
                     if (user.IsConnected)
                     {
-                        bool isServerWide = Database.autoRespawn.TryGetValue(1, out bool value);
+                        bool isServerWide = Database.autoRespawn.ContainsKey(1);
                         bool doRespawn;
                         if (!isServerWide)
                         {
-                            doRespawn = Database.autoRespawn.TryGetValue(SteamID, out bool value_);
+                            doRespawn = Database.autoRespawn.ContainsKey(SteamID);
                         }
                         else { doRespawn = true; }
 

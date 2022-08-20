@@ -7,8 +7,12 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using static RPGMods.Utils.Database;
+using RPGMods.Utils;
 using RPGMods.Hooks;
+using RPGMods.Systems;
+using System.Text.RegularExpressions;
+using ProjectM.Scripting;
+using System.Collections.Generic;
 
 namespace RPGMods.Utils
 {
@@ -16,6 +20,212 @@ namespace RPGMods.Utils
     {
         private static Entity empty_entity = new Entity();
         private static System.Random rand = new System.Random();
+
+        public static Entity DNEntity = default;
+        public static ServerGameSettings SGS = default;
+        public static ServerGameManager SGM = default;
+
+        public static Regex rxName = new Regex(@"(?<=\])[^\[].*");
+
+        public static bool GetServerGameManager(out ServerGameManager sgm)
+        {
+            sgm = Plugin.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
+            return true;
+        }
+        public static bool GetServerGameSettings(out ServerGameSettings settings)
+        {
+            settings = Plugin.Server.GetExistingSystem<ServerGameSettingsSystem>()?._Settings;
+            return true;
+        }
+
+        public static bool GetDayNightCycle(out Entity dnEntity)
+        {
+            dnEntity = DNEntity;
+            var entities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<DayNightCycle>()).ToEntityArray(Allocator.Temp);
+            if (entities.Length > 0)
+            {
+                dnEntity = entities[0];
+                return true;
+            }
+            return false;
+        }
+
+        public static bool GetClanMember(Entity clanEntity, out Dictionary<Entity, Entity> Group)
+        {
+            Group = new();
+            if (SGM._TeamChecker.HasClanTeam(clanEntity))
+            {
+                int AlliedUsersCount = SGM._TeamChecker.GetAlliedUsersCount(clanEntity);
+                if (AlliedUsersCount <= 0) return false;
+
+                NativeList<Entity> allyBuffer = SGM._TeamChecker.GetTeamsChecked();
+                //SGM._TeamChecker.GetAlliedUsers(team, allyBuffer);
+            }
+            return false;
+        }
+
+        public static int GetAllies(Entity PlayerCharacter, out Dictionary<Entity, Entity> Group)
+        {
+            Group = new();
+            Team team = Helper.SGM._TeamChecker.GetTeam(PlayerCharacter);
+            int AlliedUsersCount = Helper.SGM._TeamChecker.GetAlliedUsersCount(team);
+            if (AlliedUsersCount <= 1) return 0;
+
+            NativeList<Entity> allyBuffer = Helper.SGM._TeamChecker.GetTeamsChecked();
+            Helper.SGM._TeamChecker.GetAlliedUsers(team, allyBuffer);
+
+            foreach (var entity in allyBuffer)
+            {
+                if (Plugin.Server.EntityManager.HasComponent<User>(entity))
+                {
+                    Entity playerEntity = Plugin.Server.EntityManager.GetComponentData<User>(entity).LocalCharacter._Entity;
+                    if (playerEntity.Equals(PlayerCharacter)) continue;
+                    Group[entity] = playerEntity;
+                }
+            }
+
+            return AlliedUsersCount-1;
+        }
+
+        public static FixedString64 GetTrueName(string name)
+        {
+            MatchCollection match = rxName.Matches(name);
+            if (match.Count > 0)
+            {
+                name = match[match.Count - 1].ToString();
+            }
+            return name;
+        }
+
+        public static void CreatePlayerCache()
+        {
+            if (PvPSystem.isHonorSystemEnabled)
+            {
+                if (Database.PvPStats == null)
+                {
+                    PvPSystem.LoadPvPStat();
+                }
+            }
+
+            Cache.NamePlayerCache.Clear();
+            Cache.SteamPlayerCache.Clear();
+            var userEntities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
+            foreach (var entity in userEntities)
+            {
+                var userData = Plugin.Server.EntityManager.GetComponentData<User>(entity);
+                PlayerData playerData = new PlayerData(userData.CharacterName, userData.PlatformId, userData.IsConnected, entity, userData.LocalCharacter._Entity);
+
+                Cache.NamePlayerCache.TryAdd(GetTrueName(userData.CharacterName.ToString().ToLower()), playerData);
+                Cache.SteamPlayerCache.TryAdd(userData.PlatformId, playerData);
+
+                if (PvPSystem.isHonorSystemEnabled)
+                {
+                    Database.PvPStats.TryGetValue(userData.PlatformId, out var pvpStats);
+                    Database.SiegeState.TryGetValue(userData.PlatformId, out var siegeData);
+
+                    bool isHostile = HasBuff(userData.LocalCharacter._Entity, PvPSystem.HostileBuff);
+                    if ((pvpStats.Reputation <= -1000 || siegeData.IsSiegeOn) && isHostile == false)
+                    {
+                        isHostile = true;
+                        if (PvPSystem.isEnableHostileGlow && !PvPSystem.isUseProximityGlow) ApplyBuff(entity, userData.LocalCharacter._Entity, PvPSystem.HostileBuff);
+                    }
+
+                    Cache.HostilityState[userData.LocalCharacter._Entity] = new StateData(userData.PlatformId, isHostile);
+
+                    if (siegeData.IsSiegeOn && pvpStats.Reputation > -20000)
+                    {
+                        TimeSpan span = siegeData.SiegeEndTime - DateTime.Now;
+                        TaskRunner.Start(taskWorld =>
+                        {
+                            PvPSystem.SiegeOFF(userData.PlatformId, userData.LocalCharacter._Entity);
+                            return new object();
+                        }, false, false, false, span);
+                    }
+                }
+            }
+
+            Plugin.Logger.LogWarning("Player Cache Created.");
+        }
+
+        public static void UpdatePlayerCache(Entity userEntity, string oldName, string newName, bool forceOffline = false)
+        {
+            var userData = Plugin.Server.EntityManager.GetComponentData<User>(userEntity);
+            Cache.NamePlayerCache.Remove(GetTrueName(oldName.ToLower()));
+
+            if (forceOffline) userData.IsConnected = false;
+            PlayerData playerData = new PlayerData(newName, userData.PlatformId, userData.IsConnected, userEntity, userData.LocalCharacter._Entity);
+
+            Cache.NamePlayerCache[GetTrueName(newName.ToLower())] = playerData;
+            Cache.SteamPlayerCache[userData.PlatformId] = playerData;
+        }
+
+        public static bool RenamePlayer(Entity userEntity, Entity charEntity, FixedString64 newName)
+        {
+            //-- Max Char Length for FixedString64 is 61 bytes.
+            //if (newName.utf8LengthInBytes > 61)
+            //{
+            //    return false;
+            //}
+
+            var userData = Plugin.Server.EntityManager.GetComponentData<User>(userEntity);
+            if (PvPSystem.isHonorSystemEnabled)
+            {
+                var vampire_name = GetTrueName(newName.ToString());
+
+                if (Database.PvPStats.TryGetValue(userData.PlatformId, out var PvPData))
+                {
+                    vampire_name = "[" + PvPSystem.GetHonorTitle(PvPData.Reputation).Title + "]" + vampire_name;
+                }
+                else
+                {
+                    vampire_name = "[" + PvPSystem.GetHonorTitle(0).Title + "]" + vampire_name;
+                }
+                newName = vampire_name;
+            }
+            UpdatePlayerCache(userEntity, userData.CharacterName.ToString(), newName.ToString());
+
+            var des = Plugin.Server.GetExistingSystem<DebugEventsSystem>();
+            var networkId = Plugin.Server.EntityManager.GetComponentData<NetworkId>(userEntity);
+            var renameEvent = new RenameUserDebugEvent
+            {
+                NewName = newName,
+                Target = networkId
+            };
+            var fromCharacter = new FromCharacter
+            {
+                User = userEntity,
+                Character = charEntity
+            };
+            des.RenameUser(fromCharacter, renameEvent);
+            return true;
+        }
+
+        public static bool ValidateName(string name, out CreateCharacterFailureReason invalidReason)
+        {
+            if (Regex.IsMatch(name, @"[^a-zA-Z0-9]"))
+            {
+                invalidReason = CreateCharacterFailureReason.InvalidName;
+                return false;
+            }
+
+            //-- The game default max byte length is 20.
+            //-- The max legth assignable is actually 61 bytes.
+            FixedString64 charName = name;
+            if (charName.utf8LengthInBytes > 20)
+            {
+                invalidReason = CreateCharacterFailureReason.InvalidName;
+                return false;
+            }
+
+            if (Cache.NamePlayerCache.TryGetValue(name.ToLower(), out _))
+            {
+                invalidReason = CreateCharacterFailureReason.NameTaken;
+                return false;
+            }
+
+            invalidReason = CreateCharacterFailureReason.None;
+            return true;
+        }
 
         public static void ApplyBuff(Entity User, Entity Char, PrefabGUID GUID)
         {
@@ -44,13 +254,21 @@ namespace RPGMods.Utils
 
         public static string GetNameFromSteamID(ulong SteamID)
         {
-            var UserEntities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
-            foreach (var Entity in UserEntities)
+            //var UserEntities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
+            //foreach (var Entity in UserEntities)
+            //{
+            //    var EntityData = Plugin.Server.EntityManager.GetComponentData<User>(Entity);
+            //    if (EntityData.PlatformId == SteamID) return EntityData.CharacterName.ToString();
+            //}
+            //return null;
+            if (Cache.SteamPlayerCache.TryGetValue(SteamID, out var data))
             {
-                var EntityData = Plugin.Server.EntityManager.GetComponentData<User>(Entity);
-                if (EntityData.PlatformId == SteamID) return EntityData.CharacterName.ToString();
+                return data.CharacterName.ToString();
             }
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
         public static PrefabGUID GetGUIDFromName(string name)
@@ -151,34 +369,84 @@ namespace RPGMods.Utils
         public static bool FindPlayer(string name, bool mustOnline, out Entity playerEntity, out Entity userEntity)
         {
             EntityManager entityManager = Plugin.Server.EntityManager;
-            foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp))
+
+            //-- Way of the Cache
+            if (Cache.NamePlayerCache.TryGetValue(name.ToLower(), out var data))
             {
-                var target_component = entityManager.GetComponentData<User>(UsersEntity);
+                playerEntity = data.CharEntity;
+                userEntity = data.UserEntity;
                 if (mustOnline)
                 {
-                    if (!target_component.IsConnected) continue;
+                    var userComponent = entityManager.GetComponentData<User>(userEntity);
+                    if (!userComponent.IsConnected)
+                    {
+                        return false;
+                    }
                 }
-                
-
-                string CharName = target_component.CharacterName.ToString();
-                if (CharName.Equals(name))
-                {
-                    userEntity = UsersEntity;
-                    playerEntity = target_component.LocalCharacter._Entity;
-                    return true;
-                }
+                return true;
             }
-            playerEntity = empty_entity;
-            userEntity = empty_entity;
-            return false;
+            else
+            {
+                playerEntity = empty_entity;
+                userEntity = empty_entity;
+                return false;
+            }
+
+            //-- Way of the Query
+            //foreach (var UsersEntity in entityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp))
+            //{
+            //    var target_component = entityManager.GetComponentData<User>(UsersEntity);
+            //    if (mustOnline)
+            //    {
+            //        if (!target_component.IsConnected) continue;
+            //    }
+
+
+            //    string CharName = target_component.CharacterName.ToString();
+            //    if (CharName.Equals(name))
+            //    {
+            //        userEntity = UsersEntity;
+            //        playerEntity = target_component.LocalCharacter._Entity;
+            //        return true;
+            //    }
+            //}
+            //playerEntity = empty_entity;
+            //userEntity = empty_entity;
+            //return false;
+        }
+        public static bool FindPlayer(ulong steamid, bool mustOnline, out Entity playerEntity, out Entity userEntity)
+        {
+            EntityManager entityManager = Plugin.Server.EntityManager;
+
+            //-- Way of the Cache
+            if (Cache.SteamPlayerCache.TryGetValue(steamid, out var data))
+            {
+                playerEntity = data.CharEntity;
+                userEntity = data.UserEntity;
+                if (mustOnline)
+                {
+                    var userComponent = entityManager.GetComponentData<User>(userEntity);
+                    if (!userComponent.IsConnected)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                playerEntity = empty_entity;
+                userEntity = empty_entity;
+                return false;
+            }
         }
 
         public static bool IsPlayerInCombat(Entity player)
         {
-            return BuffUtility.HasBuff(Plugin.Server.EntityManager, player, buff.InCombat) || BuffUtility.HasBuff(Plugin.Server.EntityManager, player, buff.InCombat_PvP);
+            return BuffUtility.HasBuff(Plugin.Server.EntityManager, player, Database.Buff.InCombat) || BuffUtility.HasBuff(Plugin.Server.EntityManager, player, Database.Buff.InCombat_PvP);
         }
 
-        public static bool IsPlayerHasBuff(Entity player, PrefabGUID BuffGUID)
+        public static bool HasBuff(Entity player, PrefabGUID BuffGUID)
         {
             return BuffUtility.HasBuff(Plugin.Server.EntityManager, player, BuffGUID);
         }
@@ -195,22 +463,22 @@ namespace RPGMods.Utils
         public static bool SpawnNPCIdentify(out float identifier, string name, float3 position, float minRange = 1, float maxRange = 2, float duration = -1)
         {
             identifier = 0f;
-            var duration_final = duration;
-            var isFound = database_units.TryGetValue(name, out var unit);
+            float default_duration = 5.0f;
+            float duration_final;
+            var isFound = Database.database_units.TryGetValue(name, out var unit);
             if (!isFound) return false;
 
             float UniqueID = (float)rand.NextDouble();
             if (UniqueID == 0.0) UniqueID += 0.00001f;
             else if (UniqueID == 1.0f) UniqueID -= 0.00001f;
-            duration_final = duration + UniqueID;
-
-            bool GetNPCKey = Cache.spawnNPC_Listen.TryGetValue(duration, out _);
-            while (GetNPCKey)
+            duration_final = default_duration + UniqueID;
+            
+            while (Cache.spawnNPC_Listen.ContainsKey(duration))
             {
                 UniqueID = (float)rand.NextDouble();
                 if (UniqueID == 0.0) UniqueID += 0.00001f;
                 else if (UniqueID == 1.0f) UniqueID -= 0.00001f;
-                duration_final = duration + UniqueID;
+                duration_final = default_duration + UniqueID;
             }
 
             UnitSpawnerReactSystem_Patch.listen = true;
@@ -224,7 +492,7 @@ namespace RPGMods.Utils
 
         public static bool SpawnAtPosition(Entity user, string name, int count, float2 position, float minRange = 1, float maxRange = 2, float duration = -1)
         {
-            var isFound = database_units.TryGetValue(name, out var unit);
+            var isFound = Database.database_units.TryGetValue(name, out var unit);
             if (!isFound) return false;
 
             var translation = Plugin.Server.EntityManager.GetComponentData<Translation>(user);

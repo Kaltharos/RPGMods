@@ -5,8 +5,10 @@ using RPGMods.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Unity.Entities;
 
 namespace RPGMods.Systems
@@ -57,9 +59,43 @@ namespace RPGMods.Systems
             return isAllowed;
         }
 
+        private static object SendPermissionList(Context ctx, List<string> messages)
+        {
+            foreach(var m in messages)
+            {
+                Output.SendSystemMessage(ctx, m);
+            }
+            return new object();
+        }
+
+        public static async Task PermissionList(Context ctx)
+        {
+            await Task.Yield();
+
+            List<string> messages = new List<string>();
+
+            var SortedPermission = Database.user_permission.ToList();
+            SortedPermission.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
+            var ListPermission = SortedPermission;
+            messages.Add($"===================================");
+            if (ListPermission.Count == 0) messages.Add($"<color=#ffffffff>No Result</color>");
+            else
+            {
+                int i = 0;
+                foreach (var result in ListPermission)
+                {
+                    i++;
+                    messages.Add($"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
+                }
+            }
+            messages.Add($"===================================");
+
+            TaskRunner.Start(taskWorld => SendPermissionList(ctx, messages), false);
+        }
+
         public static void BuffReceiver(Entity buffEntity, PrefabGUID GUID)
         {
-            if (!GUID.Equals(Database.buff.OutofCombat) && !em.HasComponent<InCombatBuff>(buffEntity)) return;
+            if (!GUID.Equals(Database.Buff.OutofCombat) && !em.HasComponent<InCombatBuff>(buffEntity)) return;
             var Owner = em.GetComponentData<EntityOwner>(buffEntity).Owner;
             if (!em.HasComponent<PlayerCharacter>(Owner)) return;
 
@@ -70,7 +106,7 @@ namespace RPGMods.Systems
             {
                 var Buffer = em.AddBuffer<ModifyUnitStatBuff_DOTS>(buffEntity);
                 //-- Out of Combat Buff
-                if (GUID.Equals(Database.buff.OutofCombat))
+                if (GUID.Equals(Database.Buff.OutofCombat))
                 {
                     if (VIP_OutCombat_ResYield > 0)
                     {
@@ -223,6 +259,46 @@ namespace RPGMods.Systems
             catch
             {
                 Database.command_permission = new Dictionary<string, int>();
+                Database.command_permission["help"] = 0;
+                Database.command_permission["ping"] = 0;
+                Database.command_permission["myinfo"] = 0;
+                Database.command_permission["pvp"] = 0;
+                Database.command_permission["pvp_args"] = 100;
+                Database.command_permission["siege"] = 0;
+                Database.command_permission["siege_args"] = 100;
+                Database.command_permission["heat"] = 0;
+                Database.command_permission["heat_args"] = 100;
+                Database.command_permission["experience"] = 0;
+                Database.command_permission["experience_args"] = 100;
+                Database.command_permission["mastery"] = 0;
+                Database.command_permission["mastery_args"] = 100;
+                Database.command_permission["autorespawn"] = 100;
+                Database.command_permission["autorespawn_args"] = 100;
+                Database.command_permission["waypoint"] = 100;
+                Database.command_permission["waypoint_args"] = 100;
+                Database.command_permission["ban"] = 100;
+                Database.command_permission["bloodpotion"] = 100;
+                Database.command_permission["blood"] = 100;
+                Database.command_permission["customspawn"] = 100;
+                Database.command_permission["give"] = 100;
+                Database.command_permission["godmode"] = 100;
+                Database.command_permission["health"] = 100;
+                Database.command_permission["kick"] = 100;
+                Database.command_permission["kit"] = 100;
+                Database.command_permission["nocooldown"] = 100;
+                Database.command_permission["permission"] = 100;
+                Database.command_permission["playerinfo"] = 100;
+                Database.command_permission["punish"] = 100;
+                Database.command_permission["rename"] = 100;
+                Database.command_permission["adminrename"] = 100;
+                Database.command_permission["resetcooldown"] = 100;
+                Database.command_permission["save"] = 100;
+                Database.command_permission["shutdown"] = 100;
+                Database.command_permission["spawnnpc"] = 100;
+                Database.command_permission["speed"] = 100;
+                Database.command_permission["sunimmunity"] = 100;
+                Database.command_permission["teleport"] = 100;
+                SavePermissions();
                 Plugin.Logger.LogWarning("CommandPermissions DB Created.");
             }
         }

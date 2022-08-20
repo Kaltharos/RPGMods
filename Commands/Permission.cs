@@ -16,18 +16,7 @@ namespace RPGMods.Commands
             {
                 if (args[0].ToLower().Equals("list"))
                 {
-                    var SortedPermission = Database.user_permission.ToList();
-                    SortedPermission.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-                    var ListPermission = SortedPermission;
-                    Output.SendSystemMessage(ctx, $"===================================");
-                    int i = 0;
-                    foreach (var result in ListPermission)
-                    {
-                        i++;
-                        Output.SendSystemMessage(ctx, $"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
-                    }
-                    if (i == 0) Output.SendSystemMessage(ctx, $"<color=#ffffffff>No Result</color>");
-                    Output.SendSystemMessage(ctx, $"===================================");
+                    _ = PermissionSystem.PermissionList(ctx);
                 }
                 else if (args[0].ToLower().Equals("save"))
                 {
@@ -72,7 +61,7 @@ namespace RPGMods.Commands
                 string playerName = null;
                 if (!tryParse_2)
                 {
-                    bool tryFind = Helper.FindPlayer(args[2], false, out var target_playerEntity, out var target_userEntity);
+                    bool tryFind = Helper.FindPlayer(args[2], false, out _, out var target_userEntity);
                     if (!tryFind)
                     {
                         Output.CustomErrorMessage(ctx, $"Could not find specified player \"{args[2]}\".");

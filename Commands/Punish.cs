@@ -17,7 +17,7 @@ namespace RPGMods.Commands
                     {
                         if (ctx.Args[1].ToLower().Equals("remove"))
                         {
-                            Helper.RemoveBuff(CharEntity, Database.buff.Severe_GarlicDebuff);
+                            Helper.RemoveBuff(CharEntity, Database.Buff.Severe_GarlicDebuff);
                             Output.SendSystemMessage(ctx, $"Punishment debuff removed from player \"{PlayerName}\"");
                             return;
                         }
@@ -29,7 +29,7 @@ namespace RPGMods.Commands
                     }
                     else
                     {
-                        Helper.ApplyBuff(UserEntity, CharEntity, Database.buff.Severe_GarlicDebuff);
+                        Helper.ApplyBuff(UserEntity, CharEntity, Database.Buff.Severe_GarlicDebuff);
                         Output.SendSystemMessage(ctx, $"Applied punishment debuff to player \"{PlayerName}\"");
                         return;
                     }

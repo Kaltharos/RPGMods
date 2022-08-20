@@ -3,191 +3,57 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.Json;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace RPGMods.Utils
 {
-    public struct Float2
-    {
-        public float x { get; set; }
-        public float y { get; set; }
-        public Float2 (float X, float Y)
-        {
-            x = X;
-            y = Y;
-        }
-    }
-
-    public struct WaypointData
-    {
-        public string Name { get; set; }
-        public ulong Owner { get; set; }
-        public Float2 Location { get; set; }
-        public WaypointData(string name, ulong owner, Float2 location)
-        {
-            Name = name;
-            Owner = owner;
-            Location = location;
-        }
-    }
-
-    public struct WeaponMasterData
-    {
-        public int Spear { get; set; }
-        public int Sword { get; set; }
-        public int Scythe { get; set; }
-        public int Crossbow { get; set; }
-        public int Mace { get; set; }
-        public int Slashers { get; set; }
-        public int Axes { get; set; }
-        public int None { get; set; }
-        public int FishingPole { get; set; }
-        public int Spell { get; set; }
-
-        public WeaponMasterData(int spear = 0, int sword = 0, int scythe = 0, int crossbow = 0, int mace = 0, int slashers = 0, int axes = 0, int none = 0, int fishingpole = 0, int spell = 0)
-        {
-            Spear = spear;
-            Sword = sword;
-            Scythe = scythe;
-            Crossbow = crossbow;
-            Mace = mace;
-            Slashers = slashers;
-            Axes = axes;
-            None = none;
-            FishingPole = fishingpole;
-            Spell = spell;
-        }
-    }
-
-    public struct BanData
-    {
-        public DateTime BanUntil { get; set; }
-        public string Reason { get; set; }
-        public string BannedBy { get; set; }
-        public ulong SteamID { get; set; }
-
-        public BanData(DateTime banUntil = default(DateTime), string reason = "Invalid", string bannedBy = "Default", ulong steamID = 0)
-        {
-            BanUntil = banUntil;
-            Reason = reason;
-            BannedBy = bannedBy;
-            SteamID = steamID;
-        }
-    }
-
-    public struct SpawnOptions
-    {
-        public bool ModifyBlood { get; set; }
-        public PrefabGUID BloodType { get; set; }
-        public float BloodQuality { get; set; }
-        public bool BloodConsumeable { get; set; }
-        public bool ModifyStats { get; set; }
-        public UnitStats UnitStats { get; set; }
-        public bool Process { get; set; }
-
-        public SpawnOptions(bool modifyBlood = false, PrefabGUID bloodType = default, float bloodQuality = 0, bool bloodConsumeable = true, bool modifyStats = false, UnitStats unitStats = default, bool process = false)
-        {
-            ModifyBlood = modifyBlood;
-            BloodType = bloodType;
-            BloodQuality = bloodQuality;
-            BloodConsumeable = bloodConsumeable;
-            ModifyStats = modifyStats;
-            UnitStats = unitStats;
-            Process = process;
-        }
-    }
-
-    public struct SpawnNPCListen
-    {
-        public float Duration { get; set; }
-        public int EntityIndex { get; set; }
-        public int EntityVersion { get; set; }
-        public SpawnOptions Options { get; set; }
-        public bool Process { get; set; }
-
-        public SpawnNPCListen(float duration = 0.0f, int entityIndex = 0, int entityVersion = 0, SpawnOptions options = default, bool process = true)
-        {
-            Duration = duration;
-            EntityIndex = entityIndex;
-            EntityVersion = entityVersion;
-            Options = options;
-            Process = process;
-        }
-
-        public Entity getEntity()
-        {
-            Entity entity = new Entity()
-            {
-                Index = this.EntityIndex,
-                Version = this.EntityVersion,
-            };
-            return entity;
-        }
-    }
-
-    public sealed class SizedDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
-    {
-
-        private int maxSize;
-        private Queue<TKey> keys;
-
-        public SizedDictionary(int size)
-        {
-            maxSize = size;
-            keys = new Queue<TKey>();
-        }
-
-        public void Add(TKey key, TValue value)
-        {
-            if (key == null) throw new ArgumentNullException();
-            base.TryAdd(key, value);
-            keys.Enqueue(key);
-            if (keys.Count > maxSize) base.TryRemove(keys.Dequeue(), out _);
-        }
-
-        public bool Remove(TKey key)
-        {
-            if (key == null) throw new ArgumentNullException();
-            if (!keys.Contains(key)) return false;
-            var newQueue = new Queue<TKey>();
-            while (keys.Count > 0)
-            {
-                var thisKey = keys.Dequeue();
-                if (!thisKey.Equals(key)) newQueue.Enqueue(thisKey);
-            }
-            keys = newQueue;
-            return base.TryRemove(key, out _);
-        }
-    }
-
-
     public class Cache
     {
         //-- Cache (Wiped on plugin reload, server restart, and shutdown.)
-        public static Dictionary<ulong, float> command_Cooldown = new Dictionary<ulong, float>();
-        public static Dictionary<ulong, Entity> onlinePlayerEntities = new Dictionary<ulong, Entity>();
-        public static Dictionary<ulong, Entity> onlineUserEntities = new Dictionary<ulong, Entity>();
-        public static Dictionary<ulong, int> heatlevel = new Dictionary<ulong, int>();
-        public static Dictionary<ulong, int> bandit_heatlevel = new Dictionary<ulong, int>();
-        public static Dictionary<ulong, DateTime> player_heat_timestamp = new Dictionary<ulong, DateTime>();
-        public static Dictionary<ulong, DateTime> player_last_ambushed = new Dictionary<ulong, DateTime>();
-        public static Dictionary<ulong, DateTime> bandit_last_ambushed = new Dictionary<ulong, DateTime>();
-        public static Dictionary<ulong, DateTime> player_last_combat = new Dictionary<ulong, DateTime>();
-        public static Dictionary<ulong, int> player_combat_ticks = new Dictionary<ulong, int>();
-        public static Dictionary<ulong, int> punish_killer_offense = new Dictionary<ulong, int>();
-        public static Dictionary<ulong, DateTime> punish_killer_last_offense = new Dictionary<ulong, DateTime>();
-        public static Dictionary<ulong, float> player_level = new Dictionary<ulong, float>();
-        public static SizedDictionary<float, SpawnNPCListen> spawnNPC_Listen = new SizedDictionary<float, SpawnNPCListen>(500);
+
+        //-- -- Player Cache
+        public static Dictionary<FixedString64, PlayerData> NamePlayerCache = new();
+        public static Dictionary<ulong, PlayerData> SteamPlayerCache = new();
+        public static Dictionary<Entity, PlayerGroup> PlayerAllies = new();
+        public static Dictionary<Entity, LocalToWorld> PlayerLocations = new();
+
+        //-- -- Commands
+        public static Dictionary<ulong, float> command_Cooldown = new();
+
+        //-- -- HunterHunted System
+        public static Dictionary<ulong, int> heatlevel = new();
+        public static Dictionary<ulong, int> bandit_heatlevel = new();
+        public static Dictionary<ulong, int> undead_heatlevel = new();    //-- Not Implemented Yet
+        public static Dictionary<ulong, DateTime> player_heat_timestamp = new();
+        public static Dictionary<ulong, DateTime> player_last_ambushed = new();
+        public static Dictionary<ulong, DateTime> bandit_last_ambushed = new();
+
+        //-- -- Mastery System
+        public static Dictionary<ulong, DateTime> player_last_combat = new();
+        public static Dictionary<ulong, int> player_combat_ticks = new();
+
+        //-- -- Experience System
+        public static Dictionary<ulong, float> player_level = new();
+
+        //-- -- PvP System
+        public static Dictionary<ulong, PvPOffenseLog> OffenseLog = new();
+        public static Dictionary<ulong, ReputationLog> ReputationLog = new();
+        public static Dictionary<Entity, StateData> HostilityState = new();
+
+        //-- -- CustomNPC Spawner
+        public static SizedDictionaryAsync<float, SpawnNPCListen> spawnNPC_Listen = new(500);
     }
 
     public class Database
     {
-        public static JsonSerializerOptions JSON_options = new JsonSerializerOptions()
+        public static JsonSerializerOptions JSON_options = new()
         {
             WriteIndented = false,
             IncludeFields = false
         };
-        public static JsonSerializerOptions Pretty_JSON_options = new JsonSerializerOptions()
+        public static JsonSerializerOptions Pretty_JSON_options = new()
         {
             WriteIndented = true,
             IncludeFields = true
@@ -212,9 +78,13 @@ namespace RPGMods.Utils
 
         //-- -- EXP System
         public static Dictionary<ulong, int> player_experience { get; set; }
-        public static Dictionary<ulong, bool>  player_log_exp { get; set; }
+        public static Dictionary<ulong, bool> player_log_exp { get; set; }
 
-        //-- -- PvP Stats
+        //-- -- PvP System
+        //-- -- -- NEW Database
+        public static ConcurrentDictionary<ulong, PvPData> PvPStats { get; set; }
+        public static Dictionary<ulong, SiegeData> SiegeState = new();
+        //-- -- -- OLD Database (To be removed)
         public static Dictionary<ulong, int> pvpkills { get; set; }
         public static Dictionary<ulong, int> pvpdeath { get; set; }
         public static Dictionary<ulong, double> pvpkd { get; set; }
@@ -225,7 +95,7 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, bool> player_log_mastery { get; set; }
 
         //-- Static Database (Data that will never be changed in runtime)
-        public static Dictionary<string, PrefabGUID> database_units = new Dictionary<string, PrefabGUID>()
+        public static Dictionary<string, PrefabGUID> database_units = new()
         {
             { "CHAR_AncientTreant", new PrefabGUID(1843624663) },
             { "CHAR_AncientTreant_Spitter_Summon", new PrefabGUID(457857316) },
@@ -491,15 +361,7 @@ namespace RPGMods.Utils
             { "CHAR_Winter_Yeti_VBlood", new PrefabGUID(-1347412392) }
         };
 
-        public static Dictionary<PrefabGUID, string> database_faction = new Dictionary<PrefabGUID, string>()
-        {
-            { new PrefabGUID(1094603131), "Citizens & Soldiers" },
-            { new PrefabGUID(-413163549), "Bandit" },
-            { new PrefabGUID(1057375699), "Militia" },
-            { new PrefabGUID(2395673), "Church of Lumination" }
-        };
-
-        public static Dictionary<PrefabGUID, int> faction_heatvalue = new Dictionary<PrefabGUID, int>()
+        public static Dictionary<PrefabGUID, int> faction_heatvalue = new ()
         {
             { new PrefabGUID(1094603131), 10 }, //-- Citizen & Soldier
             { new PrefabGUID(-413163549), 1 },  //-- Bandit
@@ -507,7 +369,7 @@ namespace RPGMods.Utils
             { new PrefabGUID(2395673), 25 }     //-- Church of Lumination
         };
 
-        public static class buff
+        public static class Buff
         {
             public static PrefabGUID WolfStygian = new PrefabGUID(-1158884666);
             public static PrefabGUID WolfNormal = new PrefabGUID(-351718282);
@@ -532,11 +394,26 @@ namespace RPGMods.Utils
             public static PrefabGUID SiegeGolem_T01 = new PrefabGUID(-148535031);
             public static PrefabGUID SiegeGolem_T02 = new PrefabGUID(914043867);
 
+            //-- Coffin Buff
+            public static PrefabGUID AB_Interact_GetInside_Owner_Buff_Stone = new PrefabGUID(569692162); //-- Inside Stone Coffin
+            public static PrefabGUID AB_Interact_GetInside_Owner_Buff_Base = new PrefabGUID(381160212); //-- Inside Base/Wooden Coffin
+
+            public static PrefabGUID AB_ExitCoffin_Travel_Phase_Stone = new PrefabGUID(-162820429);
+            public static PrefabGUID AB_ExitCoffin_Travel_Phase_Base = new PrefabGUID(-997204628);
+            public static PrefabGUID AB_Interact_TombCoffinSpawn_Travel = new PrefabGUID(722466953);
+
+            public static PrefabGUID AB_Interact_WaypointSpawn_Travel = new PrefabGUID(-66432447);
+            public static PrefabGUID AB_Interact_WoodenCoffinSpawn_Travel = new PrefabGUID(-1705977973);
+            public static PrefabGUID AB_Interact_StoneCoffinSpawn_Travel = new PrefabGUID(-1276482574);
+
             //-- LevelUp Buff
             public static PrefabGUID LevelUp_Buff = new PrefabGUID(-1133938228);
 
             //-- Nice Effect...
             public static PrefabGUID AB_Undead_BishopOfShadows_ShadowSoldier_Minion_Buff = new PrefabGUID(450215391);   //-- Impair cast & movement
+
+            //-- The Only Potential Buff we can use for hostile mark
+            //Buff_Cultist_BloodFrenzy_Buff - PrefabGuid(-106492795)
 
             //-- Relic Buff
             //[-238197495]          AB_Interact_UseRelic_Manticore_Buff

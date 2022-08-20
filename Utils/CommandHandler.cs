@@ -1,13 +1,8 @@
-﻿using BepInEx.Configuration;
-using BepInEx.Logging;
-using RPGMods.Hooks;
-using RPGMods.Systems;
+﻿using RPGMods.Systems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using Unity.Entities;
 using UnityEngine;
 

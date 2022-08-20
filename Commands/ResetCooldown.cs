@@ -29,9 +29,9 @@ namespace RPGMods.Commands
             }
 
             var AbilityBuffer = entityManager.GetBuffer<AbilityGroupSlotBuffer>(PlayerCharacter);
-            for (int i = 0; i < AbilityBuffer.Length; i++)
+            foreach(var ability in AbilityBuffer)
             {
-                var AbilitySlot = AbilityBuffer[i].GroupSlotEntity._Entity;
+                var AbilitySlot = ability.GroupSlotEntity._Entity;
                 var ActiveAbility = entityManager.GetComponentData<AbilityGroupSlot>(AbilitySlot);
                 var ActiveAbility_Entity = ActiveAbility.StateEntity._Entity;
 
@@ -39,9 +39,9 @@ namespace RPGMods.Commands
                 if (b.GuidHash == 0) continue;
 
                 var AbilityStateBuffer = entityManager.GetBuffer<AbilityStateBuffer>(ActiveAbility_Entity);
-                for (int c_i = 0; c_i < AbilityStateBuffer.Length; c_i++)
+                foreach(var state in AbilityStateBuffer)
                 {
-                    var abilityState = AbilityStateBuffer[c_i].StateEntity._Entity;
+                    var abilityState = state.StateEntity._Entity;
                     var abilityCooldownState = entityManager.GetComponentData<AbilityCooldownState>(abilityState);
                     abilityCooldownState.CooldownEndTime = 0;
                     entityManager.SetComponentData(abilityState, abilityCooldownState);

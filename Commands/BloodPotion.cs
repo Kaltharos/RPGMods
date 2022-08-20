@@ -1,5 +1,6 @@
 ﻿using ProjectM;
 using RPGMods.Utils;
+using System;
 using Unity.Entities;
 
 namespace RPGMods.Commands

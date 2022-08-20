@@ -18,7 +18,7 @@ namespace RPGMods.Commands
             UpdateSpeed(ctx, isSpeeding);
             string s = isSpeeding ? "Activated" : "Deactivated";
             Output.SendSystemMessage(ctx, $"Speed buff <color=#ffff00ff>{s}</color>");
-            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
+            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.Buff.Buff_VBlood_Perk_Moose);
         }
 
         public static bool UpdateSpeed(Context ctx, bool isGodMode)

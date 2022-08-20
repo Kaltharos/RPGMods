@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using ProjectM;
 using ProjectM.Network;
+using ProjectM.Scripting;
 using RPGMods.Systems;
 using RPGMods.Utils;
 using Stunlock.Network;
@@ -8,13 +9,30 @@ using System;
 
 namespace RPGMods.Hooks
 {
+    [HarmonyPatch(typeof(SettingsManager), nameof(SettingsManager.VerifyServerGameSettings))]
+    public class ServerGameSetting_Patch
+    {
+        private static bool isInitialized = false;
+        public static void Postfix()
+        {
+            if (isInitialized == false)
+            {
+                Helper.CreatePlayerCache();
+                Helper.GetDayNightCycle(out Helper.DNEntity);
+                Helper.GetServerGameSettings(out Helper.SGS);
+                Helper.GetServerGameManager(out Helper.SGM);
+                ProximityLoop.UpdateCache();
+                isInitialized = true;
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(GameBootstrap), nameof(GameBootstrap.Start))]
     public static class GameBootstrap_Patch
     {
         public static void Postfix()
         {
-            Plugin Plugin = new Plugin();
-            Plugin.OnGameInitialized();
+            Plugin.Initialize();
         }
     }
 
@@ -43,6 +61,30 @@ namespace RPGMods.Hooks
 
                 if (!isNewVampire)
                 {
+                    if (PvPSystem.isHonorSystemEnabled)
+                    {
+                        Helper.RenamePlayer(userEntity, userData.LocalCharacter._Entity, userData.CharacterName);
+
+                        Database.PvPStats.TryGetValue(userData.PlatformId, out var pvpStats);
+                        Database.SiegeState.TryGetValue(userData.PlatformId, out var siegeState);
+
+                        if (pvpStats.Reputation <= -1000)
+                        {
+                            PvPSystem.HostileON(userData.PlatformId, userData.LocalCharacter._Entity, userEntity);
+                        }
+                        else
+                        {
+                            if (!siegeState.IsSiegeOn)
+                            {
+                                PvPSystem.HostileOFF(userData.PlatformId, userData.LocalCharacter._Entity);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var playerName = userData.CharacterName.ToString();
+                        Helper.UpdatePlayerCache(userEntity, playerName, playerName);
+                    }
                     if (WeaponMasterSystem.isDecaySystemEnabled && WeaponMasterSystem.isMasteryEnabled)
                     {
                         WeaponMasterSystem.DecayMastery(userEntity);
@@ -58,44 +100,24 @@ namespace RPGMods.Hooks
     {
         private static void Prefix(ServerBootstrapSystem __instance, NetConnectionId netConnectionId, ConnectionStatusChangeReason connectionStatusReason, string extraData)
         {
-            bool process = true;
-            switch (connectionStatusReason)
+            try
             {
-                case ConnectionStatusChangeReason.IncorrectPassword:
-                    process = false;
-                    break;
-                case ConnectionStatusChangeReason.Unknown:
-                    process = false;
-                    break;
-                case ConnectionStatusChangeReason.NoFreeSlots:
-                    process = false;
-                    break;
-                case ConnectionStatusChangeReason.Banned:
-                    process = false;
-                    break;
-                default:
-                    process = true;
-                    break;
-            }
-            if (process)
-            {
-                try
-                {
-                    var userIndex = __instance._NetEndPointToApprovedUserIndex[netConnectionId];
-                    var serverClient = __instance._ApprovedUsersLookup[userIndex];
-                    var userData = __instance.EntityManager.GetComponentData<User>(serverClient.UserEntity);
-                    bool isNewVampire = userData.CharacterName.IsEmpty;
+                var userIndex = __instance._NetEndPointToApprovedUserIndex[netConnectionId];
+                var serverClient = __instance._ApprovedUsersLookup[userIndex];
+                var userData = __instance.EntityManager.GetComponentData<User>(serverClient.UserEntity);
+                bool isNewVampire = userData.CharacterName.IsEmpty;
 
-                    if (!isNewVampire)
+                if (!isNewVampire)
+                {
+                    var playerName = userData.CharacterName.ToString();
+                    Helper.UpdatePlayerCache(serverClient.UserEntity, playerName, playerName, true);
+                    if (WeaponMasterSystem.isDecaySystemEnabled)
                     {
-                        if (WeaponMasterSystem.isDecaySystemEnabled)
-                        {
-                            Database.player_decaymastery_logout[userData.PlatformId] = DateTime.Now;
-                        }
+                        Database.player_decaymastery_logout[userData.PlatformId] = DateTime.Now;
                     }
                 }
-                catch { };
             }
+            catch { };
         }
     }
 }

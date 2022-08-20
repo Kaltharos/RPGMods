@@ -62,10 +62,7 @@ namespace RPGMods.Systems
         public static bool UnbanUser(Entity userEntity)
         {
             var userData = em.GetComponentData<User>(userEntity);
-            bool isExist = Database.user_banlist.TryGetValue(userData.PlatformId, out _);
-            if (isExist) Database.user_banlist.Remove(userData.PlatformId);
-            else return false;
-            return true;
+            return Database.user_banlist.Remove(userData.PlatformId); ;
         }
 
         public static void SaveBanList()

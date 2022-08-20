@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
 using ProjectM.Gameplay.Systems;
-using Unity.Entities;
 using RPGMods.Utils;
 using ProjectM;
+using Unity.Entities;
 using System;
+using RPGMods.Systems;
 
 namespace RPGMods.Hooks
 {
@@ -12,6 +13,15 @@ namespace RPGMods.Hooks
     {
         private static void Postfix(HandleGameplayEventsSystem __instance)
         {
+            //-- Player Location Caching
+            ProximityLoop.UpdateCache();
+
+            //-- HonorSystem Hostile Glow
+            if (PvPSystem.isHonorSystemEnabled && PvPSystem.isEnableHostileGlow && PvPSystem.isUseProximityGlow)
+            {
+                ProximityLoop.HostileProximityGlow();
+            }
+
             //-- Spawn Custom NPC Task
             if (Cache.spawnNPC_Listen.Count > 0)
             {
@@ -34,6 +44,23 @@ namespace RPGMods.Hooks
                     if (Option.ModifyStats)
                     {
                         __instance.EntityManager.SetComponentData(entity, Option.UnitStats);
+                    }
+
+                    if (item.Value.Duration < 0)
+                    {
+                        __instance.EntityManager.SetComponentData(entity, new LifeTime()
+                        {
+                            Duration = 0,
+                            EndAction = LifeTimeEndAction.None
+                        });
+                    }
+                    else
+                    {
+                        __instance.EntityManager.SetComponentData(entity, new LifeTime()
+                        {
+                            Duration = item.Value.Duration,
+                            EndAction = LifeTimeEndAction.Destroy
+                        });
                     }
 
                     Cache.spawnNPC_Listen.Remove(item.Key);

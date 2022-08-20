@@ -50,7 +50,7 @@ namespace RPGMods.Commands
                     }
                     Output.SendSystemMessage(ctx, $"Spawning {count} {name} at <{pos.x}, {pos.z}>");
                 }
-                else if (ctx.Args.Length >= 2 && !isParsable)
+                else if (ctx.Args.Length >= 2)
                 {
                     name = ctx.Args[0];
                     waypoint = ctx.Args.Last().ToLower();

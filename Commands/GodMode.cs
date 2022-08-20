@@ -17,7 +17,7 @@ namespace RPGMods.Commands
             UpdateGodMode(ctx, isGodMode);
             string s = isGodMode ? "Activated" : "Deactivated";
             Output.SendSystemMessage(ctx, $"God mode <color=#ffff00ff>{s}</color>");
-            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.buff.Buff_VBlood_Perk_Moose);
+            Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.Buff.Buff_VBlood_Perk_Moose);
         }
 
         public static bool UpdateGodMode(Context ctx, bool isGodMode)

@@ -4,7 +4,7 @@ using Unity.Transforms;
 
 namespace RPGMods.Commands
 {
-    [Command("customspawn, cspn", "customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable(\"true/false\")>]", "Spawns a modified NPC at your current position.")]
+    [Command("customspawn, cspn", "customspawn <Prefab Name> [<BloodType> <BloodQuality> <BloodConsumeable(\"true/false\")> <Duration>]", "Spawns a modified NPC at your current position.")]
     public static class CustomSpawnNPC
     {
         public static void Initialize(Context ctx)
@@ -16,6 +16,12 @@ namespace RPGMods.Commands
                 PrefabGUID type = new PrefabGUID((int)Helper.BloodType.Frailed);
                 float quality = 0;
                 bool bloodconsume = true;
+                float duration = 1800;
+
+                if (ctx.Args.Length >= 5)
+                {
+                    duration = float.Parse(ctx.Args[4]);
+                }
 
                 if (ctx.Args.Length >= 4)
                 {
@@ -39,7 +45,7 @@ namespace RPGMods.Commands
                 {
                     name = ctx.Args[0];
                     var pos = ctx.EntityManager.GetComponentData<LocalToWorld>(ctx.Event.SenderCharacterEntity).Position;
-                    if (!Helper.SpawnNPCIdentify(out var npc_id, name, pos, 1, 2, 1800))
+                    if (!Helper.SpawnNPCIdentify(out var npc_id, name, pos, 1, 2, duration))
                     {
                         Output.CustomErrorMessage(ctx, $"Could not find specified unit: {name}");
                         return;
@@ -52,7 +58,7 @@ namespace RPGMods.Commands
 
                     Cache.spawnNPC_Listen[npc_id] = NPCData;
 
-                    Output.SendSystemMessage(ctx, $"Spawning CustomNPC {name} at <{pos.x}, {pos.z}>");
+                    Output.SendSystemMessage(ctx, $"Spawning CustomNPC {name} at your position with LifeTime of {duration}s");
                 }
             }
             else

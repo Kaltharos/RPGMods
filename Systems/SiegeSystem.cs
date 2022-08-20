@@ -28,7 +28,7 @@ namespace RPGMods.Systems
 
         public static void BuffReceiver(Entity BuffEntity, PrefabGUID GUID)
         {
-            if (GUID.Equals(Database.buff.SiegeGolem_T01) || GUID.Equals(Database.buff.SiegeGolem_T02))
+            if (GUID.Equals(Database.Buff.SiegeGolem_T01) || GUID.Equals(Database.Buff.SiegeGolem_T02))
             {
                 var Buffer = em.GetBuffer<ModifyUnitStatBuff_DOTS>(BuffEntity);
                 Buffer.Add(GolemPDef);

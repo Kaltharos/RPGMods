@@ -9,7 +9,7 @@ namespace RPGMods.Commands
         public static void Initialize(Context ctx)
         {
             var ping = ctx.EntityManager.GetComponentData<Latency>(ctx.Event.SenderCharacterEntity).Value;
-            Output.SendSystemMessage(ctx, $"Your latency is <color=#ffff00ff>{ping}</color>ms");
+            Output.SendSystemMessage(ctx, $"Your latency is <color=#ffff00ff>{ping}</color>s");
         }
     }
 }

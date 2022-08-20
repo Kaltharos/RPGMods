@@ -1,6 +1,5 @@
 ﻿using ProjectM;
 using ProjectM.Network;
-using ProjectM.Scripting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +9,10 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 using RPGMods.Utils;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using UnityEngine;
+using Cache = RPGMods.Utils.Cache;
 
 namespace RPGMods.Systems
 {
@@ -28,77 +31,111 @@ namespace RPGMods.Systems
 
         public static double EXPLostOnDeath = 0.10;
 
-        private static PrefabGUID vBloodType = new PrefabGUID(1557174542);
+        private static readonly PrefabGUID vBloodType = new PrefabGUID(1557174542);
+        private static readonly int MaxCacheAge = 300;
 
-        public static void UpdateEXP(Entity killerEntity, Entity victimEntity)
+        public static void EXPMonitor(Entity killerEntity, Entity victimEntity)
         {
-            bool isVictimNPC = entityManager.HasComponent<UnitLevel>(victimEntity);
-            if (isVictimNPC)
+            //-- Check victim is not a summon
+            if (entityManager.HasComponent<Minion>(victimEntity)) return;
+
+            //-- Check victim has a level
+            if (!entityManager.HasComponent<UnitLevel>(victimEntity)) return;
+
+            //-- Must be executed from main thread
+            if (Cache.PlayerAllies.TryGetValue(killerEntity, out var PlayerGroup))
             {
-                if (entityManager.HasComponent<Minion>(victimEntity)) return;
+                TimeSpan CacheAge = DateTime.Now - PlayerGroup.TimeStamp;
+                if (CacheAge.TotalSeconds > MaxCacheAge) goto UpdateCache;
+                goto StartTask;
+            }
 
-                PlayerCharacter player = entityManager.GetComponentData<PlayerCharacter>(killerEntity);
-                Entity userEntity = player.UserEntity._Entity;
-                User user = entityManager.GetComponentData<User>(userEntity);
-                ulong SteamID = user.PlatformId;
+            UpdateCache:
+            int allyCount = Helper.GetAllies(killerEntity, out var Group);
+            PlayerGroup = new PlayerGroup()
+            {
+                AllyCount = allyCount,
+                Allies = Group,
+                TimeStamp = DateTime.Now
+            };
+            Cache.PlayerAllies[killerEntity] = PlayerGroup;
+            //-- ---------------------------------
 
-                int player_level = 0;
-                if (Database.player_experience.TryGetValue(SteamID, out int exp))
+            StartTask:
+            UpdateEXP(killerEntity, victimEntity, PlayerGroup);
+        }
+
+        public static void UpdateEXP(Entity killerEntity, Entity victimEntity, PlayerGroup PlayerGroup)
+        {
+            PlayerCharacter player = entityManager.GetComponentData<PlayerCharacter>(killerEntity);
+            Entity userEntity = player.UserEntity._Entity;
+            User user = entityManager.GetComponentData<User>(userEntity);
+            ulong SteamID = user.PlatformId;
+
+            int player_level = 0;
+            if (Database.player_experience.TryGetValue(SteamID, out int exp))
+            {
+                player_level = convertXpToLevel(exp);
+                if (exp >= convertLevelToXp(MaxLevel)) return;
+            }
+
+            UnitLevel UnitLevel = entityManager.GetComponentData<UnitLevel>(victimEntity);
+
+            bool isVBlood;
+            if (entityManager.HasComponent<BloodConsumeSource>(victimEntity))
+            {
+                BloodConsumeSource BloodSource = entityManager.GetComponentData<BloodConsumeSource>(victimEntity);
+                isVBlood = BloodSource.UnitBloodType.Equals(vBloodType);
+            }
+            else
+            {
+                isVBlood = false;
+            }
+
+            int EXPGained;
+            if (isVBlood) EXPGained = (int)(UnitLevel.Level * VBloodMultiplier);
+            else EXPGained = UnitLevel.Level;
+
+            int level_diff = UnitLevel.Level - player_level;
+            if (level_diff > 10) level_diff = 10;
+
+            if (level_diff > 0) EXPGained = (int)(EXPGained * (1 + level_diff * 0.1) * EXPMultiplier);
+            else if (level_diff <= -20) EXPGained = (int) Math.Ceiling(EXPGained * 0.10 * EXPMultiplier);
+            else if (level_diff <= -15) EXPGained = (int) Math.Ceiling(EXPGained * 0.25 * EXPMultiplier);
+            else if (level_diff <= -10) EXPGained = (int) Math.Ceiling(EXPGained * 0.50 * EXPMultiplier);
+            else if (level_diff <= -5) EXPGained = (int) Math.Ceiling(EXPGained * 0.75 * EXPMultiplier);
+            else EXPGained = (int)(EXPGained * EXPMultiplier);
+
+            if (PlayerGroup.AllyCount > 0)
+            {
+                List<Entity> CloseAllies = new();
+                LocalToWorld playerPos = Cache.PlayerLocations[killerEntity];
+                foreach (var ally in PlayerGroup.Allies)
                 {
-                    player_level = convertXpToLevel(exp);
-                    if (exp >= convertLevelToXp(MaxLevel)) return;
-                }
-
-                UnitLevel UnitLevel = entityManager.GetComponentData<UnitLevel>(victimEntity);
-
-                bool isVBlood;
-                if (entityManager.HasComponent<BloodConsumeSource>(victimEntity))
-                {
-                    BloodConsumeSource BloodSource = entityManager.GetComponentData<BloodConsumeSource>(victimEntity);
-                    isVBlood = BloodSource.UnitBloodType.Equals(vBloodType);
-                }
-                else
-                {
-                    isVBlood = false;
-                }
-
-                int EXPGained;
-                if (isVBlood) EXPGained = (int)(UnitLevel.Level * VBloodMultiplier);
-                else EXPGained = UnitLevel.Level;
-
-                int level_diff = UnitLevel.Level - player_level;
-                if (level_diff > 10) level_diff = 10;
-
-                if (level_diff > 0) EXPGained = (int)(EXPGained * (1 + level_diff * 0.1) * EXPMultiplier);
-                else if (level_diff <= -5) EXPGained = (int)(EXPGained * 0.25 * EXPMultiplier);
-                else if (level_diff <= -10) EXPGained = (int)(EXPGained * 0.50 * EXPMultiplier);
-                else if (level_diff <= -15) EXPGained = (int)(EXPGained * 0.75 * EXPMultiplier);
-                else if (level_diff <= -20) EXPGained = (int)(EXPGained * 0.90 * EXPMultiplier);
-                else EXPGained = (int)(EXPGained * EXPMultiplier);
-
-                bool HasAllies = GetAllies(killerEntity, out var Group);
-                if (HasAllies)
-                {
-                    for (int i = 0; i < Group.Count; i++)
+                    LocalToWorld allyPos = Cache.PlayerLocations[ally.Value];
+                    var Distance = math.distance(playerPos.Position.xz, allyPos.Position.xz);
+                    if (Distance <= GroupMaxDistance)
                     {
                         EXPGained = (int)(EXPGained * GroupModifier);
-                    }
-                    foreach (var teammate in Group)
-                    {
-                        ShareEXP(teammate.Key, EXPGained);
+                        CloseAllies.Add(ally.Key);
                     }
                 }
-
-                if (exp <= 0) Database.player_experience[SteamID] = EXPGained;
-                else Database.player_experience[SteamID] = exp + EXPGained;
-
-                SetLevel(killerEntity, userEntity, SteamID);
-                bool isDatabaseEXPLog = Database.player_log_exp.TryGetValue(SteamID, out bool isLogging);
-                if (isDatabaseEXPLog)
+                
+                foreach (var teammate in CloseAllies)
                 {
-                    if (!isLogging) return;
+                    ShareEXP(teammate, EXPGained);
+                }
+            }
+
+            if (exp <= 0) Database.player_experience[SteamID] = EXPGained;
+            else Database.player_experience[SteamID] = exp + EXPGained;
+
+            SetLevel(killerEntity, userEntity, SteamID);
+            if (Database.player_log_exp.TryGetValue(SteamID, out bool isLogging))
+            {
+                if (isLogging)
+                {
                     Output.SendLore(userEntity, $"<color=#ffdd00ff>You gain {EXPGained} experience points by slaying a Lv.{UnitLevel.Level} enemy.</color>");
-                    //user.SendSystemMessage($"<color=#ffffffff>Total EXP: {player_experience[SteamID]} - Level: {level} ({getLevelProgress(SteamID)}%)</color>");
                 }
             }
         }
@@ -112,40 +149,6 @@ namespace RPGMods.Systems
                 Database.player_experience[user_component.PlatformId] = exp + EXPGain;
                 SetLevel(user_component.LocalCharacter._Entity, user, user_component.PlatformId);
             }
-        }
-
-        public static bool GetAllies(Entity PlayerCharacter, out Dictionary<Entity, float> Group)
-        {
-            var sgm = Plugin.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
-            Team team = entityManager.GetComponentData<Team>(PlayerCharacter);
-            Group = new Dictionary<Entity, float>();
-            if (sgm._TeamChecker.GetAlliedUsersCount(team) <= 1) return false;
-
-            LocalToWorld playerPos = entityManager.GetComponentData<LocalToWorld>(PlayerCharacter);
-            NativeList<Entity> allyBuffer = sgm._TeamChecker.GetTeamsChecked();
-            sgm._TeamChecker.GetAlliedUsers(team, allyBuffer);
-            int i = 0;
-            try
-            {
-                foreach (var entity in allyBuffer)
-                {
-                    if (entityManager.HasComponent<User>(entity))
-                    {
-                        Entity allyEntity = entityManager.GetComponentData<User>(entity).LocalCharacter._Entity;
-                        if (allyEntity.Equals(PlayerCharacter)) continue;
-                        LocalToWorld allyPos = entityManager.GetComponentData<LocalToWorld>(allyEntity);
-                        var Distance = math.distance(playerPos.Position.xz, allyPos.Position.xz);
-                        if (Distance <= GroupMaxDistance)
-                        {
-                            Group[entity] = Distance;
-                            i++;
-                        }
-                    }
-                }
-            }
-            catch { };
-            if (i == 0) return false;
-            else return true;
         }
 
         public static void LoseEXP(Entity playerEntity)
@@ -173,7 +176,7 @@ namespace RPGMods.Systems
         public static void BuffReceiver(Entity buffEntity)
         {
             PrefabGUID GUID = entityManager.GetComponentData<PrefabGUID>(buffEntity);
-            if (GUID.Equals(Database.buff.LevelUp_Buff)) {
+            if (GUID.Equals(Database.Buff.LevelUp_Buff)) {
                 Entity Owner = entityManager.GetComponentData<EntityOwner>(buffEntity).Owner;
                 if (entityManager.HasComponent<PlayerCharacter>(Owner))
                 {
@@ -186,8 +189,9 @@ namespace RPGMods.Systems
 
         public static void SetLevel(Entity entity, Entity user, ulong SteamID)
         {
-            if (!Database.player_experience.TryGetValue(SteamID, out int exp)) Database.player_experience[SteamID] = 0;
+            if (!Database.player_experience.ContainsKey(SteamID)) Database.player_experience[SteamID] = 0;
             float level = convertXpToLevel(Database.player_experience[SteamID]);
+            if (level < 0) return;
             if (level > MaxLevel)
             {
                 level = MaxLevel;
@@ -200,11 +204,14 @@ namespace RPGMods.Systems
                 if (level_ < level) 
                 {
                     Cache.player_level[SteamID] = level;
-                    Helper.ApplyBuff(user, entity, Database.buff.LevelUp_Buff);
-                    bool isDatabaseEXPLog = Database.player_log_exp.TryGetValue(SteamID, out bool isLogging);
-                    if (isDatabaseEXPLog)
+                    Helper.ApplyBuff(user, entity, Database.Buff.LevelUp_Buff);
+                    if (Database.player_log_exp.TryGetValue(SteamID, out bool isLogging))
                     {
-                        if (isLogging) Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level</color><color=#ffffffff> {level}</color><color=#ffdd00ff>!</color>");
+                        if (isLogging) 
+                        {
+                            var userData = entityManager.GetComponentData<User>(user);
+                            Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level</color><color=#ffffffff> {level}</color><color=#ffdd00ff>!</color>");
+                        }
                     }
                     
                 }
@@ -216,7 +223,7 @@ namespace RPGMods.Systems
             Equipment eq_comp = entityManager.GetComponentData<Equipment>(entity);
             level = level - eq_comp.WeaponLevel._Value - eq_comp.ArmorLevel._Value;
             eq_comp.SpellLevel._Value = level;
-            
+
             entityManager.SetComponentData(entity, eq_comp);
         }
 

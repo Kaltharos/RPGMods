@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
 using ProjectM;
-using ProjectM.Network;
 using RPGMods.Systems;
-using RPGMods.Utils;
-using Stunlock.Network;
-using System;
-using Unity.Collections;
 
 namespace RPGMods.Hooks
 {

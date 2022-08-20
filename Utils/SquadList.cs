@@ -74,7 +74,9 @@ namespace RPGMods.Utils
         public static void SpawnSquad(Entity player, int group, int maxUnits)
         {
             int total_units = 0;
-            
+
+            var UniqueDuration = HunterHuntedSystem.ambush_despawn_timer+0.1231f;
+
             var f3pos = entityManager.GetComponentData<LocalToWorld>(player).Position;
             while (total_units < maxUnits)
             {
@@ -95,7 +97,7 @@ namespace RPGMods.Utils
                 var isFound = Database.database_units.TryGetValue(unitName, out var unit);
                 if (isFound)
                 {
-                    Plugin.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, unitSpawn, 1, 5, HunterHunted.ambush_despawn_timer);
+                    Plugin.Server.GetExistingSystem<UnitSpawnerUpdateSystem>().SpawnUnit(empty_entity, unit, f3pos, unitSpawn, 1, 5, HunterHuntedSystem.ambush_despawn_timer);
                     total_units = total_units + unitSpawn;
                 }
             }

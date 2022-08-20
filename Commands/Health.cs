@@ -26,7 +26,7 @@ namespace RPGMods.Commands
             if (ctx.Args.Length == 2)
             {
                 var targetName = ctx.Args[1];
-                if (Helper.FindPlayer(targetName, true, out var targetEntity, out var targetUserEntity))
+                if (Helper.FindPlayer(targetName, false, out var targetEntity, out var targetUserEntity))
                 {
                     PlayerName = targetName;
                     UserIndex = Plugin.Server.EntityManager.GetComponentData<User>(targetUserEntity).Index;

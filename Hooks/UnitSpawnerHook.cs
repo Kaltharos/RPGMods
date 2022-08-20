@@ -1,6 +1,7 @@
 ﻿using ProjectM;
 using HarmonyLib;
 using RPGMods.Utils;
+using RPGMods.Systems;
 
 namespace RPGMods.Hooks
 {
@@ -10,6 +11,20 @@ namespace RPGMods.Hooks
         public static bool listen = false;
         public static void Prefix(UnitSpawnerReactSystem __instance)
         {
+            if (__instance.__OnUpdate_LambdaJob0_entityQuery != null)
+            {
+                var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+                foreach (var entity in entities)
+                {
+                    var Duration = __instance.EntityManager.GetComponentData<LifeTime>(entity).Duration;
+                    if (Duration == HunterHuntedSystem.ambush_despawn_timer)
+                    {
+                        var Faction = __instance.EntityManager.GetComponentData<FactionReference>(entity);
+                        Faction.FactionGuid.ApplyModification(Helper.SGM, entity, entity, ModificationType.Set, new PrefabGUID(2120169232));
+                        __instance.EntityManager.SetComponentData(entity, Faction);
+                    }
+                }
+            }
             if (listen)
             {
                 if (__instance.__OnUpdate_LambdaJob0_entityQuery != null)
@@ -17,7 +32,6 @@ namespace RPGMods.Hooks
                     var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
                     foreach (var entity in entities)
                     {
-                        //Plugin.Logger.LogWarning($"Entity I: {entity} GUID: {Helper.GetPrefabGUID(entity)} N: {Helper.GetPrefabName(Helper.GetPrefabGUID(entity))}");
                         var Data = __instance.EntityManager.GetComponentData<LifeTime>(entity);
                         if (Cache.spawnNPC_Listen.TryGetValue(Data.Duration, out var Content))
                         {
@@ -26,8 +40,6 @@ namespace RPGMods.Hooks
                             if (Content.Options.Process) Content.Process = true;
 
                             Cache.spawnNPC_Listen[Data.Duration] = Content;
-
-                            //Plugin.Logger.LogWarning($"Struct D: {Cache.spawnNPC_Listen[Data.Duration].Duration} E: {Cache.spawnNPC_Listen[Data.Duration].getEntity()} Ready: {Cache.spawnNPC_Listen[Data.Duration].Process}");
 
                             listen = false;
                         }

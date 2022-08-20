@@ -849,14 +849,14 @@ Display your user info and location.
 
 ### [Discord](https://discord.gg/XY5bNtNm4w)
 ### Main Developer
-- Kaltharos#0001
+- `Kaltharos#0001`
 
 ### Contributors
 #### Without these people, this project will just be a dream. (In no particular order)
-- Dimentox#1154
-- Nopey#1337
-- syllabicat#0692
-- errox#7604
+- `Dimentox#1154`
+- `Nopey#1337`
+- `syllabicat#0692`
+- `errox#7604`
 
 </details>
 

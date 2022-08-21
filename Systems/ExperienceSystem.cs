@@ -91,15 +91,19 @@ namespace RPGMods.Systems
             if (PlayerGroup.AllyCount > 0)
             {
                 List<Entity> CloseAllies = new();
-                LocalToWorld playerPos = Cache.PlayerLocations[killerEntity];
-                foreach (var ally in PlayerGroup.Allies)
+                if (Cache.PlayerLocations.TryGetValue(killerEntity, out var playerPos))
                 {
-                    LocalToWorld allyPos = Cache.PlayerLocations[ally.Value];
-                    var Distance = math.distance(playerPos.Position.xz, allyPos.Position.xz);
-                    if (Distance <= GroupMaxDistance)
+                    foreach (var ally in PlayerGroup.Allies)
                     {
-                        EXPGained = (int)(EXPGained * GroupModifier);
-                        CloseAllies.Add(ally.Key);
+                        if (Cache.PlayerLocations.TryGetValue(ally.Value, out var allyPos))
+                        {
+                            var Distance = math.distance(playerPos.Position.xz, allyPos.Position.xz);
+                            if (Distance <= GroupMaxDistance)
+                            {
+                                EXPGained = (int)(EXPGained * GroupModifier);
+                                CloseAllies.Add(ally.Key);
+                            }
+                        }
                     }
                 }
                 

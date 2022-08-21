@@ -710,6 +710,9 @@ Display your user info and location.
 <details>
 <summary>Changelog</summary>
 
+`1.1.2`
+- Bug fix for exception error on trying to get disabled/offline allies location.
+
 `1.1.1`
 - Attempt at fixing proximity glow bug where the mod can't decide if they're close or far.
 - Clan members are now factored in for honor system siege.

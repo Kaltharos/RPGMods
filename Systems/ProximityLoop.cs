@@ -25,9 +25,20 @@ namespace RPGMods.Systems
 
         private static bool LoopInProgress = false;
 
+        private static EntityQuery query = Plugin.Server.EntityManager.CreateEntityQuery(new EntityQueryDesc()
+        {
+            All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<PlayerCharacter>(),
+                        ComponentType.ReadOnly<IsConnected>()
+                    },
+            Options = EntityQueryOptions.IncludeDisabled
+        });
+
         public static void UpdateCache()
         {
-            var EntityArray = em.CreateEntityQuery(ComponentType.ReadOnly<PlayerCharacter>()).ToEntityArray(Allocator.Temp);
+            Cache.PlayerLocations.Clear();
+            var EntityArray = query.ToEntityArray(Allocator.Temp);
             foreach (var entity in EntityArray)
             {
                 Cache.PlayerLocations[entity] = em.GetComponentData<LocalToWorld>(entity);
@@ -47,6 +58,14 @@ namespace RPGMods.Systems
             {
                 if (!entity.Value.IsHostile) continue;
                 if (SkipList.Contains(entity.Key)) continue;
+
+                Cache.SteamPlayerCache.TryGetValue(entity.Value.SteamID, out var playerData);
+                if (playerData.IsOnline == false)
+                {
+                    SkipList.Add(entity.Key);
+                    HostileOutRange.Add(entity.Key);
+                    continue;
+                }
 
                 if (ClosePlayers(entity.Key, out var TBSkip))
                 {

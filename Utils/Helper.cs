@@ -119,7 +119,15 @@ namespace RPGMods.Utils
 
             Cache.NamePlayerCache.Clear();
             Cache.SteamPlayerCache.Clear();
-            var userEntities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>()).ToEntityArray(Allocator.Temp);
+            EntityQuery query = Plugin.Server.EntityManager.CreateEntityQuery(new EntityQueryDesc()
+            {
+                All = new ComponentType[]
+                    {
+                        ComponentType.ReadOnly<User>()
+                    },
+                Options = EntityQueryOptions.IncludeDisabled
+            });
+            var userEntities = query.ToEntityArray(Allocator.Temp);
             foreach (var entity in userEntities)
             {
                 var userData = Plugin.Server.EntityManager.GetComponentData<User>(entity);

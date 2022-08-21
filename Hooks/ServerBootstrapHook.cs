@@ -17,11 +17,7 @@ namespace RPGMods.Hooks
         {
             if (isInitialized == false)
             {
-                Helper.CreatePlayerCache();
-                Helper.GetDayNightCycle(out Helper.DNEntity);
-                Helper.GetServerGameSettings(out Helper.SGS);
-                Helper.GetServerGameManager(out Helper.SGM);
-                ProximityLoop.UpdateCache();
+                Plugin.Initialize();
                 isInitialized = true;
             }
         }

@@ -710,6 +710,9 @@ Display your user info and location.
 <details>
 <summary>Changelog</summary>
 
+`1.1.3`
+- Hotfix for crash when user is not within a clan.
+
 `1.1.2`
 - Bug fix for exception error on trying to get disabled/offline allies location.
 

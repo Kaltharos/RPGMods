@@ -24,14 +24,22 @@ namespace RPGMods.Utils
         public static Entity DNEntity = default;
         public static ServerGameSettings SGS = default;
         public static ServerGameManager SGM = default;
+        public static UserActivityGridSystem UAGS = default;
 
         public static Regex rxName = new Regex(@"(?<=\])[^\[].*");
+
+        public static bool GetUserActivityGridSystem(out UserActivityGridSystem uags)
+        {
+            uags = Plugin.Server.GetExistingSystem<AiPrioritizationSystem>()?._UserActivityGridSystem;
+            return true;
+        }
 
         public static bool GetServerGameManager(out ServerGameManager sgm)
         {
             sgm = Plugin.Server.GetExistingSystem<ServerScriptMapper>()?._ServerGameManager;
             return true;
         }
+
         public static bool GetServerGameSettings(out ServerGameSettings settings)
         {
             settings = Plugin.Server.GetExistingSystem<ServerGameSettingsSystem>()?._Settings;
@@ -69,16 +77,22 @@ namespace RPGMods.Utils
             if (Cache.PlayerAllies.TryGetValue(PlayerCharacter, out playerGroup))
             {
                 TimeSpan CacheAge = DateTime.Now - playerGroup.TimeStamp;
-                if (CacheAge.TotalSeconds > 300) return playerGroup.AllyCount;
+                if (CacheAge.TotalSeconds < 300) return playerGroup.AllyCount;
             }
 
             Team team = Helper.SGM._TeamChecker.GetTeam(PlayerCharacter);
             playerGroup.AllyCount = Helper.SGM._TeamChecker.GetAlliedUsersCount(team)-1;
+            Dictionary<Entity, Entity> Group = new();
+            playerGroup.TimeStamp = DateTime.Now;
+
+            if (playerGroup.AllyCount <= 0)
+            {
+                Cache.PlayerAllies[PlayerCharacter] = playerGroup;
+                return 0;
+            }
 
             NativeList<Entity> allyBuffer = Helper.SGM._TeamChecker.GetTeamsChecked();
             Helper.SGM._TeamChecker.GetAlliedUsers(team, allyBuffer);
-
-            Dictionary<Entity, Entity> Group = new();
 
             foreach (var entity in allyBuffer)
             {
@@ -91,7 +105,6 @@ namespace RPGMods.Utils
             }
 
             playerGroup.Allies = Group;
-            playerGroup.TimeStamp = DateTime.Now;
             Cache.PlayerAllies[PlayerCharacter] = playerGroup;
 
             return playerGroup.AllyCount;

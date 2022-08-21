@@ -258,18 +258,19 @@ namespace RPGMods
 
         public static void Initialize()
         {
-            if (isInitialized) return;
-
-            //-- Commands Related
-            AutoSaveSystem.LoadDatabase();
-
             //-- Initialize System
             Helper.CreatePlayerCache();
             Helper.GetDayNightCycle(out Helper.DNEntity);
             Helper.GetServerGameSettings(out Helper.SGS);
             Helper.GetServerGameManager(out Helper.SGM);
+            Helper.GetUserActivityGridSystem(out Helper.UAGS);
             ProximityLoop.UpdateCache();
             PvPSystem.Interlocked.isSiegeOn = false;
+
+            if (isInitialized) return;
+
+            //-- Commands Related
+            AutoSaveSystem.LoadDatabase();
 
             //-- Apply configs
             CommandHandler.Prefix = Prefix.Value;

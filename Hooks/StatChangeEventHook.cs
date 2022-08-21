@@ -98,7 +98,7 @@ namespace RPGMods.Hooks
 
                         Database.PvPStats.TryGetValue(OwnerData.PlatformId, out var pvpStats);
 
-                        if (pvpStats.Reputation >= 10000)
+                        if (pvpStats.Reputation >= 5000)
                         {
                             Helper.GetAllies(Cache.SteamPlayerCache[OwnerData.PlatformId].CharEntity, out var AllyData);
                             if (AllyData.AllyCount > 0)

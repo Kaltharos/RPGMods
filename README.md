@@ -75,7 +75,8 @@ Cannot damage other players with positive reputation.
 `[ON] Sieging`\
 Player castle(s) are now vulnerable, and can damage other sieging player castle(s).\
 Aggressive state is enforced during siege time.\
-Siege mode cannot be exited until 3 hours window has passed since activation.
+Siege mode cannot be exited until 3 hours window has passed since activation.\
+Activating siege will also affect your allies.
 
 `[OFF] Defensive`\
 Exit castle siege mode.\
@@ -86,8 +87,8 @@ Player are able to enter passive state again.
 On global siege mode, all castle is vulnerable unless the player honor bonus says something else.\
 Player aggressive state is not enforced during global siege.
 #### All Honor Titles
-- Glorious `[Req: 10000] [Reward: -1000]` `Castle is permanently invulnerable.`
-- Noble `[Req: 5000] [Reward: -500]` `Castle receive -50% reduced damage.`
+- Glorious `[Req: 10000] [Reward: -1000]` `Castle is permanently invulnerable. Bonus is negated if allied with Dreaded players.`
+- Noble `[Req: 5000] [Reward: -500]` `Castle receive -50% reduced damage. Bonus is negated if allied with Dreaded players.`
 - Virtuous `[Req: 1500] [Reward: -100]` `+15% resource gathering`
 - Reputable `[Req: 500] [Reward: -50]` `-25% durability loss`
 - Neutral `[Req: 0] [Reward: -25]`
@@ -708,6 +709,11 @@ Display your user info and location.
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`1.1.1`
+- Attempt at fixing proximity glow bug where the mod can't decide if they're close or far.
+- Clan members are now factored in for honor system siege.
+- Bug fix for dreaded player being able to manually turn siege off.
 
 `1.1.0`
 - Added duration option for customspawn command.

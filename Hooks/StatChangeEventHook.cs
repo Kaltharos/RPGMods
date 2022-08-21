@@ -98,6 +98,23 @@ namespace RPGMods.Hooks
 
                         Database.PvPStats.TryGetValue(OwnerData.PlatformId, out var pvpStats);
 
+                        if (pvpStats.Reputation >= 10000)
+                        {
+                            Helper.GetAllies(Cache.SteamPlayerCache[OwnerData.PlatformId].CharEntity, out var AllyData);
+                            if (AllyData.AllyCount > 0)
+                            {
+                                foreach (var ally in AllyData.Allies)
+                                {
+                                    var allySteamID = Cache.HostilityState[ally.Value].SteamID;
+                                    Database.PvPStats.TryGetValue(allySteamID, out var ally_pvpStats);
+                                    if (ally_pvpStats.Reputation <= -20000)
+                                    {
+                                        pvpStats.Reputation = 0;
+                                    }
+                                }
+                            }
+                        }
+
                         if (PvPSystem.Interlocked.isSiegeOn)
                         {
                             if (pvpStats.Reputation >= 10000)
@@ -108,7 +125,7 @@ namespace RPGMods.Hooks
 
                             if (pvpStats.Reputation >= 5000)
                             {
-                                statChange.Change = statChange.Change * 0.5f;
+                                statChange.Change *= 0.5f;
                                 return;
                             }
                         }
@@ -141,7 +158,7 @@ namespace RPGMods.Hooks
                                 {
                                     if (pvpStats.Reputation >= 5000)
                                     {
-                                        statChange.Change = statChange.Change * 0.5f;
+                                        statChange.Change *= 0.5f;
                                         return;
                                     }
                                 }

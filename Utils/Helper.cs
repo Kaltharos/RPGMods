@@ -64,15 +64,21 @@ namespace RPGMods.Utils
             return false;
         }
 
-        public static int GetAllies(Entity PlayerCharacter, out Dictionary<Entity, Entity> Group)
+        public static int GetAllies(Entity PlayerCharacter, out PlayerGroup playerGroup)
         {
-            Group = new();
+            if (Cache.PlayerAllies.TryGetValue(PlayerCharacter, out playerGroup))
+            {
+                TimeSpan CacheAge = DateTime.Now - playerGroup.TimeStamp;
+                if (CacheAge.TotalSeconds > 300) return playerGroup.AllyCount;
+            }
+
             Team team = Helper.SGM._TeamChecker.GetTeam(PlayerCharacter);
-            int AlliedUsersCount = Helper.SGM._TeamChecker.GetAlliedUsersCount(team);
-            if (AlliedUsersCount <= 1) return 0;
+            playerGroup.AllyCount = Helper.SGM._TeamChecker.GetAlliedUsersCount(team)-1;
 
             NativeList<Entity> allyBuffer = Helper.SGM._TeamChecker.GetTeamsChecked();
             Helper.SGM._TeamChecker.GetAlliedUsers(team, allyBuffer);
+
+            Dictionary<Entity, Entity> Group = new();
 
             foreach (var entity in allyBuffer)
             {
@@ -84,7 +90,11 @@ namespace RPGMods.Utils
                 }
             }
 
-            return AlliedUsersCount-1;
+            playerGroup.Allies = Group;
+            playerGroup.TimeStamp = DateTime.Now;
+            Cache.PlayerAllies[PlayerCharacter] = playerGroup;
+
+            return playerGroup.AllyCount;
         }
 
         public static FixedString64 GetTrueName(string name)
@@ -132,14 +142,10 @@ namespace RPGMods.Utils
 
                     Cache.HostilityState[userData.LocalCharacter._Entity] = new StateData(userData.PlatformId, isHostile);
 
-                    if (siegeData.IsSiegeOn && pvpStats.Reputation > -20000)
+                    if (siegeData.IsSiegeOn)
                     {
-                        TimeSpan span = siegeData.SiegeEndTime - DateTime.Now;
-                        TaskRunner.Start(taskWorld =>
-                        {
-                            PvPSystem.SiegeOFF(userData.PlatformId, userData.LocalCharacter._Entity);
-                            return new object();
-                        }, false, false, false, span);
+                        bool forceSiege = (siegeData.SiegeEndTime == DateTime.MinValue);
+                        PvPSystem.SiegeON(userData.PlatformId, userData.LocalCharacter._Entity, entity, forceSiege, false);
                     }
                 }
             }

@@ -61,6 +61,7 @@ namespace RPGMods.Systems
                 }
                 else
                 {
+                    SkipList.Add(entity.Key);
                     HostileOutRange.Add(entity.Key);
                 }
             }

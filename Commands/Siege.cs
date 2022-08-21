@@ -75,8 +75,9 @@ namespace RPGMods.Commands
                     }
 
                     Output.SendSystemMessage(ctx, "Are you sure you want to enter castle siege mode?");
-                    double calcHours = Math.Round((double)(PvPSystem.SiegeDuration / 60), 2);
-                    Output.SendSystemMessage(ctx, "You will not be able to exit siege mode for (" + calcHours + ") hours once you start.");
+                    TimeSpan TimeLeft = DateTime.Now.AddMinutes(PvPSystem.SiegeDuration) - DateTime.Now;
+                    double calcHours = Math.Round(TimeLeft.TotalHours, 2);
+                    Output.SendSystemMessage(ctx, "You and your allies will not be able to exit siege mode for (" + calcHours + ") hours once you start.");
                     Output.SendSystemMessage(ctx, "Type \"" + CommandHandler.Prefix + "siege on\" again to confirm.");
                     SiegeConfirm.Add(SteamID, DateTime.Now);
                     return;
@@ -91,9 +92,26 @@ namespace RPGMods.Commands
             }
             else if (ctx.Args.Length == 1 && ctx.Args[0].ToLower().Equals("off"))
             {
+                Helper.GetAllies(charEntity, out var allies);
+                if (allies.AllyCount > 0)
+                {
+                    allies.Allies.Add(userEntity, charEntity);
+                    foreach(var ally in allies.Allies)
+                    {
+                        Cache.HostilityState.TryGetValue(ally.Value, out var hostilityState);
+                        Database.PvPStats.TryGetValue(hostilityState.SteamID, out var stats);
+                        if (stats.Reputation <= -20000)
+                        {
+                            PvPStats.Reputation = -20000;
+                            break;
+                        }
+                    }
+                }
+
                 if (PvPStats.Reputation <= -20000)
                 {
-                    Output.CustomErrorMessage(ctx, $"You're [{PvPSystem.GetHonorTitle(PvPStats.Reputation).Title}], siege mode is enforced.");
+                    Output.CustomErrorMessage(ctx, $"You or your allies are [{PvPSystem.GetHonorTitle(PvPStats.Reputation).Title}], siege mode is enforced.");
+                    return;
                 }
                 TimeSpan TimeLeft = siegeState.SiegeEndTime - DateTime.Now;
                 
@@ -101,11 +119,13 @@ namespace RPGMods.Commands
                 {
                     PvPSystem.SiegeOFF(SteamID, charEntity);
                     Output.SendSystemMessage(ctx, "Defensive siege mode engaged.");
+                    return;
                 }
                 else
                 {
                     double tLeft = Math.Round(TimeLeft.TotalHours, 2);
                     Output.SendSystemMessage(ctx, $"Siege mode cannot be ended until {Color.White(tLeft.ToString())} more hour(s)");
+                    return;
                 }
             }
             else if (ctx.Args.Length == 1 && ctx.Args[0].ToLower().Equals("global") && (ctx.Event.User.IsAdmin || PermissionSystem.PermissionCheck(ctx.Event.User.PlatformId, "siege_args")))

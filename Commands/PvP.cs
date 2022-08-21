@@ -33,6 +33,10 @@ namespace RPGMods.Commands
                     {
                         TimeSpan TimeLeft = siegeState.SiegeEndTime - DateTime.Now;
                         tLeft = Math.Round(TimeLeft.TotalHours, 2);
+                        if (PvPStats.Reputation <= -20000)
+                        {
+                            tLeft = -1;
+                        }
                     }
 
                     string hostilityText = hostilityState.IsHostile ? "Aggresive" : "Passive";

@@ -303,26 +303,23 @@ public class Destroy_TravelBuffSystem_Patch
 {
     private static void Postfix(Destroy_TravelBuffSystem __instance)
     {
-        if (PvPSystem.isHonorSystemEnabled)
+        if (__instance.__OnUpdate_LambdaJob0_entityQuery != null)
         {
-            if (__instance.__OnUpdate_LambdaJob0_entityQuery != null)
+            var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
+            foreach (var entity in entities)
             {
-                var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
-                foreach (var entity in entities)
+                PrefabGUID GUID = __instance.EntityManager.GetComponentData<PrefabGUID>(entity);
+                //-- Most likely it's a new player!
+                if (GUID.Equals(Database.Buff.AB_Interact_TombCoffinSpawn_Travel))
                 {
-                    PrefabGUID GUID = __instance.EntityManager.GetComponentData<PrefabGUID>(entity);
-                    //-- Most likely it's a new player!
-                    if (GUID.Equals(Database.Buff.AB_Interact_TombCoffinSpawn_Travel))
-                    {
-                        var Owner = __instance.EntityManager.GetComponentData<EntityOwner>(entity).Owner;
-                        if (!__instance.EntityManager.HasComponent<PlayerCharacter>(Owner)) return;
+                    var Owner = __instance.EntityManager.GetComponentData<EntityOwner>(entity).Owner;
+                    if (!__instance.EntityManager.HasComponent<PlayerCharacter>(Owner)) return;
 
-                        var userEntity = __instance.EntityManager.GetComponentData<PlayerCharacter>(Owner).UserEntity._Entity;
-                        var playerName = __instance.EntityManager.GetComponentData<User>(userEntity).CharacterName.ToString();
-                        
-                        if (PvPSystem.isHonorSystemEnabled) PvPSystem.NewPlayerReceiver(userEntity, Owner, playerName);
-                        else Helper.UpdatePlayerCache(userEntity, playerName, playerName);
-                    }
+                    var userEntity = __instance.EntityManager.GetComponentData<PlayerCharacter>(Owner).UserEntity._Entity;
+                    var playerName = __instance.EntityManager.GetComponentData<User>(userEntity).CharacterName.ToString();
+
+                    if (PvPSystem.isHonorSystemEnabled) PvPSystem.NewPlayerReceiver(userEntity, Owner, playerName);
+                    else Helper.UpdatePlayerCache(userEntity, playerName, playerName);
                 }
             }
         }

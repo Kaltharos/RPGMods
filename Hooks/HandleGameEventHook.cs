@@ -14,13 +14,9 @@ namespace RPGMods.Hooks
         private static void Postfix(HandleGameplayEventsSystem __instance)
         {
             //-- Player Location Caching
-            ProximityLoop.UpdateCache();
-
+            if (ExperienceSystem.isEXPActive || (PvPSystem.isHonorSystemEnabled && PvPSystem.isEnableHostileGlow && PvPSystem.isUseProximityGlow)) ProximityLoop.UpdateCache();
             //-- HonorSystem Hostile Glow
-            if (PvPSystem.isHonorSystemEnabled && PvPSystem.isEnableHostileGlow && PvPSystem.isUseProximityGlow)
-            {
-                ProximityLoop.HostileProximityGlow();
-            }
+            if (PvPSystem.isHonorSystemEnabled && PvPSystem.isEnableHostileGlow && PvPSystem.isUseProximityGlow) ProximityLoop.HostileProximityGlow();
 
             //-- Spawn Custom NPC Task
             if (Cache.spawnNPC_Listen.Count > 0)

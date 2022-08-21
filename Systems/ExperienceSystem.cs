@@ -32,7 +32,6 @@ namespace RPGMods.Systems
         public static double EXPLostOnDeath = 0.10;
 
         private static readonly PrefabGUID vBloodType = new PrefabGUID(1557174542);
-        private static readonly int MaxCacheAge = 300;
 
         public static void EXPMonitor(Entity killerEntity, Entity victimEntity)
         {
@@ -43,25 +42,8 @@ namespace RPGMods.Systems
             if (!entityManager.HasComponent<UnitLevel>(victimEntity)) return;
 
             //-- Must be executed from main thread
-            if (Cache.PlayerAllies.TryGetValue(killerEntity, out var PlayerGroup))
-            {
-                TimeSpan CacheAge = DateTime.Now - PlayerGroup.TimeStamp;
-                if (CacheAge.TotalSeconds > MaxCacheAge) goto UpdateCache;
-                goto StartTask;
-            }
-
-            UpdateCache:
-            int allyCount = Helper.GetAllies(killerEntity, out var Group);
-            PlayerGroup = new PlayerGroup()
-            {
-                AllyCount = allyCount,
-                Allies = Group,
-                TimeStamp = DateTime.Now
-            };
-            Cache.PlayerAllies[killerEntity] = PlayerGroup;
+            Helper.GetAllies(killerEntity, out var PlayerGroup);
             //-- ---------------------------------
-
-            StartTask:
             UpdateEXP(killerEntity, victimEntity, PlayerGroup);
         }
 

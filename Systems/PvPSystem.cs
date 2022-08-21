@@ -242,7 +242,7 @@ namespace RPGMods.Systems
                     if (KillerStats.Title != KillerHonorInfo.Title)
                     {
                         if (KillerStats.Reputation <= -1000) PvPSystem.HostileON(killer_id, KillerEntity, killer_userEntity);
-                        if (KillerStats.Reputation <= -20000) PvPSystem.SiegeON(killer_id, KillerEntity, killer_userEntity);
+                        if (KillerStats.Reputation <= -20000) PvPSystem.SiegeON(killer_id, KillerEntity, killer_userEntity, true, true);
 
                         KillerStats.Title = KillerHonorInfo.Title;
                         var true_name = Helper.GetTrueName(killer_name);
@@ -283,22 +283,75 @@ namespace RPGMods.Systems
             return true;
         }
 
-        public static bool SiegeON(ulong SteamID, Entity playerEntity, Entity userEntity)
+        public static void SiegeON(ulong SteamID, Entity playerEntity, Entity userEntity, bool forceSiege = false, bool seekAlly = true)
         {
-            Database.SiegeState[SteamID] = new SiegeData(true, DateTime.Now.AddMinutes(PvPSystem.SiegeDuration), DateTime.Now);
-            PvPSystem.HostileON(SteamID, playerEntity, userEntity);
-
-            Database.PvPStats.TryGetValue(SteamID, out var pvpStats);
-            if (pvpStats.Reputation > -20000)
+            if (seekAlly)
             {
-                TimeSpan span = Database.SiegeState[SteamID].SiegeEndTime - DateTime.Now;
+                if (Helper.GetAllies(playerEntity, out var playerGroup) > 0)
+                {
+                    playerGroup.Allies.Add(userEntity, playerEntity);
+                    if (forceSiege == false)
+                    {
+                        foreach (var ally in playerGroup.Allies)
+                        {
+                            Cache.HostilityState.TryGetValue(ally.Value, out var hostilityState);
+                            Database.PvPStats.TryGetValue(hostilityState.SteamID, out var allyPvPStats);
+                            if (allyPvPStats.Reputation <= -20000)
+                            {
+                                forceSiege = true;
+                                break;
+                            }
+                        }
+                    }
+                    foreach (var ally in playerGroup.Allies)
+                    {
+                        Cache.HostilityState.TryGetValue(ally.Value, out var hostilityState);
+                        SiegeONProc(hostilityState.SteamID, ally.Value, ally.Key, forceSiege);
+                    }
+                }
+            }
+            else
+            {
+                SiegeONProc(SteamID, playerEntity, userEntity, forceSiege);
+            }
+        }
+
+        private static void SiegeONProc(ulong SteamID, Entity playerEntity, Entity userEntity, bool forceSiege)
+        {
+            PvPSystem.HostileON(SteamID, playerEntity, userEntity);
+            Database.PvPStats.TryGetValue(SteamID, out var pvpStats);
+            Database.SiegeState.TryGetValue(SteamID, out var siegeData);
+            if (pvpStats.Reputation > -20000 && forceSiege == false)
+            {
+                if (siegeData.IsSiegeOn == false)
+                {
+                    Cache.SteamPlayerCache.TryGetValue(SteamID, out var playerData);
+                    ServerChatUtils.SendSystemMessageToAllClients(em, $"{Utils.Color.Red(playerData.CharacterName.ToString())} has entered {Color.Red("Active Siege")}!");
+
+                    siegeData.IsSiegeOn = true;
+                    siegeData.SiegeEndTime = DateTime.Now.AddMinutes(PvPSystem.SiegeDuration);
+                    siegeData.SiegeStartTime = DateTime.Now;
+                    Database.SiegeState[SteamID] = siegeData;
+                }
+                TimeSpan span = siegeData.SiegeEndTime - DateTime.Now;
                 TaskRunner.Start(taskWorld =>
                 {
                     PvPSystem.SiegeOFF(SteamID, playerEntity);
                     return new object();
                 }, false, false, false, span);
             }
-            return true;
+            else
+            {
+                if (siegeData.IsSiegeOn == false)
+                {
+                    Cache.SteamPlayerCache.TryGetValue(SteamID, out var playerData);
+                    ServerChatUtils.SendSystemMessageToAllClients(em, $"{Utils.Color.Red(playerData.CharacterName.ToString())} has entered {Color.Red("Active Siege")}!");
+                }
+                siegeData.IsSiegeOn = true;
+                siegeData.SiegeEndTime = DateTime.MinValue;
+                siegeData.SiegeStartTime = DateTime.Now;
+                Database.SiegeState[SteamID] = siegeData;
+            }
         }
 
         public static bool SiegeOFF(ulong SteamID, Entity playerEntity)
@@ -317,10 +370,6 @@ namespace RPGMods.Systems
                 }
             }
             Database.SiegeState[SteamID] = new SiegeData(false, default, default);
-
-            //var playerData = Plugin.Server.EntityManager.GetComponentData<PlayerCharacter>(playerEntity);
-            //var userData = Plugin.Server.EntityManager.GetComponentData<User>(playerData.UserEntity._Entity);
-            //ServerChatUtils.SendSystemMessageToClient(Plugin.Server.EntityManager, userData, "Siege mode has ended.");
             return true;
         }
 
@@ -357,7 +406,7 @@ namespace RPGMods.Systems
                     string PlayerName = Utils.Color.Teal(Cache.SteamPlayerCache[result.Key].CharacterName.ToString());
                     TimeSpan span = result.Value.SiegeEndTime - DateTime.Now;
                     var hSpan = Math.Round(span.TotalHours, 2);
-                    string tempDisplay = "[Siege Duration " + hSpan + " hour(s)]";
+                    string tempDisplay = "[Duration " + hSpan + " hour(s)]";
                     string DisplayStats = Utils.Color.White(tempDisplay);
                     messages.Add($"{order}. {PlayerName} : {DisplayStats}");
                 }
@@ -468,7 +517,6 @@ namespace RPGMods.Systems
                 em.AddComponent<Buff_Persists_Through_Death>(BuffEntity);
                 em.SetComponentData(BuffEntity, lifeTime_Permanent);
                 em.SetComponentData(BuffEntity, MS_Zero);
-                
             }
             return;
         }

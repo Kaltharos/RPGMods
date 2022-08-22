@@ -9,7 +9,7 @@ namespace RPGMods.Hooks
     public static class UnitSpawnerReactSystem_Patch
     {
         public static bool listen = false;
-        public static void Prefix(UnitSpawnerReactSystem __instance)
+        public static void Postfix(UnitSpawnerReactSystem __instance)
         {
             if (__instance.__OnUpdate_LambdaJob0_entityQuery != null)
             {

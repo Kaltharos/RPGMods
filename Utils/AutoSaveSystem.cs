@@ -22,6 +22,7 @@ namespace RPGMods.Utils
             PvPSystem.SavePvPStat();
             WeaponMasterSystem.SaveWeaponMastery();
             BanSystem.SaveBanList();
+            WorldDynamicsSystem.SaveFactionStats();
 
             Plugin.Logger.LogInfo("All database saved to JSON file.");
         }
@@ -43,6 +44,7 @@ namespace RPGMods.Utils
             ExperienceSystem.LoadEXPData();
             WeaponMasterSystem.LoadWeaponMastery();
             BanSystem.LoadBanList();
+            WorldDynamicsSystem.LoadFactionStats();
 
             Plugin.Logger.LogInfo("All database is now loaded.");
         }

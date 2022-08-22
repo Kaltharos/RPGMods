@@ -82,11 +82,13 @@ namespace RPGMods.Utils
 
             Team team = Helper.SGM._TeamChecker.GetTeam(PlayerCharacter);
             playerGroup.AllyCount = Helper.SGM._TeamChecker.GetAlliedUsersCount(team)-1;
-            Dictionary<Entity, Entity> Group = new();
             playerGroup.TimeStamp = DateTime.Now;
+
+            Dictionary<Entity, Entity> Group = new();
 
             if (playerGroup.AllyCount <= 0)
             {
+                playerGroup.Allies = Group;
                 Cache.PlayerAllies[PlayerCharacter] = playerGroup;
                 return 0;
             }

@@ -8,6 +8,37 @@ using Unity.Entities;
 
 namespace RPGMods.Utils
 {
+    public struct StatsBonus
+    {
+        public int Level_Int { get; set; }
+        public float HP_Float { get; set; }
+        public float PhysicalPower_Float { get; set; }
+        public float PhysicalResistance_Float { get; set; }
+        public float PhysicalCriticalStrikeChance_Float { get; set; }
+        public float PhysicalCriticalStrikeDamage_Float { get; set; }
+        public float SpellPower_Float { get; set; }
+        public float SpellResistance_Float { get; set; }
+        public float SpellCriticalStrikeChance_Float { get; set; }
+        public float SpellCriticalStrikeDamage_Float { get; set; }
+        public float DamageVsPlayerVampires_Float { get; set; }
+        public float ResistVsPlayerVampires_Float { get; set; }
+        public int FireResistance_Int { get; set; }
+    }
+
+    public struct FactionData
+    {
+        public string Name { get; set; }
+        public bool Active { get; set; }
+        public int Level { get; set; }
+        public int MaxLevel { get; set; }
+        public int MinLevel { get; set; }
+        public int ActivePower { get; set; }
+        public int StoredPower { get; set; }
+        public int DailyPower { get; set; }
+        public int RequiredPower { get; set; }
+        public StatsBonus FactionBonus { get; set; }
+    }
+
     public struct PlayerGroup
     {
         public int AllyCount { get; set; }

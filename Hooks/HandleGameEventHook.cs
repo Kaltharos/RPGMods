@@ -11,12 +11,31 @@ namespace RPGMods.Hooks
     [HarmonyPatch(typeof(HandleGameplayEventsSystem), nameof(HandleGameplayEventsSystem.OnUpdate))]
     public class HandleGameplayEventsSystem_Patch
     {
+        private static byte CurrentDay = 0;
+        private static bool isDNInitialized = false;
         private static void Postfix(HandleGameplayEventsSystem __instance)
         {
             //-- Player Location Caching
             if (ExperienceSystem.isEXPActive || (PvPSystem.isHonorSystemEnabled && PvPSystem.isEnableHostileGlow && PvPSystem.isUseProximityGlow)) ProximityLoop.UpdateCache();
             //-- HonorSystem Hostile Glow
             if (PvPSystem.isHonorSystemEnabled && PvPSystem.isEnableHostileGlow && PvPSystem.isUseProximityGlow) ProximityLoop.HostileProximityGlow();
+
+            //-- Day Cycle Tracking
+            var DNCycle = __instance._DayNightCycle.GetSingleton();
+            if (CurrentDay != DNCycle.GameDateTimeNow.Day)
+            {
+                if (!isDNInitialized)
+                {
+                    CurrentDay = DNCycle.GameDateTimeNow.Day;
+                    isDNInitialized = true;
+                }
+                else
+                {
+                    CurrentDay = DNCycle.GameDateTimeNow.Day;
+                    if (WorldDynamicsSystem.isFactionDynamic) WorldDynamicsSystem.OnDayCycle();
+                }
+            }
+            //-- ------------------
 
             //-- Spawn Custom NPC Task
             if (Cache.spawnNPC_Listen.Count > 0)

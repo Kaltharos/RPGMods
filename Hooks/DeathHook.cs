@@ -20,7 +20,10 @@ public class DeathEventListenerSystem_Patch
             NativeArray<DeathEvent> deathEvents = __instance._DeathEventQuery.ToComponentDataArray<DeathEvent>(Allocator.Temp);
             foreach (DeathEvent ev in deathEvents)
             {
-                //-- Creature Kill Tracking
+                //-- Just track whatever died...
+                if (WorldDynamicsSystem.isFactionDynamic) WorldDynamicsSystem.MobKillMonitor(ev.Died);
+
+                //-- Player Creature Kill Tracking
                 if (__instance.EntityManager.HasComponent<PlayerCharacter>(ev.Killer) && __instance.EntityManager.HasComponent<Movement>(ev.Died))
                 {
                     if (ExperienceSystem.isEXPActive) ExperienceSystem.EXPMonitor(ev.Killer, ev.Died);

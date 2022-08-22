@@ -103,7 +103,9 @@ namespace RPGMods
         private static ConfigEntry<int> MasteryCombatTick;
         private static ConfigEntry<int> MasteryMaxCombatTicks;
 
-        private static bool isInitialized = false;
+        private static ConfigEntry<bool> EnableWorldDynamics;
+
+        public static bool isInitialized = false;
 
         public static ManualLogSource Logger;
         private static World _serverWorld;
@@ -218,6 +220,8 @@ namespace RPGMods
             WeaponMastery_VBloodMultiplier = Config.Bind("Mastery", "VBlood Mastery Multiplier", 15f, "Multiply Mastery gained from VBlood kill.");
             WeaponDecayInterval = Config.Bind("Mastery", "Decay Interval", 60, "Every amount of seconds the user is offline by the configured value will translate as 1 decay tick.");
             Offline_Weapon_MasteryDecayValue = Config.Bind("Mastery", "Decay Value", 1, "Mastery will decay by this amount for every decay tick.(1 -> 0.001%)");
+
+            EnableWorldDynamics = Config.Bind("World Dynamics", "Enable Faction Dynamics", true, "All other faction dynamics data & config is withing /RPGMods/Saves/factionstats.json file.");
 
             if (!Directory.Exists("BepInEx/config/RPGMods")) Directory.CreateDirectory("BepInEx/config/RPGMods");
             if (!Directory.Exists("BepInEx/config/RPGMods/Saves")) Directory.CreateDirectory("BepInEx/config/RPGMods/Saves");
@@ -346,6 +350,8 @@ namespace RPGMods
             WeaponMasterSystem.MaxMastery = WeaponMaxMastery.Value;
             WeaponMasterSystem.MasteryCombatTick = MasteryCombatTick.Value;
             WeaponMasterSystem.MaxCombatTick = MasteryMaxCombatTicks.Value;
+
+            WorldDynamicsSystem.isFactionDynamic = EnableWorldDynamics.Value;
 
             isInitialized = true;
         }

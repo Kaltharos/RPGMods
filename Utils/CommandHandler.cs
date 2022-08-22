@@ -29,13 +29,10 @@ namespace RPGMods.Utils
                 if (!NameExists(type, command, out var primary)) continue;
                 if (DisabledCommands.Split(',').Any(x => x.ToLower() == primary)) continue;
 
-                if (!ev.User.IsAdmin)
+                if (!PermissionSystem.PermissionCheck(ev.User.PlatformId, primary) && !ev.User.IsAdmin)
                 {
-                    if (!PermissionSystem.PermissionCheck(ev.User.PlatformId, primary))
-                    {
-                        Output.CustomErrorMessage(ev, "You do not have the required permissions to use that.");
-                        return;
-                    }
+                    Output.CustomErrorMessage(ev, "You do not have the required permissions to use that.");
+                    return;
                 }
 
                 Cache.command_Cooldown.TryGetValue(ev.User.PlatformId, out float last_Command);

@@ -673,19 +673,19 @@ namespace RPGMods.Systems
         public static void SavePvPStat()
         {
             //-- NEW
-            File.WriteAllText("BepInEx/config/RPGMods/Saves/PvPStats.json", JsonSerializer.Serialize(Database.PvPStats, Database.JSON_options));
-            File.WriteAllText("BepInEx/config/RPGMods/Saves/SiegeStates.json", JsonSerializer.Serialize(Database.SiegeState, Database.JSON_options));
+            File.WriteAllText("BepInEx/config/RPGMods/Saves/pvpstats.json", JsonSerializer.Serialize(Database.PvPStats, Database.JSON_options));
+            File.WriteAllText("BepInEx/config/RPGMods/Saves/siegestates.json", JsonSerializer.Serialize(Database.SiegeState, Database.JSON_options));
         }
 
         public static void LoadPvPStat()
         {
             //-- NEW
-            if (!File.Exists("BepInEx/config/RPGMods/Saves/PvPStats.json"))
+            if (!File.Exists("BepInEx/config/RPGMods/Saves/pvpstats.json"))
             {
-                var stream = File.Create("BepInEx/config/RPGMods/Saves/PvPStats.json");
+                var stream = File.Create("BepInEx/config/RPGMods/Saves/pvpstats.json");
                 stream.Dispose();
             }
-            string content = File.ReadAllText("BepInEx/config/RPGMods/Saves/PvPStats.json");
+            string content = File.ReadAllText("BepInEx/config/RPGMods/Saves/pvpstats.json");
             try
             {
                 Database.PvPStats = JsonSerializer.Deserialize<ConcurrentDictionary<ulong, PvPData>>(content);
@@ -698,12 +698,12 @@ namespace RPGMods.Systems
             }
 
             //-- Siege Mechanic
-            if (!File.Exists("BepInEx/config/RPGMods/Saves/SiegeStates.json"))
+            if (!File.Exists("BepInEx/config/RPGMods/Saves/siegestates.json"))
             {
-                var stream = File.Create("BepInEx/config/RPGMods/Saves/SiegeStates.json");
+                var stream = File.Create("BepInEx/config/RPGMods/Saves/siegestates.json");
                 stream.Dispose();
             }
-            content = File.ReadAllText("BepInEx/config/RPGMods/Saves/SiegeStates.json");
+            content = File.ReadAllText("BepInEx/config/RPGMods/Saves/siegestates.json");
             try
             {
                 Database.SiegeState = JsonSerializer.Deserialize<Dictionary<ulong, SiegeData>>(content);

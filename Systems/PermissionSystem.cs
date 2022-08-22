@@ -50,6 +50,11 @@ namespace RPGMods.Systems
         {
             var isExist = Database.command_permission.TryGetValue(command, out int requirement);
             if (isExist) return requirement;
+            else
+            {
+                Database.command_permission[command] = 100;
+                SavePermissions();
+            }
             return 100;
         }
 
@@ -298,6 +303,7 @@ namespace RPGMods.Systems
                 Database.command_permission["speed"] = 100;
                 Database.command_permission["sunimmunity"] = 100;
                 Database.command_permission["teleport"] = 100;
+                Database.command_permission["worlddynamics"] = 100;
                 SavePermissions();
                 Plugin.Logger.LogWarning("CommandPermissions DB Created.");
             }

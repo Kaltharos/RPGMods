@@ -1,66 +1,70 @@
 # RPGMods
 ### Server Only Mod
-Server only mod for RPG system which also include ChatCommands with bug fixes.\
+Server only mod for RPG systems, which also includes ChatCommands with bug fixes.\
 Read the changelog for extra details.
 #### [Video Demo of Experience & Mastery](https://streamable.com/k2p3bm)
 
 ## Experience System
 Disable the VRising Gear Level system and replace it with a traditional RPG experience system,\
-complete with exp sharing between clan members or other player designated as ally.
+complete with exp sharing between clan members or other players designated as allies.
 
 ## Mastery System
-### Weapon Mastery
-Mastering a weapon will now progressively give extra bonus to the character stats.\
+> ### Weapon Mastery
+Mastering a weapon will now progressively give extra bonuses to the character's stats.\
 Weapon mastery will increase when the weapon is used to kill a creature, and while in combat to a maximum of 60 seconds. (0.001%/Sec)\
 Spell mastery can only increase and take effect when no weapon is equipped.
-### Mastery Decay
+> ### Mastery Decay
 When the vampire goes to sleep (offline), all their mastery will continuously decay per minute passed while offline.\
 This decay will keep on counting even while the server is offline.
 
 ## HunterHunted System
-A new system where every NPC you killed contribute to a heat system,\
-if you kill too many NPC from that faction, eventually your heat level will raise higher and higher.
+A new system where every NPC you kill contributes to a heat system,\
+if you kill too many NPCs from that faction, eventually your heat level will rise higher and higher.\
 
 The higher your heat level is, a more difficult squad of ambushers will be sent by that faction to kill you.\
-Heat level will eventually cooldown the longer you went without killing NPCs from that faction,\
-space your kills so you don't get hunter by an extremely elite group of assassins.
+Heat level will eventually cooldown the longer you go without killing NPCs from that faction,\
+space your kills so you don't get hunted by an extremely elite group of assassins.\
 
 Otherwise, if you are dead for any reason at all, your heat/wanted level will reset back to anonymous.\
-`-- Note` Ambush may only occur when the player is in combat.
+```
+Note:
+- Ambush may only occur when the player is in combat.
+- All mobs spawned by this system is assigned to Faction_VampireHunters
+```
 
 ## PvP System
 Configurable PvP kill serverwide announcement.\
-Kill/Death will also be recorded, and a ladder board for the Top 10 K/D in the server.
-### Toggle PvP Commnd
+Kill/Death will also be recorded, and a ladder board for the Top 10 K/D on the server.
+> ### Toggle PvP Commnd
 If enabled, players can toggle their pvp status on/off via the pvp command.\
 If their pvp status is off, they are excluded from all PvP damage.\
 Your server must be configured as a PvP server for the toggle to work,\
-otherwise player will never be able to do any pvp damage despite toggling pvp status to be on.
+players will otherwise never be able to do any pvp damage despite toggling pvp status to be on.
 
-PvP toggle will be overriden by `Hostility Mode` if honor system is active.
-### Punishment System
-Additionally there's a punishment system which can be used to punish player who kill lower level player,\
+PvP toggle will be overridden by Hostility Mode if the honor system is active.
+> ### Punishment System
+Additionally, there's a punishment system which can be used to punish players who kill lower level players,\
 which is configurable in the config.\
-Punishment will apply a debuff that reduce player combat effeciency.
-- `-25%` Physical & spell power
-- `-15` Physical, spell, holy, and fire resistance
-- Gear level down (Overriden by EXP system if active)
-### Honor System
-All vampires start with `Neutral` honor rank.\
-Killing a vampire with neutral or positive honor rank will deduct some honor points,\
-while killing a vampire with negative honor rank will reward the player with some honor points.\
-Other way to gain honor is by grinding mobs. Each mobs kill will give 1 honor points.\
-There's a hard limit of `250p/hours` gain to prevent grind.
+Punishment will apply a debuff that reduces player combat efficiency.
+* -25% Physical & spell power
+* -15 Physical, spell, holy, and fire resistance
+* Gear level down (Overridden by EXP system if active)
+> ### Honor System
+All vampires start with Neutral honor rank.\
+Killing a vampire with a neutral or positive honor rank will deduct some honor points,\
+while killing a vampire with a negative honor rank will reward the player with some honor points.\
+Another way to gain honor is by grinding mobs. Each mob kill will give 1 honor point.\
+There's a hard limit of 250p/hours gain to prevent grind.
 
-The honor title is added as a prefix to the player name.\
-All chat commands which is included within RPGMods should still be used without the\
+The honor title is added as a prefix to the player's name.\
+All chat commands which are included within RPGMods should still be used without the\
 honor title prefix if a player name is required.\
-Other stuff like whispering other player does require the title prefix to be used.
+Other stuff like whispering to other players does require the title prefix to be used.
 
 Honor title prefix is not automatically updated for chat messages,\
-everything else like building ownership and hovering player name is automatically updated.
+everything else like building ownership and hovering player names are automatically updated.
 
-For all the mechanic to work correctly, please set your server settings to:
+For all the mechanics to work correctly, please set your server settings to:
 - `Game Mode: PvP`
 - `Castle Damage Mode: Always`
 - `Player Damage Mode: Always`
@@ -70,48 +74,98 @@ Can damage any player.\
 No reputation loss will be given to the aggressor when killed.
 
 `[OFF] Passive`\
-Cannot damage other players with positive reputation.
+Cannot damage other players with a positive reputation.
 #### Castle Siege
 `[ON] Sieging`\
 Player castle(s) are now vulnerable, and can damage other sieging player castle(s).\
 Aggressive state is enforced during siege time.\
-Siege mode cannot be exited until 3 hours window has passed since activation.\
-Activating siege will also affect your allies.
+Siege mode cannot be exited until a 3 hour window has passed since activation.\
+Activating siege mode will also affect your allies.
 
 `[OFF] Defensive`\
 Exit castle siege mode.\
 Castle(s) are now invulnerable.\
-Player are able to enter passive state again.
+Player is able to enter passive state again.
 
 `Global Siege`\
-On global siege mode, all castle is vulnerable unless the player honor bonus says something else.\
+In global siege mode, all castles are vulnerable unless the player's honor bonus says otherwise.\
 Player aggressive state is not enforced during global siege.
 #### All Honor Titles
-- Glorious `[Req: 10000] [Reward: -1000]` `Castle is permanently invulnerable. Bonus is negated if allied with Dreaded players.`
-- Noble `[Req: 5000] [Reward: -500]` `Castle receive -50% reduced damage. Bonus is negated if allied with Dreaded players.`
-- Virtuous `[Req: 1500] [Reward: -100]` `+15% resource gathering`
-- Reputable `[Req: 500] [Reward: -50]` `-25% durability loss`
-- Neutral `[Req: 0] [Reward: -25]`
-- Suspicious `[Req: -1] [Reward: 0]`
-- Infamous `[Req: -1000] [Reward: 10]` `Enforced aggresive state.`
-- Villainous `[Req: -3000] [Reward: 50]` `-20% damage taken from positive rep vampires.`
-- Nefarious `[Req: -10000] [Reward: 100]` `+20% damage dealt to positive rep vampires.`
-- Dreaded `[Req: -20000] [Reward: 150]` `Enforced castle siege participation`
+| Title | Requirement | Reward/Kill | Bonus |
+| --- | --- | --- | --- |
+| Glorious | 10000 | -1000 | Castle(s) is permanently invulnerable. Bonus is negated if allied with Dreaded players. |
+| Noble | 5000 | -500 | Castle(s) receive -50% reduced damage. Bonus is negated if allied with Dreaded players. |
+| Virtuous | 1500 | -100 | +15% resource gathering. |
+| Reputable | 500 | -50 | -25% durability loss. (Does not affect durability loss from combat.) |
+| Neutral | 0 | -25 | No additional stats. |
+| Suspicious | -1 | 0 | No additional stats. |
+| Infamous | -1000 | 10 | Enforced aggressive state. |
+| Villainous | -3000 | 50 | -20% damage taken from positive rep vampires. |
+| Nefarious | -10000 | 100 | +20% damage dealt to positive rep vampires. |
+| Dreaded | -20000 | 150 | Enforced castle siege participation |
+
+## World Dynamics
+Each factions in the world will continously gain strength for every in-game day cycle.\
+Vampires will need to regularly cull these factions mobs to prevent or weaken the faction.\
+For each mobs killed, the faction growth will be hampered, if enough are killed, the faction may even weaken.
+
+Every faction strength gain and stat buff can be manually configured, by the server admin via config & json file.
+
+<details>
+<summary>Faction Stats Explaination</summary>
+
+Use [Gaming.Tools](https://gaming.tools/v-rising) to look up NPCs faction.
+```json
+//-- DO NOT COPY PASTE - JUST EDIT THE FILE BUILD BY THE AUTOMATICALLY
+//-- INFO:
+//-- - Dynamic value: can and will change during gameplay.
+//-- - Static value: will not change during game play.
+//-- - FactionBonus: this section is all static.
+
+"-413163549": {
+    "Name": "Faction_Bandits",
+    "Active": false,        //-- Set to true to activate this faction
+    "Level": 0,             //-- Dynamic value.
+    "MaxLevel": 0,          //-- Static value. Faction will never go above this level.
+    "MinLevel": 0,          //-- Static value. Faction will never go below this level.
+    "ActivePower": 0,       //-- Dynamic value. Current active power that will get exported to stored power.
+    "StoredPower": 0,       //-- Dynamic value. Once it reach required power, faction level up. If it reach < 0, faction level down.
+    "DailyPower": 0,        //-- Static value. Active power will be set to this for every in-game day cycle.
+    "RequiredPower": 0,     //-- Static value. Stored power need to reach this value for faction to level up.
+    "FactionBonus": {
+        "Level_Int": 0,                             //-- Stats bonus that will be given to the faction mobs. Formula: OriginalValue + (Value * Level)
+        "HP_Float": 0,                              //-- Leave at 0 to not give bonus. Negative to debuff when level up, buff when level down. Postitive to buff when level up, debuff when level down.
+        "PhysicalPower_Float": 0,
+        "PhysicalResistance_Float": 0,              //-- Unit will be invulnerable to physical damage if this reach 1
+        "PhysicalCriticalStrikeChance_Float": 0,
+        "PhysicalCriticalStrikeDamage_Float": 0,
+        "SpellPower_Float": 0,
+        "SpellResistance_Float": 0,                 //-- Unit will be invulnerable to spell damage if this reach 1
+        "SpellCriticalStrikeChance_Float": 0,
+        "SpellCriticalStrikeDamage_Float": 0,
+        "DamageVsPlayerVampires_Float": 0,          
+        "ResistVsPlayerVampires_Float": 0,          //-- Unit will be invulnerable to player if this reach 1
+        "FireResistance_Int": 0
+    }
+}
+```
+
+</details>
 
 ## Command Permission & VIP Login Whitelist
-Commands be configured to require a minimum level of permission for the user to be able to use them.\
-When there's no minimum permission set in the `command_permission.json`, it will default to a minimum requirement of permission lv. 100.
+Commands are configured to require a minimum level of permission for the user to be able to use them.\
+When there's no minimum permission set in the command_permission.json, it will default to a minimum requirement of permission lv. 100.
 
-VIP System when enabled, will enable the user with permission level higher or equal to the minimum requirement set in to config,\
+VIP System, when enabled, will enable the user with permission level higher or equal to the minimum requirement set in the config,\
 to be able to bypass server capacity.
 
-Permission level range from 0 to 100.\
-With 0 as the default permission for user (lowest),\
+Permission levels range from 0 to 100.\
+With 0 as the default permission for users (lowest),\
 and 100 as the highest permission (admin).
 
 ## Custom Ban System
 You can now ban a player for the specified duration in days using the .ban/.unban command.\
-`WARNING` if you remove RPGMods all the banned user via the chat command will no longer be banned!
+`WARNING` If you remove RPGMods, all the banned users via the command will no longer be banned!
 
 ## Config
 <details>
@@ -706,9 +760,22 @@ Display your user info and location.
 
 </details>
 
+<details>
+<summary>worlddynamics</summary>
+
+`worlddynamics [<faction>] [<stats>|<save>|<load>]`\
+List all faction stats. Save them, or load from the json file.\
+&ensp;&ensp;**Example:** `wd faction stats` -> List all active faction stats.\
+
+</details>
+
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`1.2.0`
+- Added an initial version for world dynamics.
+- Added worlddynamics commands.
 
 `1.1.3`
 - Hotfix for crash when user is not within a clan.
@@ -743,116 +810,11 @@ Display your user info and location.
 - Minor adjustments.
 
 `1.0.1`
-- Added optional wetstone dependency.
+- Added optional wetstone dependency for compiling.
 - Added compabilities with wetstone reload function.
 
 `1.0.0`
-- Removed wetstone dependency
-
-`0.3.2`
-- Adjustment in EXP System so player don't get more exp if they've reached the max level cap.
-- Adjustment in EXP gain for killing lower level mobs.
-- Adjusted bonus EXP gain for killing higher level mob to be capped at 10 level higher max.
-- User with sufficient permission for waypoint_args will no longer be restricted by the waypoint limit.
-- Reduced the required heat for ambush to occur.
-- Fixed PvP Debuff punishment not applying correctly.
-
-`0.3.1`
-- Added configurable permission for special params that previously only usable by admins.
-- Added VIP system that can give a passive buff to VIP players.
-
-`0.3.0`
-- Changed command permission to use permission level instead of just checking for admin/not.
-- Permission and disabled commands config now automatically include abbreviation.
-- Added whitelist/vip system which should be able to bypass max connected user config.
-- Added ban command.
-- Added kick command.
-
-`0.2.5`
-- Emergency patch release to fix that losing exp on death is still active even when the exp system is disabled.
-
-`0.2.4`
-- Modified the save command to also force the server to save game.
-- Modified the level up chat notification to be on/off according to the .xp log command.
-- Fixed the waypoint bug, admin will ignore the limit properly now, and config for waypoint is properly set.
-- Fixed bug with .mastery set command not being able to set other player mastery.
-- Moved EXP lost on death to downed event to avoid people suiciding after pvp and losing exp.
-- Attempt to fix rare broken string that is totally unknown how it can occurs.
-- Commands `.help [<command>]` will no longer show details if the user doesn't have sufficient priviledge.
-
-`0.2.3`
-- Added level up effect & notification for the experience system.
-- Added config to disable PvP toggling in the pvp command.
-- Changed the default exp & mastery feed to be off instead of on.
-
-`0.2.2`
-- Fixed some stats being bugged in the mastery system.
-- Reduced movement speed bonus from Slashers and None mastery.
-- Fixed mastery set command output only saying the first char of the weapon type.
-- Added Siege Golem buff options in configs.
-- Added ambush unit despawn timer in configs.
-
-`0.2.1`
-- Renamed the list in mastery to be in accordance with the mastery in game types.
-
-`0.2.0`
-- Fixed typo in mastery commands for setting Schyte mastery.
-- Added PvP punishment system.
-- Changed PvP system to hook from downed player instead of killed player.
-- Fixed bug in mastery decay not being disabled when mastery system is not enabled.
-- Fixed bug in mastery command that still report mastery status even when the system is disabled.
-
-`0.1.6`
-- Commands & permission are no longer case sensitive. F*ck...
-
-`0.1.5`
-- Introduced a mechanic to randomize mastery gain from creature kills.
-- Fixed issue on mastery gain on player death.
-- Fleshed out the weapon mastery bonus.
-
-`0.1.4`
-- Added Weapon Mastery system.
-- Disabled EXP/Mastery gain from summoned creatures.
-- Added EXP & Mastery gain logs for players.
-- Changed some 'notification' type of message into Lore chat type.
-- Added capabilities to change other player heat values.
-- Added mastery command.
-- Added a new abreviation for experience command. (exp)
-
-`0.0.3`
-- Fixed bug with chat cooldown being applied twice the value of the config
-- Fixed bug with waypoint limits.
-- Fixed bug with PvPStats recording.
-- Fixed bug with teleport command.
-- PvPKD should display decimals properly now.
-
-`0.0.2`
-- Fixed bug on allies checking when it was called if plugin was never reloaded with Wetstone.
-
-`0.0.1`
-- Added command delay timer
-- Integrated the data saving into the GameServer autosave & shutdown
-- All saved data will now use SteamID as key for compability with character name changes
-- Added Experience system
-- Changed SunImmunity behavior, there's no more persistent sun immunity with this
-- Added GodMode command
-- Added HunterHunted (Wanted Level) system
-- Added PvP stats & leaderboard system for it
-- Added PvP kill serverwide announcement
-- Added ping command to check for latency against the server
-- Added autorespawn command
-- Added nocooldown command
-- Added resetcooldown command
-- Fixed blood command to apply the bloodtype buff and avoid BloodHunger HUD bug
-- Optimized NPC spawn system, it will not lag the server anymore
-- Modified NPC spawn command to accept amount to spawn
-- Fixed NPC spawn command to be able to spawn normal units
-- Hide commands from user that do not have sufficient priviledge to use the command
-- Disabled waypoint command for user in combat
-- Modified waypoint command to "instance" the waypoint name
-- Admin ignore waypoint limit
-- Modified health command to be able to affect specified player or kill them by setting their HP to 0
-- Some other thing that i may not be able to remember
+- Removed wetstone dependency.
 
 </details>
 

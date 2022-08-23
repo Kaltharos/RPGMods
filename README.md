@@ -782,7 +782,17 @@ Display your user info and location.
 List all faction stats. Save them, or load from the json file.\
 &ensp;&ensp;**Example:** `wd faction stats` -> List all active faction stats.\
 &ensp;&ensp;**Example:** `wd faction ignore CHAR_Bandit_Thug` -> Ignore bandit thug for faction buffs.\
-&ensp;&ensp;**Example:** `wd faction unignore CHAR_Bandit_Thug` -> Stop ignoring bandit thug for faction buffs.\
+&ensp;&ensp;**Example:** `wd faction unignore CHAR_Bandit_Thug` -> Stop ignoring bandit thug for faction buffs.
+
+</details>
+
+<details>
+<summary>powerup</summary>
+
+`powerup <player_name> <add>|<remove> <max hp> <p.atk> <s.atk> <p.def> <s.def>`\
+Buff specified player with the specified value.\
+&ensp;&ensp;**Example:** `pu LegendaryVampire add 1000 50 125 0.5 0.7` -> Buff the player for specified values.\
+&ensp;&ensp;**Example:** `pu LegendaryVampire remove` -> Remove the buff from the specified player.
 
 </details>
 

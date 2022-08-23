@@ -68,6 +68,9 @@ namespace RPGMods.Commands
                 Output.SendSystemMessage(ctx, "PowerUp added to specified player.");
                 return;
             }
+
+            Output.InvalidArguments(ctx);
+            return;
         }
 
         public static void SavePowerUp()

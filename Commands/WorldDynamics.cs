@@ -8,7 +8,7 @@ using Unity.Entities;
 
 namespace RPGMods.Commands
 {
-    [Command("worlddynamics, wd", Usage = "wd [<faction>] [<stats>|<save>|<load>]", Description = "List all faction stats. Save them, or load from the json file.")]
+    [Command("worlddynamics, wd", Usage = "wd [<faction>] [<stats>|<save>|<load>|<ignore>|<unignore>] [<npc prefab name>]", Description = "List all faction stats. Save them, or load from the json file.")]
     public static class WorldDynamics
     {
         public static void Initialize(Context ctx)
@@ -27,6 +27,49 @@ namespace RPGMods.Commands
 
             if (ctx.Args[0].ToLower().Equals("faction"))
             {
+                if (ctx.Args[1].ToLower().Equals("ignore"))
+                {
+                    if (ctx.Args.Length < 3)
+                    {
+                        Output.MissingArguments(ctx);
+                        return;
+                    }
+
+                    string mobName = ctx.Args[2];
+                    if (Database.database_units.TryGetValue(mobName, out var mobGUID))
+                    {
+                        Database.IgnoredMonsters.Add(mobName);
+                        Database.IgnoredMonstersGUID.Add(mobGUID);
+                        Output.SendSystemMessage(ctx, $"NPC \"{mobName}\" is now ignored for faction buffing.");
+                        return;
+                    }
+                    else
+                    {
+                        Output.CustomErrorMessage(ctx, "Specified NPC not found.");
+                        return;
+                    }
+                }
+                if (ctx.Args[1].ToLower().Equals("unignore"))
+                {
+                    if (ctx.Args.Length < 3)
+                    {
+                        Output.MissingArguments(ctx);
+                        return;
+                    }
+
+                    string mobName = ctx.Args[2];
+                    if (Database.database_units.TryGetValue(mobName, out var mobGUID))
+                    {
+                        Database.IgnoredMonsters.Remove(mobName);
+                        Database.IgnoredMonstersGUID.Remove(mobGUID);
+                        Output.SendSystemMessage(ctx, $"NPC \"{mobName}\" is removed from faction buff ignore list.");
+                    }
+                    else
+                    {
+                        Output.CustomErrorMessage(ctx, "Specified NPC not found.");
+                        return;
+                    }
+                }
                 if (ctx.Args[1].ToLower().Equals("stats"))
                 {
                     int i = 0;
@@ -44,13 +87,15 @@ namespace RPGMods.Commands
                 if (ctx.Args[1].ToLower().Equals("save"))
                 {
                     WorldDynamicsSystem.SaveFactionStats();
-                    Output.SendSystemMessage(ctx, $"Factions data saved.");
+                    WorldDynamicsSystem.SaveIgnoredMobs();
+                    Output.SendSystemMessage(ctx, $"Factions data & ignored mobs saved.");
                     return;
                 }
                 if (ctx.Args[1].ToLower().Equals("load"))
                 {
                     WorldDynamicsSystem.LoadFactionStats();
-                    Output.SendSystemMessage(ctx, $"Factions json data loaded.");
+                    WorldDynamicsSystem.LoadIgnoredMobs();
+                    Output.SendSystemMessage(ctx, $"Factions & ignored mobs json data loaded.");
                     return;
                 }
             }

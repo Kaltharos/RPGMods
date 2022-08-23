@@ -112,7 +112,7 @@ For each mobs killed, the faction growth will be hampered, if enough are killed,
 Every faction strength gain and stat buff can be manually configured, by the server admin via config & json file.
 
 <details>
-<summary>Faction Stats Explaination</summary>
+<summary>Faction Stats Details</summary>
 
 Use [Gaming.Tools](https://gaming.tools/v-rising) to look up NPCs faction.
 ```json
@@ -151,6 +151,21 @@ Use [Gaming.Tools](https://gaming.tools/v-rising) to look up NPCs faction.
 ```
 
 </details>
+
+<details>
+<summary>Ignored Monsters</summary>
+
+Use [Gaming.Tools](https://gaming.tools/v-rising) to look up NPCs GUID.
+You can add some monster to the ignored list with their Prefab Name.
+```json
+[
+  "CHAR_Undead_Banshee",
+  "CHAR_Cultist_Pyromancer"
+]
+```
+
+</details>
+
 
 ## Command Permission & VIP Login Whitelist
 Commands are configured to require a minimum level of permission for the user to be able to use them.\
@@ -763,15 +778,22 @@ Display your user info and location.
 <details>
 <summary>worlddynamics</summary>
 
-`worlddynamics [<faction>] [<stats>|<save>|<load>]`\
+`worlddynamics [<faction>] [<stats>|<save>|<load>|<ignore>|<unignore>] [<npc prefab name>]`\
 List all faction stats. Save them, or load from the json file.\
 &ensp;&ensp;**Example:** `wd faction stats` -> List all active faction stats.\
+&ensp;&ensp;**Example:** `wd faction ignore CHAR_Bandit_Thug` -> Ignore bandit thug for faction buffs.\
+&ensp;&ensp;**Example:** `wd faction unignore CHAR_Bandit_Thug` -> Stop ignoring bandit thug for faction buffs.\
 
 </details>
 
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`1.2.1` `UNTESTED`
+- Added mob ignore feature for faction buff.
+- Added mob ignore command for faction buffs.
+- Added power up command.
 
 `1.2.0`
 - Added an initial version for world dynamics.

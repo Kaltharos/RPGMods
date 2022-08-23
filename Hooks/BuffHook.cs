@@ -187,6 +187,49 @@ public class ModifyUnitStatBuffSystem_Spawn_Patch
 
                 Buffer.Clear();
 
+                if (Database.PowerUpList.TryGetValue(Data.PlatformId, out var powerUpData))
+                {
+                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                    {
+                        StatType = UnitStatType.MaxHealth,
+                        Value = powerUpData.MaxHP,
+                        ModificationType = ModificationType.Add,
+                        Id = ModificationId.NewId(0)
+                    });
+
+                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                    {
+                        StatType = UnitStatType.PhysicalPower,
+                        Value = powerUpData.PATK,
+                        ModificationType = ModificationType.Add,
+                        Id = ModificationId.NewId(0)
+                    });
+
+                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                    {
+                        StatType = UnitStatType.SpellPower,
+                        Value = powerUpData.SATK,
+                        ModificationType = ModificationType.Add,
+                        Id = ModificationId.NewId(0)
+                    });
+
+                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                    {
+                        StatType = UnitStatType.PhysicalResistance,
+                        Value = powerUpData.PDEF,
+                        ModificationType = ModificationType.Add,
+                        Id = ModificationId.NewId(0)
+                    });
+
+                    Buffer.Add(new ModifyUnitStatBuff_DOTS()
+                    {
+                        StatType = UnitStatType.SpellResistance,
+                        Value = powerUpData.SDEF,
+                        ModificationType = ModificationType.Add,
+                        Id = ModificationId.NewId(0)
+                    });
+                }
+
                 if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.BuffReceiver(Buffer, Owner, Data.PlatformId);
 
                 if (Database.nocooldownlist.ContainsKey(Data.PlatformId))

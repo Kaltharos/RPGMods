@@ -16,6 +16,7 @@ namespace RPGMods.Utils
             Speed.SaveSpeed();
             AutoRespawn.SaveAutoRespawn();
             //Kit.SaveKits();   //-- Nothing to save here for now.
+            PowerUp.SavePowerUp();
 
             //-- System Related
             ExperienceSystem.SaveEXPData();
@@ -23,6 +24,7 @@ namespace RPGMods.Utils
             WeaponMasterSystem.SaveWeaponMastery();
             BanSystem.SaveBanList();
             WorldDynamicsSystem.SaveFactionStats();
+            WorldDynamicsSystem.SaveIgnoredMobs();
 
             Plugin.Logger.LogInfo("All database saved to JSON file.");
         }
@@ -38,6 +40,7 @@ namespace RPGMods.Utils
             Speed.LoadSpeed();
             AutoRespawn.LoadAutoRespawn();
             Kit.LoadKits();
+            PowerUp.LoadPowerUp();
 
             //-- System Related
             PvPSystem.LoadPvPStat();
@@ -45,6 +48,7 @@ namespace RPGMods.Utils
             WeaponMasterSystem.LoadWeaponMastery();
             BanSystem.LoadBanList();
             WorldDynamicsSystem.LoadFactionStats();
+            WorldDynamicsSystem.LoadIgnoredMobs();
 
             Plugin.Logger.LogInfo("All database is now loaded.");
         }

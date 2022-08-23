@@ -72,6 +72,7 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, int> waypoints_owned { get; set; }
         public static Dictionary<ulong, int> user_permission { get; set; }
         public static Dictionary<string, int> command_permission { get; set; }
+        public static Dictionary<ulong, PowerUpData> PowerUpList { get; set; }
 
         //-- -- Ban System
         public static Dictionary<ulong, BanData> user_banlist { get; set; }
@@ -96,6 +97,8 @@ namespace RPGMods.Utils
 
         //-- -- World Event System
         public static ConcurrentDictionary<int, FactionData> FactionStats { get; set; }
+        public static HashSet<string> IgnoredMonsters { get; set; }
+        public static HashSet<PrefabGUID> IgnoredMonstersGUID { get; set; }
 
         //-- Static Database (Data that will never be changed in runtime)
         public static Dictionary<string, PrefabGUID> database_units = new()

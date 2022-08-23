@@ -69,6 +69,9 @@ namespace RPGMods.Systems
         {
             if (!em.HasComponent<UnitLevel>(entity) && !em.HasComponent<UnitStats>(entity)) return;
 
+            var mobGUID = em.GetComponentData<PrefabGUID>(entity);
+            if (Database.IgnoredMonstersGUID.Contains(mobGUID)) return;
+
             var factionID = em.GetComponentData<FactionReference>(entity).FactionGuid._Value.GetHashCode();
             if (!Database.FactionStats.TryGetValue(factionID, out var factionStats)) return;
 
@@ -136,6 +139,46 @@ namespace RPGMods.Systems
         public static void SaveFactionStats()
         {
             File.WriteAllText("BepInEx/config/RPGMods/Saves/factionstats.json", JsonSerializer.Serialize(Database.FactionStats, Database.Pretty_JSON_options));
+        }
+
+        public static void SaveIgnoredMobs()
+        {
+            File.WriteAllText("BepInEx/config/RPGMods/Saves/ignoredmonsters.json", JsonSerializer.Serialize(Database.IgnoredMonsters, Database.Pretty_JSON_options));
+        }
+
+        public static void LoadIgnoredMobs()
+        {
+            if (!File.Exists("BepInEx/config/RPGMods/Saves/ignoredmonsters.json"))
+            {
+                var stream = File.Create("BepInEx/config/RPGMods/Saves/ignoredmonsters.json");
+                stream.Dispose();
+            }
+            string content = File.ReadAllText("BepInEx/config/RPGMods/Saves/ignoredmonsters.json");
+            try
+            {
+                Database.IgnoredMonsters = JsonSerializer.Deserialize<HashSet<string>>(content);
+                Database.IgnoredMonstersGUID = new HashSet<PrefabGUID>();
+                foreach (var item in Database.IgnoredMonsters)
+                {
+                    if (Database.database_units.TryGetValue(item, out var GUID))
+                    {
+                        Database.IgnoredMonstersGUID.Add(GUID);
+                    }
+                }
+                Plugin.Logger.LogWarning("IgnoredMonsters DB Populated.");
+            }
+            catch
+            {
+                Database.IgnoredMonsters = new HashSet<string>();
+                Database.IgnoredMonstersGUID = new HashSet<PrefabGUID>();
+
+                Database.IgnoredMonsters.Add("CHAR_Undead_Banshee");
+                Database.IgnoredMonstersGUID.Add(Database.database_units["CHAR_Undead_Banshee"]);
+
+                SaveIgnoredMobs();
+
+                Plugin.Logger.LogWarning("IgnoredMonsters DB Created.");
+            }
         }
 
         public static void LoadFactionStats()

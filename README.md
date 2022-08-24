@@ -815,6 +815,8 @@ Notes:
 `1.2.2`
 - Added anti-cheese system for PvP Punishment without EXP System.
 - Added a config to disable the honor title only with benefits, etc still active.
+- Found an issue with heatspawn faction not applied, no longer this will an issue.
+- Fixed customspawn command, stupid mistake was made, fixed it was.
 
 `1.2.1`
 - Added mob ignore feature for faction buff.

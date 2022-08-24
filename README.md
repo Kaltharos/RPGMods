@@ -794,6 +794,11 @@ Buff specified player with the specified value.\
 &ensp;&ensp;**Example:** `pu LegendaryVampire add 1000 50 125 0.5 0.7` -> Buff the player for specified values.\
 &ensp;&ensp;**Example:** `pu LegendaryVampire remove` -> Remove the buff from the specified player.
 
+```
+Notes:
+- Buffing PDef & SDef to 1 will make the player immune to those damage.
+```
+
 </details>
 
 ## More Information

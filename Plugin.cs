@@ -60,6 +60,8 @@ namespace RPGMods
         private static ConfigEntry<bool> HonorSortLadder;
         
         private static ConfigEntry<bool> EnablePvPPunish;
+        private static ConfigEntry<bool> EnablePvPPunishAnnounce;
+        private static ConfigEntry<bool> ExcludeOfflineKills;
         private static ConfigEntry<int> PunishLevelDiff;
         private static ConfigEntry<float> PunishDuration;
         private static ConfigEntry<int> PunishOffenseLimit;
@@ -179,7 +181,10 @@ namespace RPGMods
             PvPLadderLength = Config.Bind("PvP", "Ladder Length", 10, "How many players should be displayed in the PvP Ladders.");
             HonorSortLadder = Config.Bind("PvP", "Sort PvP Ladder by Honor", true, "This will automatically be false if honor system is not enabled.");
             EnablePvPToggle = Config.Bind("PvP", "Enable PvP Toggle", false, "Enable/disable the pvp toggle feature in the pvp command.");
+
             EnablePvPPunish = Config.Bind("PvP", "Enable PvP Punishment", false, "Enables the punishment system for killing lower level player.");
+            EnablePvPPunishAnnounce = Config.Bind("PvP", "Enable PvP Punish Announcement", true, "Announce all grief-kills that occured.");
+            ExcludeOfflineKills = Config.Bind("PvP", "Exclude Offline Grief", true, "Do not punish the killer if the victim is offline.");
             PunishLevelDiff = Config.Bind("PvP", "Punish Level Difference", -10, "Only punish the killer if the victim level is this much lower.");
             PunishOffenseLimit = Config.Bind("PvP", "Offense Limit", 3, "Killer must make this many offense before the punishment debuff is applied.");
             PunishOffenseCooldown = Config.Bind("PvP", "Offense Cooldown", 300f, "Reset the offense counter after this many seconds has passed since last offense.");
@@ -326,6 +331,8 @@ namespace RPGMods
             PvPSystem.isSortByHonor = HonorSortLadder.Value;
             
             PvPSystem.isPunishEnabled = EnablePvPPunish.Value;
+            PvPSystem.isAnnounceGrief = EnablePvPPunishAnnounce.Value;
+            PvPSystem.isExcludeOffline = ExcludeOfflineKills.Value;
             PvPSystem.PunishLevelDiff = PunishLevelDiff.Value;
             PvPSystem.PunishDuration = PunishDuration.Value;
             PvPSystem.OffenseLimit = PunishOffenseLimit.Value;

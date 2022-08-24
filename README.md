@@ -812,6 +812,11 @@ Notes:
 <details>
 <summary>Changelog</summary>
 
+`1.2.3`
+- Added config option to announce all grief kills.
+- Added config option to exclude killing of offline player from PvP Punishment.
+- Fixed unintended effect that causes vermin nest to have no spawn limit.
+
 `1.2.2`
 - Added anti-cheese system for PvP Punishment without EXP System.
 - Added a config to disable the honor title only with benefits, etc still active.

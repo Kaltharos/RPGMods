@@ -16,6 +16,8 @@ namespace RPGMods.Hooks
                 var entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
                 foreach (var entity in entities)
                 {
+                    if (!__instance.EntityManager.HasComponent<LifeTime>(entity)) return;
+
                     var Duration = __instance.EntityManager.GetComponentData<LifeTime>(entity).Duration;
                     if (Duration == HunterHuntedSystem.ambush_despawn_timer)
                     {
@@ -23,21 +25,16 @@ namespace RPGMods.Hooks
                         Faction.FactionGuid.ApplyModification(Helper.SGM, entity, entity, ModificationType.Set, new PrefabGUID(2120169232));
                         __instance.EntityManager.SetComponentData(entity, Faction);
                     }
-                }
 
-                if (listen)
-                {
-                    foreach (var entity in entities)
+                    if (listen)
                     {
-                        var Data = __instance.EntityManager.GetComponentData<LifeTime>(entity);
-                        if (Cache.spawnNPC_Listen.TryGetValue(Data.Duration, out var Content))
+                        if (Cache.spawnNPC_Listen.TryGetValue(Duration, out var Content))
                         {
                             Content.EntityIndex = entity.Index;
                             Content.EntityVersion = entity.Version;
                             if (Content.Options.Process) Content.Process = true;
 
-                            Cache.spawnNPC_Listen[Data.Duration] = Content;
-
+                            Cache.spawnNPC_Listen[Duration] = Content;
                             listen = false;
                         }
                     }

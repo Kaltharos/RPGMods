@@ -23,16 +23,18 @@ namespace RPGMods.Systems
 
         //-- Punish System
         public static bool isPunishEnabled = true;
-        public static bool isSortByHonor = true;
         public static int PunishLevelDiff = -10;
         public static float PunishDuration = 1800f;
         public static int OffenseLimit = 3;
         public static float Offense_Cooldown = 300f;
+        public static bool isAnnounceGrief = true;
+        public static bool isExcludeOffline = true;
 
         //-- Honor System
         //-- The Only Potential Buff we can use for hostile mark
         //Buff_Cultist_BloodFrenzy_Buff - PrefabGuid(-106492795)
         public static PrefabGUID HostileBuff = new PrefabGUID(-106492795);
+        public static bool isSortByHonor = true;
         public static bool isHonorSystemEnabled = true;
         public static bool isHonorTitleEnabled = true;
         public static int HonorGainSpanLimit = 60;
@@ -462,7 +464,16 @@ namespace RPGMods.Systems
         public static void PunishCheck(Entity Killer, Entity Victim)
         {
             Entity KillerUser = em.GetComponentData<PlayerCharacter>(Killer).UserEntity._Entity;
-            ulong KillerSteamID = em.GetComponentData<User>(KillerUser).PlatformId;
+            User killerUserData = em.GetComponentData<User>(KillerUser);
+            ulong KillerSteamID = killerUserData.PlatformId;
+
+            Entity VictimUser = em.GetComponentData<PlayerCharacter>(Victim).UserEntity._Entity;
+            User victimUserData = em.GetComponentData<User>(VictimUser);
+
+            if (isExcludeOffline)
+            {
+                if (victimUserData.IsConnected == false) return;
+            }
 
             float KillerLevel;
             if (Cache.PlayerLevelCache.TryGetValue(Killer, out var killerData)) KillerLevel = killerData.Level;
@@ -482,6 +493,10 @@ namespace RPGMods.Systems
                 OffenseData.LastOffense = DateTime.Now;
 
                 Cache.OffenseLog[KillerSteamID] = OffenseData;
+
+                if (isAnnounceGrief) ServerChatUtils.SendSystemMessageToAllClients(Plugin.Server.EntityManager, $"" +
+                    $"Vampire {Color.Red(killerUserData.CharacterName.ToString())} (Lv.{KillerLevel}) " +
+                    $"grief-killed \"{Color.White(victimUserData.CharacterName.ToString())}\" (Lv.{VictimLevel})");
 
                 if (OffenseData.Offense >= OffenseLimit)
                 {

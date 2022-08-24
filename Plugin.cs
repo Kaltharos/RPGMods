@@ -66,6 +66,7 @@ namespace RPGMods
         private static ConfigEntry<float> PunishOffenseCooldown;
 
         private static ConfigEntry<bool> EnableHonorSystem;
+        private static ConfigEntry<bool> EnableHonorTitle;
         private static ConfigEntry<int> MaxHonorGainPerSpan;
         private static ConfigEntry<bool> EnableHonorBenefit;
         private static ConfigEntry<int> HonorSiegeDuration;
@@ -165,6 +166,7 @@ namespace RPGMods
 
             AnnouncePvPKills = Config.Bind("PvP", "Announce PvP Kills", true, "Make a server wide announcement for all PvP kills.");
             EnableHonorSystem = Config.Bind("PvP", "Enable Honor System", false, "Enable the honor system.");
+            EnableHonorTitle = Config.Bind("PvP", "Enable Honor Title", true, "When enabled, the system will append the title to their name.\nHonor system will leave the player name untouched if disabled.");
             MaxHonorGainPerSpan = Config.Bind("PvP", "Max Honor Gain/Hour", 250, "Maximum amount of honor points the player can gain per hour.");
             EnableHonorBenefit = Config.Bind("PvP", "Enable Honor Benefit & Penalties", true, "If disabled, the hostility state and custom siege system will be disabled.\n" +
                 "All other bonus is also not applied.");
@@ -312,6 +314,7 @@ namespace RPGMods
             PvPSystem.isAnnounceKills = AnnouncePvPKills.Value;
 
             PvPSystem.isHonorSystemEnabled = EnableHonorSystem.Value;
+            PvPSystem.isHonorTitleEnabled = EnableHonorTitle.Value;
             PvPSystem.MaxHonorGainPerSpan = MaxHonorGainPerSpan.Value;
             PvPSystem.SiegeDuration = HonorSiegeDuration.Value;
             PvPSystem.isHonorBenefitEnabled = EnableHonorBenefit.Value;

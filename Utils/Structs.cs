@@ -8,6 +8,18 @@ using Unity.Entities;
 
 namespace RPGMods.Utils
 {
+    public struct LevelData
+    {
+        public float Level;
+        public DateTime TimeStamp;
+
+        public LevelData(float level = 0, DateTime timeStamp = default)
+        {
+            Level = level;
+            TimeStamp = timeStamp;
+        }
+    }
+
     public struct PowerUpData
     {
         public string Name { get; set; }

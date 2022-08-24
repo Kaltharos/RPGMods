@@ -197,7 +197,7 @@ namespace RPGMods.Utils
             //}
 
             var userData = Plugin.Server.EntityManager.GetComponentData<User>(userEntity);
-            if (PvPSystem.isHonorSystemEnabled)
+            if (PvPSystem.isHonorSystemEnabled && PvPSystem.isHonorTitleEnabled)
             {
                 var vampire_name = GetTrueName(newName.ToString());
 

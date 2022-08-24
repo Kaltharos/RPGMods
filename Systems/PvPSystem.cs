@@ -34,6 +34,7 @@ namespace RPGMods.Systems
         //Buff_Cultist_BloodFrenzy_Buff - PrefabGuid(-106492795)
         public static PrefabGUID HostileBuff = new PrefabGUID(-106492795);
         public static bool isHonorSystemEnabled = true;
+        public static bool isHonorTitleEnabled = true;
         public static int HonorGainSpanLimit = 60;
         public static int MaxHonorGainPerSpan = 250;
         public static bool isHonorBenefitEnabled = true;
@@ -165,10 +166,13 @@ namespace RPGMods.Systems
                     {
                         if (KillerStats.Reputation <= -1000) PvPSystem.HostileON(killer_id, KillerEntity, killer_userEntity);
                         KillerStats.Title = KillerHonorInfo.Title;
-                        var true_name = Helper.GetTrueName(killer_name);
-                        killer_name = "[" + KillerHonorInfo.Title + "]" + true_name;
-                        KillerStats.PlayerName = killer_name;
-                        renamePlayer = true;
+                        if (isHonorTitleEnabled)
+                        {
+                            var true_name = Helper.GetTrueName(killer_name);
+                            killer_name = "[" + KillerHonorInfo.Title + "]" + true_name;
+                            KillerStats.PlayerName = killer_name;
+                            renamePlayer = true;
+                        }
                     }
                 }
 
@@ -245,10 +249,14 @@ namespace RPGMods.Systems
                         if (KillerStats.Reputation <= -20000) PvPSystem.SiegeON(killer_id, KillerEntity, killer_userEntity, true, true);
 
                         KillerStats.Title = KillerHonorInfo.Title;
-                        var true_name = Helper.GetTrueName(killer_name);
-                        killer_name = "[" + KillerHonorInfo.Title + "]" + true_name;
-                        KillerStats.PlayerName = killer_name;
-                        renamePlayer = true;
+
+                        if (isHonorTitleEnabled)
+                        {
+                            var true_name = Helper.GetTrueName(killer_name);
+                            killer_name = "[" + KillerHonorInfo.Title + "]" + true_name;
+                            KillerStats.PlayerName = killer_name;
+                            renamePlayer = true;
+                        }
                     }
                 }
 
@@ -423,15 +431,46 @@ namespace RPGMods.Systems
             }, false);
         }
 
+        public static void OnEquipChange(Entity player)
+        {
+            var PlayerLevel = em.GetComponentData<Equipment>(player).GetFullLevel();
+            Cache.PlayerLevelCache.TryGetValue(player, out var levelData);
+
+            if (PlayerLevel > levelData.Level)
+            {
+                levelData.Level = PlayerLevel;
+                levelData.TimeStamp = DateTime.Now;
+                Cache.PlayerLevelCache[player] = levelData;
+            }
+        }
+
+        public static void OnCombatEngaged(Entity buffEntity, Entity player)
+        {
+            PrefabGUID GUID = em.GetComponentData<PrefabGUID>(buffEntity);
+            if (GUID.Equals(Database.Buff.InCombat_PvP))
+            {
+                Cache.PlayerLevelCache.TryGetValue(player, out var levelData);
+                if (DateTime.Now.Subtract(levelData.TimeStamp).TotalSeconds > 60)
+                {
+                    levelData.Level = em.GetComponentData<Equipment>(player).GetFullLevel();
+                }
+                levelData.TimeStamp = DateTime.Now;
+                Cache.PlayerLevelCache[player] = levelData;
+            }
+        }
+
         public static void PunishCheck(Entity Killer, Entity Victim)
         {
             Entity KillerUser = em.GetComponentData<PlayerCharacter>(Killer).UserEntity._Entity;
             ulong KillerSteamID = em.GetComponentData<User>(KillerUser).PlatformId;
-            Equipment KillerGear = em.GetComponentData<Equipment>(Killer);
-            float KillerLevel = KillerGear.ArmorLevel + KillerGear.WeaponLevel + KillerGear.SpellLevel;
 
-            Equipment VictimGear = em.GetComponentData<Equipment>(Victim);
-            float VictimLevel = VictimGear.ArmorLevel + VictimGear.WeaponLevel + VictimGear.SpellLevel;
+            float KillerLevel;
+            if (Cache.PlayerLevelCache.TryGetValue(Killer, out var killerData)) KillerLevel = killerData.Level;
+            else KillerLevel = em.GetComponentData<Equipment>(Killer).GetFullLevel();
+
+            float VictimLevel;
+            if (Cache.PlayerLevelCache.TryGetValue(Victim, out var victimData)) VictimLevel = victimData.Level;
+            else VictimLevel = em.GetComponentData<Equipment>(Victim).GetFullLevel();
 
             if (VictimLevel - KillerLevel <= PunishLevelDiff)
             {
@@ -523,7 +562,7 @@ namespace RPGMods.Systems
 
         public static void NewPlayerReceiver(Entity userEntity, Entity playerEntity, FixedString64 playerName)
         {
-            Helper.RenamePlayer(userEntity, playerEntity, playerName);
+            if (isHonorTitleEnabled) Helper.RenamePlayer(userEntity, playerEntity, playerName);
 
             var steamID = Plugin.Server.EntityManager.GetComponentData<User>(userEntity).PlatformId;
             Cache.HostilityState[playerEntity] = new StateData(steamID, false);

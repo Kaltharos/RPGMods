@@ -59,7 +59,7 @@ namespace RPGMods.Hooks
                 {
                     if (PvPSystem.isHonorSystemEnabled)
                     {
-                        Helper.RenamePlayer(userEntity, userData.LocalCharacter._Entity, userData.CharacterName);
+                        if (PvPSystem.isHonorTitleEnabled) Helper.RenamePlayer(userEntity, userData.LocalCharacter._Entity, userData.CharacterName);
 
                         Database.PvPStats.TryGetValue(userData.PlatformId, out var pvpStats);
                         Database.SiegeState.TryGetValue(userData.PlatformId, out var siegeState);

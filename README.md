@@ -44,7 +44,11 @@ players will otherwise never be able to do any pvp damage despite toggling pvp s
 PvP toggle will be overridden by Hostility Mode if the honor system is active.
 > ### Punishment System
 Additionally, there's a punishment system which can be used to punish players who kill lower level players,\
-which is configurable in the config.\
+which is configurable in the config.
+
+The punishment system also has an anti-cheese built-in in case the server is not using the EXP system.\
+Purposefully unequiping gear to appear as lower level to cheese the punishment system will not work.
+
 Punishment will apply a debuff that reduces player combat efficiency.
 * -25% Physical & spell power
 * -15 Physical, spell, holy, and fire resistance
@@ -251,6 +255,9 @@ Multiply resource yield (not item drop) when user is out of combat. -1.0 to disa
 Make a server wide announcement for all PvP kills.
 - `Enable Honor System` [default `false`]\
 Enable the honor system.
+- `Enable Honor Title` [default `true`]\
+When enabled, the system will append the title to their name.\
+Honor system will leave the player name untouched if disabled.
 - `Max Honor Gain/Hour` [default `250`]\
 Maximum amount of honor points the player can gain per hour.
 - `Enable Honor Benefit & Penalties` [default `true`]\
@@ -804,6 +811,10 @@ Notes:
 ## More Information
 <details>
 <summary>Changelog</summary>
+
+`1.2.2`
+- Added anti-cheese system for PvP Punishment without EXP System.
+- Added a config to disable the honor title only with benefits, etc still active.
 
 `1.2.1`
 - Added mob ignore feature for faction buff.

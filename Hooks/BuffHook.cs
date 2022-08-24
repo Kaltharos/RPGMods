@@ -298,7 +298,7 @@ public class BuffSystem_Spawn_Server_Patch
     {
         if (__instance.__OnUpdate_LambdaJob0_entityQuery == null) return;
 
-        if (HunterHuntedSystem.isActive || WeaponMasterSystem.isMasteryEnabled)
+        if (PvPSystem.isPunishEnabled || HunterHuntedSystem.isActive || WeaponMasterSystem.isMasteryEnabled)
         {
             NativeArray<Entity> entities = __instance.__OnUpdate_LambdaJob0_entityQuery.ToEntityArray(Allocator.Temp);
             foreach (var entity in entities)
@@ -315,6 +315,7 @@ public class BuffSystem_Spawn_Server_Patch
                     HunterHuntedSystem.BanditAmbusher(e_User, e_Owner, true);
                 }
                 if (WeaponMasterSystem.isMasteryEnabled) WeaponMasterSystem.LoopMastery(e_User, e_Owner);
+                if (PvPSystem.isPunishEnabled && !ExperienceSystem.isEXPActive) PvPSystem.OnCombatEngaged(entity, e_Owner);
             }
         }
     }

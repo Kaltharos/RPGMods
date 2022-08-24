@@ -38,6 +38,7 @@ namespace RPGMods.Utils
         public static Dictionary<ulong, float> player_level = new();
 
         //-- -- PvP System
+        public static Dictionary<Entity, LevelData> PlayerLevelCache = new();
         public static Dictionary<ulong, PvPOffenseLog> OffenseLog = new();
         public static Dictionary<ulong, ReputationLog> ReputationLog = new();
         public static Dictionary<Entity, StateData> HostilityState = new();
@@ -377,6 +378,7 @@ namespace RPGMods.Utils
 
         public static class Buff
         {
+            public static PrefabGUID EquipBuff = new PrefabGUID(343359674);
             public static PrefabGUID WolfStygian = new PrefabGUID(-1158884666);
             public static PrefabGUID WolfNormal = new PrefabGUID(-351718282);
             public static PrefabGUID BatForm = new PrefabGUID(1205505492);

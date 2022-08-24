@@ -805,7 +805,7 @@ Notes:
 <details>
 <summary>Changelog</summary>
 
-`1.2.1` `UNTESTED`
+`1.2.1`
 - Added mob ignore feature for faction buff.
 - Added mob ignore command for faction buffs.
 - Added power up command.

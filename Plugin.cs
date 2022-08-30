@@ -244,7 +244,8 @@ namespace RPGMods
         {
             InitConfig();
             Logger = Log;
-            harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            harmony = new Harmony(Plugin.PLUGIN_GUID);
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             TaskRunner.Initialize();
 

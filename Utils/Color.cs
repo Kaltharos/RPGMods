@@ -9,51 +9,51 @@
 
         public static string White(string text)
         {
-            return ColorText("#ffffffff", text);
+            return ColorText("#fffffffe", text);
         }
         public static string Black(string text)
         {
-            return ColorText("#000000ff", text);
+            return ColorText("#000000", text);
         }
         public static string Gray(string text)
         {
-            return ColorText("#404040ff", text);
+            return ColorText("#404040", text);
         }
         public static string Orange(string text)
         {
-            return ColorText("#c98332ff", text);
+            return ColorText("#c98332", text);
         }
         public static string Yellow(string text)
         {
-            return ColorText("#cfc14aff", text);
+            return ColorText("#cfc14a", text);
         }
         public static string Green(string text)
         {
-            return ColorText("#56ad3bff", text);
+            return ColorText("#56ad3b", text);
         }
         public static string Teal(string text)
         {
-            return ColorText("#3b8dadff", text);
+            return ColorText("#3b8dad", text);
         }
         public static string Blue(string text)
         {
-            return ColorText("#3444a8ff", text);
+            return ColorText("#3444a8", text);
         }
         public static string Purple(string text)
         {
-            return ColorText("#8b3691ff", text);
+            return ColorText("#8b3691", text);
         }
         public static string Pink(string text)
         {
-            return ColorText("#b53c8fff", text);
+            return ColorText("#b53c8ffe", text);
         }
         public static string Red(string text)
         {
-            return ColorText("#ff0000ff", text);
+            return ColorText("#ff0000", text);
         }
         public static string SoftRed(string text)
         {
-            return ColorText("#b53c40ff", text);
+            return ColorText("#b53c40", text);
         }
     }
 }

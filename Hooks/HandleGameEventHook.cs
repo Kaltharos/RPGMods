@@ -49,11 +49,14 @@ namespace RPGMods.Hooks
 
                     if (Option.ModifyBlood)
                     {
-                        var BloodSource = __instance.EntityManager.GetComponentData<BloodConsumeSource>(entity);
-                        BloodSource.UnitBloodType = Option.BloodType;
-                        BloodSource.BloodQuality = Option.BloodQuality;
-                        BloodSource.CanBeConsumed = Option.BloodConsumeable;
-                        __instance.EntityManager.SetComponentData(entity, BloodSource);
+                        if (__instance.EntityManager.HasComponent<BloodConsumeSource>(entity))
+                        {
+                            var BloodSource = __instance.EntityManager.GetComponentData<BloodConsumeSource>(entity);
+                            BloodSource.UnitBloodType = Option.BloodType;
+                            BloodSource.BloodQuality = Option.BloodQuality;
+                            BloodSource.CanBeConsumed = Option.BloodConsumeable;
+                            __instance.EntityManager.SetComponentData(entity, BloodSource);
+                        }
                     }
 
                     if (Option.ModifyStats)

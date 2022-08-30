@@ -35,10 +35,10 @@ namespace RPGMods.Commands
                         Output.SendSystemMessage(ctx, $"Specified command not found.");
                         return;
                     }
-                    Output.SendSystemMessage(ctx, $"Help for <color=#00ff00ff>{ctx.Prefix}{aliases.First()}</color>");
-                    Output.SendSystemMessage(ctx, $"<color=#ffffffff>Aliases: {string.Join(", ", aliases)}</color>");
-                    Output.SendSystemMessage(ctx, $"<color=#ffffffff>Description: {description}</color>");
-                    Output.SendSystemMessage(ctx, $"<color=#ffffffff>Usage: {ctx.Prefix}{usage}</color>");
+                    Output.SendSystemMessage(ctx, $"Help for <color=#00ff00>{ctx.Prefix}{aliases.First()}</color>");
+                    Output.SendSystemMessage(ctx, $"<color=#fffffffe>Aliases: {string.Join(", ", aliases)}</color>");
+                    Output.SendSystemMessage(ctx, $"<color=#fffffffe>Description: {description}</color>");
+                    Output.SendSystemMessage(ctx, $"<color=#fffffffe>Usage: {ctx.Prefix}{usage}</color>");
                     return;
                 }
                 else
@@ -62,13 +62,13 @@ namespace RPGMods.Commands
                     bool send = false;
                     if (userPermission < reqPermission && ctx.Event.User.IsAdmin)
                     {
-                        s = $"<color=#00ff00ff>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#ff0000ff>[{reqPermission}]</color> <color=#ffffffff>{description}</color>";
+                        s = $"<color=#00ff00>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#ff0000>[{reqPermission}]</color> <color=#fffffffe>{description}</color>";
                         //s = $"<color=#00ff00ff>{ctx.Prefix}{aliases.First()}/{string.Join(", ", aliases)}</color> - <color=#ff0000ff>[ADMIN]</color> <color=#ffffffff>{description}</color>";
                         send = true;
                     }
                     else if (userPermission >= reqPermission)
                     {
-                        s = $"<color=#00ff00ff>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#ffffffff>{description}</color>";
+                        s = $"<color=#00ff00>{ctx.Prefix}{string.Join(", ", aliases)}</color> - <color=#fffffffe>{description}</color>";
                         //s = $"<color=#00ff00ff>{ctx.Prefix}{aliases.First()}/{string.Join(", ", aliases)}</color> - <color=#ffffffff>{description}</color>";
                         send = true;
                     }

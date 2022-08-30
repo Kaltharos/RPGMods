@@ -29,7 +29,7 @@ namespace RPGMods
     public class Plugin : BasePlugin
 #endif
     {
-        private Harmony harmony;
+        public static Harmony harmony;
 
         private static ConfigEntry<string> Prefix;
         private static ConfigEntry<string> DisabledCommands;
@@ -271,7 +271,6 @@ namespace RPGMods
         {
             //-- Initialize System
             Helper.CreatePlayerCache();
-            Helper.GetDayNightCycle(out Helper.DNEntity);
             Helper.GetServerGameSettings(out Helper.SGS);
             Helper.GetServerGameManager(out Helper.SGM);
             Helper.GetUserActivityGridSystem(out Helper.UAGS);

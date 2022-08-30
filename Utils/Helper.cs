@@ -21,7 +21,6 @@ namespace RPGMods.Utils
         private static Entity empty_entity = new Entity();
         private static System.Random rand = new System.Random();
 
-        public static Entity DNEntity = default;
         public static ServerGameSettings SGS = default;
         public static ServerGameManager SGM = default;
         public static UserActivityGridSystem UAGS = default;
@@ -44,32 +43,6 @@ namespace RPGMods.Utils
         {
             settings = Plugin.Server.GetExistingSystem<ServerGameSettingsSystem>()?._Settings;
             return true;
-        }
-
-        public static bool GetDayNightCycle(out Entity dnEntity)
-        {
-            dnEntity = DNEntity;
-            var entities = Plugin.Server.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<DayNightCycle>()).ToEntityArray(Allocator.Temp);
-            if (entities.Length > 0)
-            {
-                dnEntity = entities[0];
-                return true;
-            }
-            return false;
-        }
-
-        public static bool GetClanMember(Entity clanEntity, out Dictionary<Entity, Entity> Group)
-        {
-            Group = new();
-            if (SGM._TeamChecker.HasClanTeam(clanEntity))
-            {
-                int AlliedUsersCount = SGM._TeamChecker.GetAlliedUsersCount(clanEntity);
-                if (AlliedUsersCount <= 0) return false;
-
-                NativeList<Entity> allyBuffer = SGM._TeamChecker.GetTeamsChecked();
-                //SGM._TeamChecker.GetAlliedUsers(team, allyBuffer);
-            }
-            return false;
         }
 
         public static int GetAllies(Entity PlayerCharacter, out PlayerGroup playerGroup)

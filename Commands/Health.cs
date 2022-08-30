@@ -47,7 +47,7 @@ namespace RPGMods.Commands
             };
             Plugin.Server.GetExistingSystem<DebugEventsSystem>().ChangeHealthEvent(UserIndex, ref HealthEvent);
 
-            Output.SendSystemMessage(ctx, $"Player \"{PlayerName}\" Health set to <color=#ffff00ff>{Value}%</color>");
+            Output.SendSystemMessage(ctx, $"Player \"{PlayerName}\" Health set to <color=#ffff00>{Value}%</color>");
         }
     }
 }

@@ -74,7 +74,7 @@ namespace RPGMods.Systems
             {
                 if (isLogging)
                 {
-                    Output.SendLore(userEntity, $"<color=#ffb700ff>Weapon mastery has increased by {MasteryValue * 0.001}%</color>");
+                    Output.SendLore(userEntity, $"<color=#ffb700>Weapon mastery has increased by {MasteryValue * 0.001}%</color>");
                 }
             }
         }

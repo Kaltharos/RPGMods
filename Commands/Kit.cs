@@ -31,7 +31,7 @@ namespace RPGMods.Commands
                 {
                     Helper.AddItemToInventory(ctx, new PrefabGUID(guid.Key), guid.Value);
                 }
-                Output.SendSystemMessage(ctx, $"You got the kit: <color=#ffff00ff>{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
+                Output.SendSystemMessage(ctx, $"You got the kit: <color=#ffff00>{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
             }
             catch
             {

@@ -101,12 +101,12 @@ namespace RPGMods.Commands
                 int total_wp = 0;
                 foreach (var global_wp in Database.globalWaypoint)
                 {
-                    Output.SendSystemMessage(ctx, $" - <color=#ffff00ff>{global_wp.Key}</color> [<color=#00dd00ff>Global</color>]");
+                    Output.SendSystemMessage(ctx, $" - <color=#ffff00>{global_wp.Key}</color> [<color=#00dd00>Global</color>]");
                     total_wp++;
                 }
                 foreach (var wp in Database.waypoints)
                 {
-                    Output.SendSystemMessage(ctx, $" - <color=#ffff00ff>{wp.Value.Name}</color>");
+                    Output.SendSystemMessage(ctx, $" - <color=#ffff00>{wp.Value.Name}</color>");
                     total_wp++;
                 }
                 if (total_wp == 0) Output.CustomErrorMessage(ctx, "No waypoint available.");

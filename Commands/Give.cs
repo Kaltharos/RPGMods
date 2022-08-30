@@ -31,7 +31,7 @@ namespace RPGMods.Commands
             }
 
             Helper.AddItemToInventory(ctx, guid, amount);
-            Output.SendSystemMessage(ctx, $"You got <color=#ffff00ff>{amount} {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
+            Output.SendSystemMessage(ctx, $"You got <color=#ffff00>{amount} {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name)}</color>");
         }
     }
 }

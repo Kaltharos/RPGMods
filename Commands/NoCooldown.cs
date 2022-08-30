@@ -18,7 +18,7 @@ namespace RPGMods.Commands
             else isNoCD = true;
             UpdateCooldownList(ctx, isNoCD);
             string p = isNoCD ? "Activated" : "Deactivated";
-            Output.SendSystemMessage(ctx, $"No Cooldown is now <color=#ffff00ff>{p}</color>");
+            Output.SendSystemMessage(ctx, $"No Cooldown is now <color=#ffff00>{p}</color>");
             Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.Buff.Buff_VBlood_Perk_Moose);
         }
 

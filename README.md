@@ -812,15 +812,20 @@ Notes:
 <details>
 <summary>Changelog</summary>
 
+`1.2.4`
+- Arguments parse protection for customspawn command.
+- Fixed error with spawning horses using customspawn command.
+- New initialization method to fix crash with a 100% fresh server with no save.
+
 `1.2.3`
 - Added config option to announce all grief kills.
 - Added config option to exclude killing of offline player from PvP Punishment.
-- Fixed unintended effect that causes vermin nest to have no spawn limit.
+- Fixed unintended effect that causes vermin nest & tomb to have no spawn limit.
 
 `1.2.2`
 - Added anti-cheese system for PvP Punishment without EXP System.
 - Added a config to disable the honor title only with benefits, etc still active.
-- Found an issue with heatspawn faction not applied, no longer this will an issue.
+- Found an issue with heatspawn faction not applied, no longer this will be an issue.
 - Fixed customspawn command, stupid mistake was made, fixed it was.
 
 `1.2.1`

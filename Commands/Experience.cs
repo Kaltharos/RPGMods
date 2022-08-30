@@ -46,7 +46,7 @@ namespace RPGMods.Commands
                     }
                     Database.player_experience[SteamID] = value;
                     ExperienceSystem.SetLevel(PlayerCharacter, UserEntity, SteamID);
-                    Output.SendSystemMessage(ctx, $"Player \"{CharName}\" Experience is now set to be<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>");
+                    Output.SendSystemMessage(ctx, $"Player \"{CharName}\" Experience is now set to be<color=#fffffffe> {ExperienceSystem.getXp(SteamID)}</color>");
                 }
                 else if (ctx.Args[0].ToLower().Equals("log"))
                 {
@@ -72,10 +72,10 @@ namespace RPGMods.Commands
             else
             {
                 int userLevel = ExperienceSystem.getLevel(SteamID);
-                Output.SendSystemMessage(ctx, $"-- <color=#ffffffff>{CharName}</color> --");
+                Output.SendSystemMessage(ctx, $"-- <color=#fffffffe>{CharName}</color> --");
                 Output.SendSystemMessage(ctx,
-                    $"Level:<color=#ffffffff> {userLevel}</color> (<color=#ffffffff>{ExperienceSystem.getLevelProgress(SteamID)}%</color>) " +
-                    $" [ XP:<color=#ffffffff> {ExperienceSystem.getXp(SteamID)}</color>/<color=#ffffffff>{ExperienceSystem.convertLevelToXp(userLevel + 1)}</color> ]");
+                    $"Level:<color=#fffffffe> {userLevel}</color> (<color=#fffffffe>{ExperienceSystem.getLevelProgress(SteamID)}%</color>) " +
+                    $" [ XP:<color=#fffffffe> {ExperienceSystem.getXp(SteamID)}</color>/<color=#fffffffe>{ExperienceSystem.convertLevelToXp(userLevel + 1)}</color> ]");
             }
         }
     }

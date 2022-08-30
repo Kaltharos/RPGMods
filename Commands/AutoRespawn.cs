@@ -49,11 +49,11 @@ namespace RPGMods.Commands
             string s = isAutoRespawn ? "Activated" : "Deactivated";
             if (isServerWide)
             {
-                Output.SendSystemMessage(ctx, $"Server wide Auto Respawn <color=#ffff00ff>{s}</color>");
+                Output.SendSystemMessage(ctx, $"Server wide Auto Respawn <color=#ffff00>{s}</color>");
             }
             else
             {
-                Output.SendSystemMessage(ctx, $"Player \"{PlayerName}\" Auto Respawn <color=#ffff00ff>{s}</color>");
+                Output.SendSystemMessage(ctx, $"Player \"{PlayerName}\" Auto Respawn <color=#ffff00>{s}</color>");
             }
         }
 

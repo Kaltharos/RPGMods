@@ -83,7 +83,7 @@ namespace RPGMods.Commands
                 if (level == 0) Database.user_permission.Remove(SteamID);
                 else Database.user_permission[SteamID] = level;
 
-                Output.SendSystemMessage(ctx, $"Player \"{playerName}\" permission is now set to<color=#ffffffff> {level}</color>.");
+                Output.SendSystemMessage(ctx, $"Player \"{playerName}\" permission is now set to <color=#fffffffe>{level}</color>.");
                 return;
             }
             else

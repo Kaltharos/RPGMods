@@ -578,6 +578,11 @@ namespace RPGMods.Systems
         public static void NewPlayerReceiver(Entity userEntity, Entity playerEntity, FixedString64 playerName)
         {
             if (isHonorTitleEnabled) Helper.RenamePlayer(userEntity, playerEntity, playerName);
+            else
+            {
+                string recastName = playerName.ToString();
+                Helper.UpdatePlayerCache(userEntity, recastName, recastName, false);
+            }
 
             var steamID = Plugin.Server.EntityManager.GetComponentData<User>(userEntity).PlatformId;
             Cache.HostilityState[playerEntity] = new StateData(steamID, false);

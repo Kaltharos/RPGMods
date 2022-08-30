@@ -20,7 +20,11 @@ namespace RPGMods.Commands
 
                 if (ctx.Args.Length >= 5)
                 {
-                    duration = float.Parse(ctx.Args[4]);
+                    if (!float.TryParse(ctx.Args[4], out duration))
+                    {
+                        Output.InvalidArguments(ctx);
+                        return;
+                    }
                 }
 
                 if (ctx.Args.Length >= 4)
@@ -31,9 +35,16 @@ namespace RPGMods.Commands
 
                 if (ctx.Args.Length >= 3)
                 {
-                    quality = float.Parse(ctx.Args[2]);
-                    if (float.Parse(ctx.Args[2]) < 0) quality = 0;
-                    if (float.Parse(ctx.Args[2]) > 100) quality = 100;
+                    if (float.TryParse(ctx.Args[2], out quality))
+                    {
+                        if (quality < 0) quality = 0;
+                        if (quality > 100) quality = 100;
+                    }
+                    else
+                    {
+                        Output.InvalidArguments(ctx);
+                        return;
+                    }
                 }
 
                 if (ctx.Args.Length >= 2)

@@ -83,14 +83,14 @@ namespace RPGMods.Systems
             SortedPermission.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
             var ListPermission = SortedPermission;
             messages.Add($"===================================");
-            if (ListPermission.Count == 0) messages.Add($"<color=#ffffffff>No Result</color>");
+            if (ListPermission.Count == 0) messages.Add($"<color=#fffffffe>No Result</color>");
             else
             {
                 int i = 0;
                 foreach (var result in ListPermission)
                 {
                     i++;
-                    messages.Add($"{i}. <color=#ffffffff>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
+                    messages.Add($"{i}. <color=#fffffffe>{Helper.GetNameFromSteamID(result.Key)} : {result.Value}</color>");
                 }
             }
             messages.Add($"===================================");

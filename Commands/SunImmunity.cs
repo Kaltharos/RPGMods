@@ -16,7 +16,7 @@ namespace RPGMods.Commands
             else isSunImmune = true;
             UpdateImmunity(ctx, isSunImmune);
             string s = isSunImmune ? "Activated" : "Deactivated";
-            Output.SendSystemMessage(ctx, $"Sun Immunity <color=#ffff00ff>{s}</color>");
+            Output.SendSystemMessage(ctx, $"Sun Immunity <color=#ffff00>{s}</color>");
             Helper.ApplyBuff(ctx.Event.SenderUserEntity, ctx.Event.SenderCharacterEntity, Database.Buff.Buff_VBlood_Perk_Moose);
         }
 

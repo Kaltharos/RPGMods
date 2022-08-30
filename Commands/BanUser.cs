@@ -21,10 +21,10 @@ namespace RPGMods.Commands
                     if (BanSystem.IsUserBanned(targetData_.PlatformId, out var banData_))
                     {
                         TimeSpan duration = banData_.BanUntil - DateTime.Now;
-                        Output.SendSystemMessage(ctx, $"Player:<color=#ffffffff> {args[0]}</color>");
-                        Output.SendSystemMessage(ctx, $"Status:<color=#ffffffff> Banned</color> | By:<color=#ffffffff> {banData_.BannedBy}</color>");
-                        Output.SendSystemMessage(ctx, $"Duration:<color=#ffffffff> {Math.Round(duration.TotalDays)}</color> day(s) [<color=#ffffffff>{banData_.BanUntil}</color>]");
-                        Output.SendSystemMessage(ctx, $"Reason:<color=#ffffffff> {banData_.Reason}</color>");
+                        Output.SendSystemMessage(ctx, $"Player:<color=#fffffffe> {args[0]}</color>");
+                        Output.SendSystemMessage(ctx, $"Status:<color=#fffffffe> Banned</color> | By:<color=#fffffffe> {banData_.BannedBy}</color>");
+                        Output.SendSystemMessage(ctx, $"Duration:<color=#fffffffe> {Math.Round(duration.TotalDays)}</color> day(s) [<color=#fffffffe>{banData_.BanUntil}</color>]");
+                        Output.SendSystemMessage(ctx, $"Reason:<color=#fffffffe> {banData_.Reason}</color>");
                         return;
                     }
                     else
@@ -67,8 +67,8 @@ namespace RPGMods.Commands
                     var user = ctx.Event.User;
                     Helper.KickPlayer(targetUserEntity);
                     Output.SendSystemMessage(ctx, $"Player \"{name}\" is now banned.");
-                    Output.SendSystemMessage(ctx, $"Banned Until:<color=#ffffffff> {banData.BanUntil}</color>");
-                    Output.SendSystemMessage(ctx, $"Reason:<color=#ffffffff> {reason}</color>");
+                    Output.SendSystemMessage(ctx, $"Banned Until:<color=#fffffffe> {banData.BanUntil}</color>");
+                    Output.SendSystemMessage(ctx, $"Reason:<color=#fffffffe> {reason}</color>");
                     return;
                 }
                 else

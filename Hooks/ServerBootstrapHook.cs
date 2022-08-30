@@ -1,25 +1,52 @@
 ﻿using HarmonyLib;
 using ProjectM;
+using ProjectM.Auth;
+using ProjectM.Gameplay.Systems;
 using ProjectM.Network;
 using ProjectM.Scripting;
+using ProjectM.Terrain;
 using RPGMods.Systems;
 using RPGMods.Utils;
 using Stunlock.Network;
 using System;
+using System.Reflection;
 
 namespace RPGMods.Hooks
 {
-    [HarmonyPatch(typeof(SettingsManager), nameof(SettingsManager.VerifyServerGameSettings))]
-    public class ServerGameSetting_Patch
+    //[HarmonyPatch(typeof(LoadPersistenceSystemV2), nameof(LoadPersistenceSystemV2.SetLoadState))]
+    //public class PersistenceSystem_Patch
+    //{
+    //    public static void Prefix(ServerStartupState.State loadState, LoadPersistenceSystemV2 __instance)
+    //    {
+    //        if (loadState == ServerStartupState.State.SuccessfulStartup)
+    //        {
+    //            Plugin.Initialize();
+    //        }
+    //    }
+    //}
+
+    //[HarmonyPatch(typeof(SettingsManager), nameof(SettingsManager.VerifyServerGameSettings))]
+    //public class ServerGameSetting_Patch
+    //{
+    //    private static bool isInitialized = false;
+    //    public static void Postfix()
+    //    {
+    //        if (isInitialized == false)
+    //        {
+    //            Plugin.Initialize();
+    //            isInitialized = true;
+    //        }
+    //    }
+    //}
+
+    [HarmonyPatch(typeof(HandleGameplayEventsSystem), nameof(HandleGameplayEventsSystem.OnUpdate))]
+    public class InitializationPatch
     {
-        private static bool isInitialized = false;
-        public static void Postfix()
+        [HarmonyPostfix]
+        public static void RPGMods_Initialize_Method()
         {
-            if (isInitialized == false)
-            {
-                Plugin.Initialize();
-                isInitialized = true;
-            }
+            Plugin.Initialize();
+            Plugin.harmony.Unpatch(typeof(HandleGameplayEventsSystem).GetMethod("OnUpdate"), typeof(InitializationPatch).GetMethod("RPGMods_Initialize_Method"));
         }
     }
 

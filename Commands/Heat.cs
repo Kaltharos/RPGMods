@@ -46,7 +46,7 @@ namespace RPGMods.Commands
                 if (int.TryParse(ctx.Args[0], out var n)) Cache.heatlevel[SteamID] = n;
                 if (int.TryParse(ctx.Args[1], out var nm)) Cache.bandit_heatlevel[SteamID] = nm;
                 Output.SendSystemMessage(ctx, $"Player \"{CharName}\" heat value changed.");
-                Output.SendSystemMessage(ctx, $"Human: <color=#ffff00ff>{Cache.heatlevel[SteamID]}</color> | Bandit: <color=#ffff00ff>{Cache.bandit_heatlevel[SteamID]}</color>");
+                Output.SendSystemMessage(ctx, $"Human: <color=#ffff00>{Cache.heatlevel[SteamID]}</color> | Bandit: <color=#ffff00>{Cache.bandit_heatlevel[SteamID]}</color>");
                 HunterHuntedSystem.HeatManager(userEntity);
                 return;
             }

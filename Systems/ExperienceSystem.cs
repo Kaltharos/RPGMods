@@ -121,7 +121,7 @@ namespace RPGMods.Systems
             {
                 if (isLogging)
                 {
-                    Output.SendLore(userEntity, $"<color=#ffdd00ff>You gain {EXPGained} experience points by slaying a Lv.{UnitLevel.Level} enemy.</color>");
+                    Output.SendLore(userEntity, $"<color=#ffdd00>You gain {EXPGained} experience points by slaying a Lv.{UnitLevel.Level} enemy.</color>");
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace RPGMods.Systems
             Database.player_experience[SteamID] = exp - EXPLost;
 
             SetLevel(playerEntity, userEntity, SteamID);
-            Output.SendLore(userEntity, $"You've been defeated,<color=#ffffffff> {EXPLostOnDeath * 100}%</color> experience is lost.");
+            Output.SendLore(userEntity, $"You've been defeated,<color=#fffffffe> {EXPLostOnDeath * 100}%</color> experience is lost.");
         }
 
         public static void BuffReceiver(Entity buffEntity)
@@ -196,7 +196,7 @@ namespace RPGMods.Systems
                         if (isLogging) 
                         {
                             var userData = entityManager.GetComponentData<User>(user);
-                            Output.SendLore(user, $"<color=#ffdd00ff>Level up! You're now level</color><color=#ffffffff> {level}</color><color=#ffdd00ff>!</color>");
+                            Output.SendLore(user, $"<color=#ffdd00>Level up! You're now level</color><color=#fffffffe> {level}</color><color=#ffdd00ff>!</color>");
                         }
                     }
                     
